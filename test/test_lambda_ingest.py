@@ -25,21 +25,23 @@ from src.lambda_ingestion import (
 class TestTimeStampDataRetrival:
     @mock_aws
     def test_timestamp_return_in_str(self):
+        table_name = 'test-table'
         bucket_name = "test-bucket"
         mock_client = boto3.client("s3")
-        file_key = "time_stamp.txt"
+        file_key = f"time_stamp_{table_name}.txt"
         file_content = "Hello Carlo!"
         mock_client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'eu-west-2' })
         mock_client.put_object(Bucket=bucket_name, Key=file_key, Body=file_content)
-        result = timestamp_data_retrival(mock_client, bucket_name)
+        result = timestamp_data_retrival(mock_client, bucket_name,table_name)
 
         assert result == "Hello Carlo!"
     @mock_aws
     def test_NO_timestamp_available(self):
+        table_name = 'test-table'
         bucket_name = "test-bucket"
         mock_client = boto3.client("s3")
         mock_client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'eu-west-2' })
-        result = timestamp_data_retrival(mock_client, bucket_name)
+        result = timestamp_data_retrival(mock_client, bucket_name,table_name)
 
         assert result == None
 # Dummy data for mocking database response
