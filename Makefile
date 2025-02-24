@@ -34,7 +34,7 @@ format-check: black black-check flake8
 bandit:
 	source venv/bin/activate && bandit -r src/ test/
 pip-audit:
-	source venv/bin/activate && pip-audit check
+	source venv/bin/activate && pip-audit
 
 security: bandit pip-audit
 
