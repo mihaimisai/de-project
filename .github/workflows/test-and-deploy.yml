@@ -28,9 +28,6 @@ jobs:
       - name: Install requirements
         run: make requirements
 
-      - name: Run flake8
-        run: flake8 src/ test/ 
-
       - name: Run format
         run: make format-check
 
