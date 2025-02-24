@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    name: run-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout and clone repo
+        uses: actions/checkout@v4
+      
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.6'
+
+      - name: Make environment
+        run: make environment
+
+      - name: Install requirements
+        run: make requirements
+
+      - name: Run flake8
+        run: flake8 src/ test/ 
+
+      - name: Run format
+        run: make format-check
+
+      - name: Run security checks
+        run: make security
+
+      - name: Run tests
+        run: run-tests
