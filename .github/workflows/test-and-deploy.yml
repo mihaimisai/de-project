@@ -41,7 +41,6 @@ jobs:
     runs-on: ubuntu-latest
     name: deploy-lambda
     needs: run-tests
-    environment: dev
     steps:
       - name: Checkout and clone repo
         uses: actions/checkout@v4
