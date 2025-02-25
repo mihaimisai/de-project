@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "data_bucket" {
-  bucket_prefix = var.ingested_data_bucket_prefix
+  bucket_prefix = var.data_bucket_prefix
   tags = {
     Name        = "data bucket"
     Environment = "Dev"

@@ -1,4 +1,3 @@
-#check when bucket is created
 variable "state_bucket" { 
     type = string
     default = "de-project-terraform-state"
@@ -10,6 +9,11 @@ variable "data_bucket_prefix" {
 variable "code_bucket_prefix" {
     type = string
     default = "de-project-lambda-code-"
+}
+
+variable "timestamp_bucket_prefix" {
+    type = string
+    default = "de-project-lambda-timestamp-"
 }
 variable "lambda_1_name" {
     type = string

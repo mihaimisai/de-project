@@ -8,8 +8,7 @@ terraform {
         }
     }
     backend "s3" {
-        bucket = ""
-        # to be completed later
+        bucket = var.state_bucket
         key = "terraform.tfstate"
         region = "eu-west-2"
     }
@@ -19,7 +18,7 @@ provider "aws"{
     region = "eu-west-2"
     default_tags{
         tags = {
-          ProjectName = "De_Project_Banshee"#to be completed
+          ProjectName = "DE_Project_Banshee"
           Team = "Banshee"
           DeployedFrom = "Terraform"
           Repository = "de-project"
