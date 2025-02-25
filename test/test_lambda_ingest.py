@@ -376,15 +376,17 @@ class TestIngestDataToS3:
         "src.utils.ingest_data_to_s3.load_credentials_for_pg_access",
         side_effect=dummy_load_credentials,
     )
+    # fmt: off
     @patch(
         "src.utils.ingest_data_to_s3.pg8000.connect", 
-        return_value=DummyConnection()
-    )  # noqa: E501
+        return_value=DummyConnection())
+    # fmt:on
     @patch("src.utils.ingest_data_to_s3.pd.read_sql", return_value=dummy_df)
     @patch(
         "src.lambda_function.pq.write_table",
         side_effect=Exception("Parquet conversion error"),
     )
+    # fmt: off
     def test_parquet_conversion_failure(
         self, 
         mock_write_table, 
@@ -393,6 +395,7 @@ class TestIngestDataToS3:
         mock_load_creds, 
         caplog
     ):
+    # fmt: on
         """Test that ingestion fails when converting
         the DataFrame to Parquet format fails."""
         mock_client = boto3.client("s3", region_name="eu-west-2")
@@ -471,16 +474,17 @@ class TestProcessAllTables:
             assert mock_ingest.call_count == len(self.EXPECTED_TABLES)
 
             # Construct the expected function call arguments.
+            # fmt: off
             expected_calls = [
                 call(
                     mock_client, 
-                    table, 
-                    time_stamp, 
+                    table, time_stamp, 
                     ingestion_bucket, 
                     timestamp_bucket
                 )  # noqa: E501
                 for table in self.EXPECTED_TABLES
             ]
+            # fmt: on
 
             # Check that all expected calls were made in order.
             mock_ingest.assert_has_calls(expected_calls, any_order=False)
