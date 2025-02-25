@@ -2,7 +2,7 @@ variable "state_bucket" {
     type = string
     default = "de-project-terraform-state"
 }
-variable "data_bucket_prefix" {
+variable "ingested_data_bucket_prefix" {
     type = string
     default = "de-project-ingested-data-"
 }
@@ -12,7 +12,7 @@ variable "code_bucket_prefix" {
 }
 
 variable "timestamp_bucket_prefix" {
-    type = string
+  type = string
     default = "de-project-lambda-timestamp-"
 }
 variable "lambda_1_name" {
