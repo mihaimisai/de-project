@@ -22,11 +22,16 @@ resource "aws_s3_bucket" "code_bucket" {
   }
 }
 
-#TODO: Upload the ingester_lambda code to the code_bucket
+# Upload the ingester_lambda code to the code_bucket
 resource "aws_s3_object" "ingester_lambda_code" {
   bucket = aws_s3_bucket.code_bucket.bucket
   key = "lambda/ingester_lambda.zip"
   source = "${path.module}/../ingester_function.zip" 
 }
 
-#TODO: Upload the ingester_lambda layer to the code_bucket if exists
+# Upload the ingester_lambda layer to the code_bucket if exists
+resource "aws_s3_object" "ingester_layer_code" {
+  bucket = aws_s3_bucket.code_bucket.bucket
+  key = "layers/ingester_layer.zip"
+  source = "${path.module}/../ingester_lambda_layer.zip"
+}
