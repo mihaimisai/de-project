@@ -1,3 +1,32 @@
+variable "db_user" { 
+  type = string 
+  }
+
+variable "db_password" { 
+  type = string 
+  }
+
+variable "db_host" { 
+  type = string 
+  }
+
+variable "db_db" { 
+  type = string 
+  }
+
+variable "db_port" { 
+  type = number 
+  }
+
+variable "log_email" {
+  type = string
+}
+
+variable "log_email_pass" {
+  type = string
+}
+
+
 variable "state_bucket" { 
     type = string
     default = "de-project-terraform-state"
@@ -35,5 +64,4 @@ variable "python_runtime" {
 variable "alert_email" {
     type = string
     default = "NotificationStreamBanshee@Gmail.com"
-
 }
