@@ -1,5 +1,9 @@
 .coverage
 **/__pycache__/
-
-
-
+/.pytest_cache
+/pytest.ini
+/venv/
+.env
+.env.*
+lambda_function_ingestion/
+package_for_lambda_ingestion/
