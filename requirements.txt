@@ -1,4 +1,5 @@
 asn1crypto==1.5.1
+bandit==1.8.3
 black==25.1.0
 boto3==1.36.26
 botocore==1.36.26
