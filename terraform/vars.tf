@@ -34,6 +34,6 @@ variable "python_runtime" {
 }
 variable "alert_email" {
     type = string
-    default = ""# add email
+    default = "NotificationStreamBanshee@Gmail.com"
 
 }
