@@ -6,7 +6,9 @@ from io import BytesIO
 from moto import mock_aws
 from unittest.mock import patch, call
 from src.utils.ingest_data_to_s3 import ingest_data_to_s3
-from src.utils.load_credentials_for_pg_access import load_credentials_for_pg_access  # noqa: E501
+from src.utils.load_credentials_for_pg_access import (
+    load_credentials_for_pg_access,
+)  # noqa: E501
 from src.utils.s3_data_upload import s3_data_upload
 from src.utils.timestamp_data_retrival import timestamp_data_retrival
 from src.utils.upload_time_stamp import upload_time_stamp
@@ -16,15 +18,19 @@ from src.lambda_function import (  # noqa: F401
     process_all_tables,
     S3_INGESTION_BUCKET,
     S3_TIMESTAMP_BUCKET,
-    REGION
+    REGION,
 )
 
 
 class TestLoadCredentials:
     def test_load_credentials_for_pg_access_success(self):
-        [PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD] = (
-            load_credentials_for_pg_access()
-        )
+        [
+            PG_HOST,
+            PG_PORT,
+            PG_DATABASE,
+            PG_USER,
+            PG_PASSWORD,
+        ] = load_credentials_for_pg_access()
         assert (
             PG_HOST
             == "nc-data-eng-totesys-production.chpsczt8h1nu.eu-west-2.rds.amazonaws.com"  # noqa: E501
@@ -47,7 +53,9 @@ class TestTimeStampDataRetrival:
             Bucket=bucket_name,
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
-        mock_client.put_object(Bucket=bucket_name, Key=file_key, Body=file_content)  # noqa: E501
+        mock_client.put_object(
+            Bucket=bucket_name, Key=file_key, Body=file_content
+        )  # noqa: E501
         result = timestamp_data_retrival(mock_client, bucket_name, table_name)
 
         assert result == "Hello world!"
@@ -67,7 +75,6 @@ class TestTimeStampDataRetrival:
 
 
 class TestUploadDataStamp:
-
     @mock_aws
     def test_upload_time_stamp_success(self, caplog):
         """Test successful upload"""
@@ -109,14 +116,11 @@ class TestUploadDataStamp:
             upload_time_stamp(mock_client, bucket_name, table_name)
 
         # Verify error log message
-        expected_log = (
-            f"Error uploading time_stamp_{table_name}.txt to S3 bucket: '{bucket_name}'"  # noqa: E501
-        )
+        expected_log = f"Error uploading time_stamp_{table_name}.txt to S3 bucket: '{bucket_name}'"  # noqa: E501
         assert expected_log in caplog.text
 
 
 class TestS3DataUpload:
-
     @mock_aws
     def test_s3_data_upload_success(self, caplog):
         """Test that a Parquet file is successfully uploaded."""
@@ -170,7 +174,10 @@ class TestS3DataUpload:
         def fake_upload_fileobj():
             raise ClientError(  # noqa: F821
                 {
-                    "Error": {"Code": "TestError", "Message": "Simulated S3 error"}  # noqa: E501
+                    "Error": {
+                        "Code": "TestError",
+                        "Message": "Simulated S3 error",
+                    }  # noqa: E501
                 },  # noqa: E501
                 "upload_fileobj",
             )
@@ -221,14 +228,14 @@ def dummy_s3_data_upload(client, bucket_name, table_name, buffer):
 
 
 class TestIngestDataToS3:
-
     @mock_aws
     @patch(
         "src.utils.load_credentials_for_pg_access.load_credentials_for_pg_access",  # noqa: E501
         side_effect=dummy_load_credentials,
     )
     @patch(
-        "src.utils.ingest_data_to_s3.pg8000.connect", return_value=DummyConnection()  # noqa: E501
+        "src.utils.ingest_data_to_s3.pg8000.connect",
+        return_value=DummyConnection(),  # noqa: E501
     )  # noqa: E501
     @patch("src.utils.ingest_data_to_s3.pd.read_sql", return_value=dummy_df)
     @patch(
@@ -337,7 +344,8 @@ class TestIngestDataToS3:
         side_effect=dummy_load_credentials,
     )
     @patch(
-        "src.utils.ingest_data_to_s3.pg8000.connect", return_value=DummyConnection()  # noqa: E501
+        "src.utils.ingest_data_to_s3.pg8000.connect",
+        return_value=DummyConnection(),  # noqa: E501
     )  # noqa: E501
     @patch(
         "src.utils.ingest_data_to_s3.pd.read_sql",
@@ -368,18 +376,21 @@ class TestIngestDataToS3:
         "src.utils.ingest_data_to_s3.load_credentials_for_pg_access",
         side_effect=dummy_load_credentials,
     )
-    @patch("src.utils.ingest_data_to_s3.pg8000.connect", return_value=DummyConnection())  # noqa: E501
+    @patch(
+        "src.utils.ingest_data_to_s3.pg8000.connect", 
+        return_value=DummyConnection()
+    )  # noqa: E501
     @patch("src.utils.ingest_data_to_s3.pd.read_sql", return_value=dummy_df)
     @patch(
         "src.lambda_function.pq.write_table",
         side_effect=Exception("Parquet conversion error"),
     )
     def test_parquet_conversion_failure(
-        self,
-        mock_write_table,
-        mock_read_sql,
-        mock_pg_connect,
-        mock_load_creds,
+        self, 
+        mock_write_table, 
+        mock_read_sql, 
+        mock_pg_connect, 
+        mock_load_creds, 
         caplog
     ):
         """Test that ingestion fails when converting
@@ -461,7 +472,13 @@ class TestProcessAllTables:
 
             # Construct the expected function call arguments.
             expected_calls = [
-                call(mock_client, table, time_stamp, ingestion_bucket, timestamp_bucket)  # noqa: E501
+                call(
+                    mock_client, 
+                    table, 
+                    time_stamp, 
+                    ingestion_bucket, 
+                    timestamp_bucket
+                )  # noqa: E501
                 for table in self.EXPECTED_TABLES
             ]
 
