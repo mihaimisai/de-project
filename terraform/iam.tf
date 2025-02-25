@@ -28,9 +28,6 @@ resource "aws_iam_role" "lambda_1_role" {
 # ------------------------------
 
 # Define
-
-
-
 data "aws_iam_policy_document" "s3_data_policy_doc" {
   statement {
 
