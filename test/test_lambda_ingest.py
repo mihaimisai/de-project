@@ -4,112 +4,403 @@ import boto3
 import logging
 import pandas as pd
 from io import BytesIO
+import pyarrow as pa
 import pyarrow.parquet as pq
 from moto import mock_aws
 import pg8000
 import pyarrow as pa
 import src.lambda_ingestion
 from unittest import mock
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, call
+from datetime import datetime
 
 # Import functions and constants from lambda_ingestion.
 from src.lambda_ingestion import (
+    load_credentials_for_pg_access,
     s3_client,
     timestamp_data_retrival,
+    upload_time_stamp,
+    s3_data_upload,
     ingest_data_to_s3,
-    load_credentials_for_pg_access,
+    process_all_tables, #Still needs testing, possbly refractoring to run task async
     S3_INGESTION_BUCKET,
     REGION,
 )
 
+
+class TestLoadCredentials:
+    def test_load_credentials_for_pg_access_success(self):
+        [PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD] = (
+            load_credentials_for_pg_access()
+        )
+        assert (
+            PG_HOST
+            == "nc-data-eng-totesys-production.chpsczt8h1nu.eu-west-2.rds.amazonaws.com"
+        )
+        assert PG_PORT == "5432"
+        assert PG_DATABASE == "totesys"
+        assert PG_USER == "project_team_2"
+        assert PG_PASSWORD == "eOVWx4L4xDGPJKC"
+
+
 class TestTimeStampDataRetrival:
     @mock_aws
     def test_timestamp_return_in_str(self):
-        table_name = 'test-table'
+        table_name = "test-table"
         bucket_name = "test-bucket"
-        mock_client = boto3.client("s3")
+        mock_client = boto3.client("s3", region_name='eu-west-2')
         file_key = f"time_stamp_{table_name}.txt"
-        file_content = "Hello Carlo!"
-        mock_client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'eu-west-2' })
+        file_content = "Hello world!"
+        mock_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
         mock_client.put_object(Bucket=bucket_name, Key=file_key, Body=file_content)
-        result = timestamp_data_retrival(mock_client, bucket_name,table_name)
+        result = timestamp_data_retrival(mock_client, bucket_name, table_name)
 
-        assert result == "Hello Carlo!"
+        assert result == "Hello world!"
+
     @mock_aws
     def test_NO_timestamp_available(self):
-        table_name = 'test-table'
+        table_name = "test-table"
         bucket_name = "test-bucket"
-        mock_client = boto3.client("s3")
-        mock_client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'eu-west-2' })
-        result = timestamp_data_retrival(mock_client, bucket_name,table_name)
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+        mock_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        result = timestamp_data_retrival(mock_client, bucket_name, table_name)
 
         assert result == None
-# Dummy data for mocking database response
-dummy_data = {"col1": [1, 2, 3], "col2": ["a", "b", "c"]}
-dummy_df = pd.DataFrame(dummy_data)
 
-class TestLambdaIngestion:
+
+class TestUploadDataStamp:
+
     @mock_aws
-    @pytest.mark.skip
-    def test_ingest_success(self, caplog):
-        """
-        Test successful ingestion scenario with logging verification.
-        """
-        caplog.set_level(logging.INFO)
-        
-        with mock.patch("pg8000.connect", return_value=mock.Mock()), \
-             mock.patch("pandas.read_sql", return_value=dummy_df), \
-             mock.patch("src.lambda_ingestion.load_credentials_for_pg_access", return_value=("host", "5432", "db", "user", "pass")), \
-             mock.patch("boto3.client") as mock_s3:
-            
-            # Create a simulated S3 bucket
-            s3 = mock_s3.return_value
-            s3.create_bucket.return_value = None
-            
-            table_name = "test_table"
-            ingest_data_to_s3(table_name)
-            
-            # Verify logs
-            assert "Successfully fetched data from table" in caplog.text
-            assert "Successfully converted data from table" in caplog.text
-            assert "Successfully uploaded Parquet file to S3" in caplog.text
-    @pytest.mark.skip
-    def test_missing_credentials(self, caplog):
-        """
-        Test missing credentials logging.
-        """
-        caplog.set_level(logging.ERROR)
-        
-        with mock.patch("src.lambda_ingestion.load_credentials_for_pg_access", return_value=(None, None, None, None, None)):
-            ingest_data_to_s3("test_table")
-        
-        assert "Error loading PostgreSQL credentials" in caplog.text
-    @pytest.mark.skip
-    def test_pg_connection_failure(self, caplog):
-        """
-        Test handling of PostgreSQL connection failure.
-        """
-        caplog.set_level(logging.ERROR)
+    def test_upload_time_stamp_success(self, caplog):
+        """Test successful upload"""
+        bucket_name = "test-bucket"
+        table_name = "test_table"
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+        # Create a mock S3 bucket
+        mock_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
 
-        with mock.patch("src.lambda_ingestion.load_credentials_for_pg_access", return_value=("host", "5432", "db", "user", "pass")), \
-             mock.patch("pg8000.connect", side_effect=Exception("DB connection failed")):
-            
-            ingest_data_to_s3("test_table")
-        
-        assert "Error connecting to PostgreSQL" in caplog.text
-    @pytest.mark.skip
-    def test_s3_upload_failure(self, caplog):
-        """
-        Test handling of S3 upload failure with logging.
-        """
-        caplog.set_level(logging.ERROR)
+        with caplog.at_level(logging.INFO):  # Capture logs at INFO level
+            timestamp = upload_time_stamp(mock_client, bucket_name, table_name)
 
-        with mock.patch("src.lambda_ingestion.load_credentials_for_pg_access", return_value=("host", "5432", "db", "user", "pass")), \
-             mock.patch("pg8000.connect", return_value=mock.Mock()), \
-             mock.patch("pandas.read_sql", return_value=dummy_df), \
-             mock.patch("boto3.client") as mock_s3:
-            
-            mock_s3.return_value.upload_fileobj.side_effect = Exception("S3 upload failed")
-            ingest_data_to_s3("test_table")
+        assert isinstance(timestamp, str)
+        assert (
+            len(timestamp) == 19
+        )  # Ensure correct timestamp format (YYYY-MM-DD HH:MM:SS)
+
+        # Check if the correct log message was recorded
+        expected_log = f"Successfully uploaded time_stamp_{table_name}.txt file to S3 bucket '{bucket_name}'"
+        assert expected_log in caplog.text
+
+        # Verify file exists in S3
+        response = mock_client.list_objects_v2(Bucket=bucket_name)
+        s3_keys = [obj["Key"] for obj in response.get("Contents", [])]
+        expected_s3_key = f"time_stamp_{table_name}.txt"
+        assert expected_s3_key in s3_keys
+    @mock_aws
+    def test_upload_time_stamp_invalid_bucket(self, caplog):
+        """Test uploading to a non-existent bucket"""
+        bucket_name = "non-existent-bucket"
+        table_name = "test_table"
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+
+        with caplog.at_level(logging.ERROR), pytest.raises(Exception) as exc_info:
+            upload_time_stamp(mock_client, bucket_name, table_name)
+
+        # Verify error log message
+        expected_log = (
+            f"Error uploading time_stamp_{table_name}.txt to S3 bucket: '{bucket_name}'"
+        )
+        assert expected_log in caplog.text
+
+# Example logger configuration 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+class TestS3DataUpload:
+    
+    @mock_aws
+    def test_s3_data_upload_success(self, caplog):
+        """Test that a Parquet file is successfully uploaded."""
+        bucket_name = "test-bucket"
+        table_name = "test_table"
+        mock_client = boto3.client("s3", region_name='eu-west-2')
         
-        assert "Error uploading Parquet file to S3" in caplog.text
+        # Create the bucket in the mock environment
+        mock_client.create_bucket(Bucket=bucket_name,
+        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+        
+        # Create a BytesIO buffer with dummy Parquet data
+        data = b"dummy parquet data"
+        buffer = BytesIO(data)
+        
+        with caplog.at_level(logging.INFO):
+            s3_data_upload(mock_client, bucket_name, table_name, buffer)
+        
+        # Verify that the file now exists in the bucket
+        response = mock_client.list_objects_v2(Bucket=bucket_name)
+        keys = [obj["Key"] for obj in response.get("Contents", [])]
+        expected_key = f"ingestion/{table_name}.parquet"
+        assert expected_key in keys
+        
+        # Verify that the correct success log message was recorded
+        expected_log = (
+            f"Successfully uploaded Parquet file to S3 bucket '{bucket_name}' "
+            f"for table '{table_name}'"
+        )
+        assert expected_log in caplog.text
+    @mock_aws
+    def test_s3_data_upload_error(self, caplog):
+        """Test that an exception is raised and logged when S3 upload fails."""
+        bucket_name = "test-bucket"
+        table_name = "test_table"
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+        # Create the bucket so that it exists in moto
+        mock_client.create_bucket(Bucket=bucket_name,
+        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+        
+        # Create a BytesIO buffer with dummy data
+        data = b"dummy parquet data"
+        buffer = BytesIO(data)
+        
+        # Define a helper function that simulates an S3 error.
+        def fake_upload_fileobj():
+            raise ClientError(
+                {"Error": {"Code": "TestError", "Message": "Simulated S3 error"}},
+                "upload_fileobj"
+            )
+        
+        # Use unittest.mock.patch to replace upload_fileobj with our fake function.
+        with patch.object(mock_client, "upload_fileobj", side_effect=fake_upload_fileobj):
+            # If you want your function to re-raise the exception (after logging),
+            # the following test will pass. Otherwise, if the function swallows the error,
+            # you should verify the log message only.
+            with caplog.at_level(logging.ERROR), pytest.raises(Exception):
+                s3_data_upload(mock_client, bucket_name, table_name, buffer)
+            
+            # Verify that the error log message was recorded.
+            expected_log = (
+                f"Error uploading Parquet file to S3 for table '{table_name}':"
+            )
+            assert expected_log in caplog.text
+
+
+
+# Dummy connection class for pg8000
+class DummyConnection:
+    def close(self):
+        pass
+# Dummy credentials function: returns valid credentials
+def dummy_load_credentials():
+    return ("dummy_host", 5432, "dummy_db", "dummy_user", "dummy_pass")
+
+# Dummy DataFrame to simulate a query result
+dummy_df = pd.DataFrame({
+    "col1": [1, 2],
+    "col2": ["a", "b"]
+})
+
+# Dummy upload_time_stamp: simply returns a dummy timestamp string.
+def dummy_upload_time_stamp(client, bucket_name, table_name):
+    return "2025-02-24 12:00:00"
+
+# Dummy s3_data_upload: do nothing (its behavior is tested elsewhere)
+def dummy_s3_data_upload(client, bucket_name, table_name, buffer):
+    pass
+
+class TestIngestDataToS3:
+
+
+    @mock_aws
+    @patch("src.lambda_ingestion.load_credentials_for_pg_access", side_effect=dummy_load_credentials)
+    @patch("src.lambda_ingestion.pg8000.connect", return_value=DummyConnection())
+    @patch("src.lambda_ingestion.pd.read_sql", return_value=dummy_df)
+    @patch("src.lambda_ingestion.upload_time_stamp", side_effect=dummy_upload_time_stamp)
+    @patch("src.lambda_ingestion.s3_data_upload", side_effect=dummy_s3_data_upload)
+    def test_ingest_data_success(self,
+                                 mock_aws_data_upload,
+                                 mock_upload_time_stamp,
+                                 mock_read_sql,
+                                 mock_pg_connect,
+                                 mock_load_creds,
+                                 caplog):
+        """Test a successful ingestion where all steps work correctly."""
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+        with caplog.at_level(logging.INFO):
+            # Call the function with a valid table name and no time_stamp filter.
+            ingest_data_to_s3(
+                s3_client=mock_client,
+                table_name="test_table",
+                time_stamp=None,
+                S3_INGESTION_BUCKET="your-ingestion-bucket",
+                S3_TIMESTAMP_BUCKET="your-timestamp-bucket"
+            )
+
+        # Check that the expected log messages were emitted.
+        assert "Connecting to PostgreSQL database:" in caplog.text
+        assert "Successfully fetched data from table:" in caplog.text
+        assert "Successfully converted data from table" in caplog.text
+
+        # Verify that our dummy functions were called.
+        mock_upload_time_stamp.assert_called_once()
+        mock_aws_data_upload.assert_called_once()
+    @mock_aws
+    @patch("src.lambda_ingestion.load_credentials_for_pg_access", return_value=(None, None, None, None, None))
+    def test_missing_credentials(self, mock_load_creds, caplog):
+        """Test that ingestion fails when PostgreSQL credentials are missing."""
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+
+        with caplog.at_level(logging.ERROR):
+            result = ingest_data_to_s3(
+                s3_client=mock_client,
+                table_name="test_table",
+                time_stamp=None,
+                S3_INGESTION_BUCKET="your-ingestion-bucket",
+                S3_TIMESTAMP_BUCKET="your-timestamp-bucket"
+            )
+        # The function should return early (None) after logging the error.
+        assert result is None
+        assert ("One or more PostgreSQL credentials are missing." in caplog.text or
+                "Error loading PostgreSQL credentials:" in caplog.text)
+    @mock_aws
+    @patch("src.lambda_ingestion.load_credentials_for_pg_access", side_effect=dummy_load_credentials)
+    @patch("src.lambda_ingestion.pg8000.connect", side_effect=Exception("Connection failed"))
+    def test_pg_connection_failure(self, mock_pg_connect, mock_load_creds, caplog):
+        """Test that ingestion fails when the PostgreSQL connection cannot be established."""
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+        with caplog.at_level(logging.ERROR):
+            result = ingest_data_to_s3(
+                s3_client=mock_client,
+                table_name="test_table",
+                time_stamp=None,
+                S3_INGESTION_BUCKET="your-ingestion-bucket",
+                S3_TIMESTAMP_BUCKET="your-timestamp-bucket"
+            )
+        assert result is None
+        assert "Error connecting to PostgreSQL or executing query for table" in caplog.text
+    @mock_aws
+    @patch("src.lambda_ingestion.load_credentials_for_pg_access", side_effect=dummy_load_credentials)
+    @patch("src.lambda_ingestion.pg8000.connect", return_value=DummyConnection())
+    @patch("src.lambda_ingestion.pd.read_sql", side_effect=Exception("SQL error"))
+    def test_sql_query_failure(self, mock_read_sql, mock_pg_connect, mock_load_creds, caplog):
+        """Test that ingestion fails when the SQL query execution fails."""
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+
+        with caplog.at_level(logging.ERROR):
+            result = ingest_data_to_s3(
+                s3_client=mock_client,
+                table_name="test_table",
+                time_stamp=None,
+                S3_INGESTION_BUCKET="your-ingestion-bucket",
+                S3_TIMESTAMP_BUCKET="your-timestamp-bucket"
+            )
+        assert result is None
+        assert "Error connecting to PostgreSQL or executing query for table" in caplog.text
+    @mock_aws
+    @patch("src.lambda_ingestion.load_credentials_for_pg_access", side_effect=dummy_load_credentials)
+    @patch("src.lambda_ingestion.pg8000.connect", return_value=DummyConnection())
+    @patch("src.lambda_ingestion.pd.read_sql", return_value=dummy_df)
+    @patch("src.lambda_ingestion.pq.write_table", side_effect=Exception("Parquet conversion error"))
+    def test_parquet_conversion_failure(self,
+                                        mock_write_table,
+                                        mock_read_sql,
+                                        mock_pg_connect,
+                                        mock_load_creds,
+                                        caplog):
+        """Test that ingestion fails when converting the DataFrame to Parquet format fails."""
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+        with caplog.at_level(logging.ERROR):
+            result = ingest_data_to_s3(
+                s3_client=mock_client,
+                table_name="test_table",
+                time_stamp=None,
+                S3_INGESTION_BUCKET="your-ingestion-bucket",
+                S3_TIMESTAMP_BUCKET="your-timestamp-bucket"
+            )
+        assert result is None
+        assert "Error converting DataFrame to Parquet for table" in caplog.text
+
+class TestProcessAllTables:
+    # List of tables that are expected to be processed.
+    EXPECTED_TABLES = [
+        "counterparty",
+        "currency",
+        "department",
+        "design",
+        "staff",
+        "sales_order",
+        "address",
+        "payment",
+        "purchase_order",
+        "payment_type",
+        "transaction",
+    ]
+
+    # Mock function to simulate successful ingestion of data to S3.
+    def dummy_ingest_data_to_s3(self, client, table, time_stamp, ingestion_bucket, timestamp_bucket):
+        return f"Processed {table}"  # Returns a success message for any table.
+
+    # Mock function that simulates an exception when processing the "department" table.
+    def dummy_ingest_data_to_s3_with_exception(self, client, table, time_stamp, ingestion_bucket, timestamp_bucket):
+        if table == "department":
+            raise Exception("Simulated error in department")  # Simulates failure for "department".
+        return f"Processed {table}"  # Returns success for other tables.
+
+    @mock_aws  # Mocks AWS services for the test.
+    def test_process_all_tables_success(self):
+        """Test that all tables are successfully processed without exceptions."""
+        
+        # Create a mock S3 client with the specified AWS region.
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+        
+        # Define the timestamp and bucket names.
+        time_stamp = "2025-02-24 12:00:00"
+        ingestion_bucket = "ingestion-bucket"
+        timestamp_bucket = "timestamp-bucket"
+        
+        # Mock the `ingest_data_to_s3` function to use the dummy success function.
+        with patch("src.lambda_ingestion.ingest_data_to_s3", side_effect=self.dummy_ingest_data_to_s3) as mock_ingest:
+            
+            # Call the function under test.
+            process_all_tables(mock_client, time_stamp, ingestion_bucket, timestamp_bucket)
+            
+            # Verify that ingest_data_to_s3 was called once for each expected table.
+            assert mock_ingest.call_count == len(self.EXPECTED_TABLES)
+            
+            # Construct the expected function call arguments.
+            expected_calls = [
+                call(mock_client, table, time_stamp, ingestion_bucket, timestamp_bucket)
+                for table in self.EXPECTED_TABLES
+            ]
+            
+            # Check that all expected calls were made in order.
+            mock_ingest.assert_has_calls(expected_calls, any_order=False)
+
+    @mock_aws  # Mocks AWS services for the test.
+    def test_process_all_tables_exception(self):
+        """Test that an exception is raised when processing the 'department' table."""
+        
+        # Create a mock S3 client with the specified AWS region.
+        mock_client = boto3.client("s3", region_name='eu-west-2')
+        
+        # Define the timestamp and bucket names.
+        time_stamp = "2025-02-24 12:00:00"
+        ingestion_bucket = "ingestion-bucket"
+        timestamp_bucket = "timestamp-bucket"
+        
+        # Mock the `ingest_data_to_s3` function to use the exception-raising version.
+        with patch("src.lambda_ingestion.ingest_data_to_s3", side_effect=self.dummy_ingest_data_to_s3_with_exception) as mock_ingest:
+            
+            # Expect an exception when calling the function.
+            with pytest.raises(Exception, match="Simulated error in department"):
+                process_all_tables(mock_client, time_stamp, ingestion_bucket, timestamp_bucket)
+            
+            # Verify that ingest_data_to_s3 was called up until the "department" table caused an error.
+            assert mock_ingest.call_count == 3  # Should process three tables before failing.
