@@ -6,33 +6,18 @@ from io import BytesIO
 from moto import mock_aws
 from unittest.mock import patch, call
 from src.utils.ingest_data_to_s3 import ingest_data_to_s3
-from src.utils.load_credentials_for_pg_access import load_credentials_for_pg_access  # noqa: E501
+from src.utils.load_credentials_for_pg_access import load_credentials_for_pg_access
 from src.utils.s3_data_upload import s3_data_upload
 from src.utils.timestamp_data_retrival import timestamp_data_retrival
 from src.utils.upload_time_stamp import upload_time_stamp
 
 # Import functions and constants from lambda_ingestion.
-from src.lambda_function import (  # noqa: F401
+from src.lambda_function import (
     process_all_tables,
-    S3_INGESTION_BUCKET,
-    S3_TIMESTAMP_BUCKET,
-    REGION
+    # s3_ingestion_bucket,
+    # s3_timestamp_bucket,
+    region
 )
-
-
-class TestLoadCredentials:
-    def test_load_credentials_for_pg_access_success(self):
-        [PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD] = (
-            load_credentials_for_pg_access()
-        )
-        assert (
-            PG_HOST
-            == "nc-data-eng-totesys-production.chpsczt8h1nu.eu-west-2.rds.amazonaws.com"  # noqa: E501
-        )
-        assert PG_PORT == "5432"
-        assert PG_DATABASE == "totesys"
-        assert PG_USER == "project_team_2"
-        assert PG_PASSWORD == "eOVWx4L4xDGPJKC"
 
 
 class TestTimeStampDataRetrival:

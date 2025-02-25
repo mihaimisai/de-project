@@ -6,7 +6,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 from src.utils.load_credentials_for_pg_access import (
     load_credentials_for_pg_access,
-)  # noqa: E501
+)
 from src.utils.upload_time_stamp import upload_time_stamp
 from src.utils.s3_data_upload import s3_data_upload
 
@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 def ingest_data_to_s3(
     s3_client,
     table_name,
-    time_stamp=None,
-    S3_INGESTION_BUCKET="your-ingestion-bucket",
-    S3_TIMESTAMP_BUCKET="your-timestamp-bucket",
+    S3_INGESTION_BUCKET,
+    S3_TIMESTAMP_BUCKET,
+    time_stamp=None
 ):
     """
     Extracts data from a PostgreSQL table and uploads it to
@@ -42,6 +42,7 @@ def ingest_data_to_s3(
         return
 
     conn = None
+    
     try:
         # Establish a connection to PostgreSQL database
         logger.info(
