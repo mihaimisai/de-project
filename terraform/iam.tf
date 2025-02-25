@@ -24,33 +24,27 @@ resource "aws_iam_role" "lambda_1_role" {
 
 
 # ------------------------------
-# Lambda IAM Policy for S3 Write
+# Lambda IAM Policy for S3 Read and Write
 # ------------------------------
 
 # Define
 data "aws_iam_policy_document" "s3_data_policy_doc" {
   statement {
 
-    actions = [
-      "s3:PutObject",
-    #   "s3:PutObjectACL"
-    ]
+    actions = ["s3:PutObject"]
     resources = [
       "${aws_s3_bucket.timestamp_bucket.arn}/*",
-    "${aws_s3_bucket.data_bucket.arn}/*"
+      "${aws_s3_bucket.data_bucket.arn}/*"
     ]
     effect = "Allow"
   }
    statement {
 
-    actions = [
-      "s3:GetObject",
-    #   "s3:GetObjectACL"
-    ]
+    actions = ["s3:GetObject"]
     resources = [
       "${aws_s3_bucket.timestamp_bucket.arn}/*",
-    "${aws_s3_bucket.data_bucket.arn}/*",
-    "${aws_s3_bucket.code_bucket.arn}/*"
+      "${aws_s3_bucket.data_bucket.arn}/*",
+      "${aws_s3_bucket.code_bucket.arn}/*"
     ]
     effect = "Allow"
   }
@@ -80,7 +74,7 @@ data "aws_iam_policy_document" "cw_document" {
       "logs:CreateLogGroup",
     
     ]
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.account_id}:*"]
+    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
     effect    = "Allow"
   }
 
@@ -90,7 +84,7 @@ data "aws_iam_policy_document" "cw_document" {
       "logs:PutLogEvents"
     ]
     resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.account_id}:log-group:/aws/lambda/${var.lambda_1_name}:*"
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.lambda_1_name}:*"
     ]
     effect = "Allow"
   }
