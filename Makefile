@@ -21,9 +21,9 @@ requirements: environment
 #Format and check
 
 black:
-	source venv/bin/activate && black src/ test/
+	source venv/bin/activate && black --line-length=79 src/ test/
 black-check:
-	source venv/bin/activate && black --check src/ test/
+	source venv/bin/activate && black --check --line-length=79 src/ test/
 flake8:
 	source venv/bin/activate && flake8 src/ test/
 
