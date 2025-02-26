@@ -1,11 +1,10 @@
-from src.utils.connect_to_db import connect_to_db, close_db
+from src.utils.connect_to_db import connect_to_db
 import pytest
 import logging
-import unittest
-from unittest.mock import patch, Mock
-import pg8000 
-from pg8000.exceptions import InterfaceError, DatabaseError
+from unittest.mock import patch
+from pg8000.exceptions import InterfaceError
 from testfixtures import LogCapture
+
 
 @pytest.fixture
 def test_logger():
@@ -14,47 +13,69 @@ def test_logger():
     return logger
 
 
-
 class TestConnectToDb:
-    @patch("src.utils.connect_to_db.pg_access", return_value=("localhost", 1234, "test_db", "user", "password"))
-    def test_connects_to_db_fails_with_no_connection_established(self, test_logger):
+    @patch(
+        "src.utils.connect_to_db.pg_access",
+        return_value=("localhost", 1234, "test_db", "user", "password"),
+    )
+    def test_fails_with_no_connection_established(self,
+                                                  test_logger):
         with pytest.raises(InterfaceError):
             connect_to_db(test_logger)
 
-    @patch("src.utils.connect_to_db.pg_access", return_value=("localhost", 1234, "test_db", "user", "password"))
-    @patch("src.utils.connect_to_db.Connection", return_value=object())
-    def test_connects_to_db_success(self, mock_access, mock_connection, test_logger):
-        result = connect_to_db(test_logger)
+    @patch(
+        "src.utils.connect_to_db.pg_access",
+        return_value=("localhost", 1234, "test_db", "user", "password"),
+    )
+    @patch("src.utils.connect_to_db.Connection",
+           return_value=object())
+    def test_connects_to_db_success(self,
+                                    mock_access,
+                                    mock_connection,
+                                    test_logger):
+        connect_to_db(test_logger)
 
         mock_access.assert_called_once_with(
             host="localhost",
             port=1234,
             database="test_db",
             user="user",
-            password="password"
+            password="password",
         )
-    
-    # @patch("src.utils.connect_to_db.pg_access", return_value=("incorrect"))
-    def test_connects_to_db_logs_error(self, test_logger):
-        with LogCapture() as l:
-            try:
-                connect_to_db(test_logger)
-            except:
-                pass
-        for log in l:
-            assert x == ('test_logger', 'ERROR', 'Connection failed: One or more PostgreSQL credentials are missing.')
-    
-    @patch("src.utils.connect_to_db.pg_access", return_value=("localhost", 1234, "test_db", "user", "password"))
-    @patch("src.utils.connect_to_db.Connection", return_value=object())
-    def test_connects_to_db_logs_info(self, mock_access, mock_connection, test_logger):
-        with LogCapture() as l:
-            try:
-                connect_to_db(test_logger)
-            except:
-                pass
-        
-        for log in l:
-            assert x == ('test_logger', 'INFO', 'Connecting to PostgreSQL database: test_db on host: localhost')
-    
-    
 
+    def test_connects_to_db_logs_error(self,
+                                       test_logger):
+        with LogCapture() as logstream:
+            try:
+                connect_to_db(test_logger)
+            except Exception:
+                pass
+        for log in logstream:
+            assert log == (
+                "test_logger",
+                "ERROR",
+                "Connection failed: One or more PostgreSQL credentials are missing.", # noqa
+            )
+
+    @patch(
+        "src.utils.connect_to_db.pg_access",
+        return_value=("localhost", 1234, "test_db", "user", "password"),
+    )
+    @patch("src.utils.connect_to_db.Connection",
+           return_value=object())
+    def test_connects_to_db_logs_info(self,
+                                      mock_access,
+                                      mock_connection,
+                                      test_logger):
+        with LogCapture() as logstream:
+            try:
+                connect_to_db(test_logger)
+            except Exception:
+                pass
+
+        for log in logstream:
+            assert log == (
+                "test_logger",
+                "INFO",
+                "Connecting to PostgreSQL database: test_db on host: localhost", # noqa
+            )
