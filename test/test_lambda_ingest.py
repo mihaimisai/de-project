@@ -12,11 +12,11 @@ from src.utils.timestamp_data_retrival import timestamp_data_retrival
 from src.utils.upload_time_stamp import upload_time_stamp
 
 # Import functions and constants from lambda_ingestion.
-from src.lambda_function import (
+from northcoders.project.src.process_all_tables import (
     process_all_tables,
     # s3_ingestion_bucket,
     # s3_timestamp_bucket,
-    region
+    region,
 )
 
 
@@ -32,7 +32,9 @@ class TestTimeStampDataRetrival:
             Bucket=bucket_name,
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
-        mock_client.put_object(Bucket=bucket_name, Key=file_key, Body=file_content)  # noqa: E501
+        mock_client.put_object(
+            Bucket=bucket_name, Key=file_key, Body=file_content
+        )  # noqa: E501
         result = timestamp_data_retrival(mock_client, bucket_name, table_name)
 
         assert result == "Hello world!"
@@ -94,9 +96,7 @@ class TestUploadDataStamp:
             upload_time_stamp(mock_client, bucket_name, table_name)
 
         # Verify error log message
-        expected_log = (
-            f"Error uploading time_stamp_{table_name}.txt to S3 bucket: '{bucket_name}'"  # noqa: E501
-        )
+        expected_log = f"Error uploading time_stamp_{table_name}.txt to S3 bucket: '{bucket_name}'"  # noqa: E501
         assert expected_log in caplog.text
 
 
@@ -155,7 +155,10 @@ class TestS3DataUpload:
         def fake_upload_fileobj():
             raise ClientError(  # noqa: F821
                 {
-                    "Error": {"Code": "TestError", "Message": "Simulated S3 error"}  # noqa: E501
+                    "Error": {
+                        "Code": "TestError",
+                        "Message": "Simulated S3 error",
+                    }  # noqa: E501
                 },  # noqa: E501
                 "upload_fileobj",
             )
@@ -446,7 +449,9 @@ class TestProcessAllTables:
 
             # Construct the expected function call arguments.
             expected_calls = [
-                call(mock_client, table, time_stamp, ingestion_bucket, timestamp_bucket)  # noqa: E501
+                call(
+                    mock_client, table, time_stamp, ingestion_bucket, timestamp_bucket
+                )  # noqa: E501
                 for table in self.EXPECTED_TABLES
             ]
 

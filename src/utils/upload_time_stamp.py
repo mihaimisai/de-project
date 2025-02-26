@@ -19,7 +19,7 @@ def upload_time_stamp(client, bucket_name, table_name, logger):
         logger.info(
             f"Successfully uploaded {formatted_now}_{table_name}.txt file to S3 bucket '{bucket_name}'"  # noqa
         )
-        
+
     except Exception as e:
         logger.error(
             f"Error uploading time_stamp_{table_name}.txt to S3 bucket: '{bucket_name}': {e}"  # noqa

@@ -2,11 +2,10 @@ import logging
 from src.utils.ingest_data_to_s3 import ingest_data_to_s3
 
 # S3 Configuration
-s3_ingestion_bucket = "your-ingestion-bucket" #names should be obtained from tf
-s3_timestamp_bucket = "your-timestamp-bucket" #names should be obtained from tf
-
-# not used
-# S3_PROCESSED_BUCKET = "your-processed-bucket"
+# names should be obtained from tf
+s3_ingestion_bucket = "your-ingestion-bucket"
+# names should be obtained from tf
+s3_timestamp_bucket = "your-timestamp-bucket"
 
 region = "eu-west-2"
 
@@ -20,10 +19,7 @@ logger = logging.getLogger(__name__)
 # Main execution function
 
 
-def process_all_tables(
-    client,
-    logger
-):
+def process_all_tables(client, logger):
     """
     Orchestrates the ingestion and transformation of multiple tables.
     """
@@ -41,8 +37,7 @@ def process_all_tables(
         "transaction",
     ]
 
-
     for table in tables:
         ingest_data_to_s3(
-            client,logger, table, s3_ingestion_bucket, s3_timestamp_bucket
+            client, logger, table, s3_ingestion_bucket, s3_timestamp_bucket
         )

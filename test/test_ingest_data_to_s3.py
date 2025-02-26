@@ -6,21 +6,23 @@ import boto3
 import pytest
 from src.utils.connect_to_db import connect_to_db, close_db
 
+
 @pytest.fixture()
 def db():
     db = connect_to_db()
     yield db
     close_db(db)
 
+
 @pytest.fixture()
 @mock_aws
 def client():
-    client = boto3.client('s3', region_name='eu-west-2')
+    client = boto3.client("s3", region_name="eu-west-2")
     return client
 
 
 class TestIngestDataToS3:
-    
+
     def test_ingest_data_successfully_connecting_to_client(
         self,
     ):
@@ -113,7 +115,8 @@ class TestIngestDataToS3:
         side_effect=dummy_load_credentials,
     )
     @patch(
-        "src.utils.ingest_data_to_s3.pg8000.connect", return_value=DummyConnection()  # noqa: E501
+        "src.utils.ingest_data_to_s3.pg8000.connect",
+        return_value=DummyConnection(),  # noqa: E501
     )  # noqa: E501
     @patch(
         "src.utils.ingest_data_to_s3.pd.read_sql",
@@ -144,19 +147,16 @@ class TestIngestDataToS3:
         "src.utils.ingest_data_to_s3.load_credentials_for_pg_access",
         side_effect=dummy_load_credentials,
     )
-    @patch("src.utils.ingest_data_to_s3.pg8000.connect", return_value=DummyConnection())  # noqa: E501
+    @patch(
+        "src.utils.ingest_data_to_s3.pg8000.connect", return_value=DummyConnection()
+    )  # noqa: E501
     @patch("src.utils.ingest_data_to_s3.pd.read_sql", return_value=dummy_df)
     @patch(
         "src.lambda_function.pq.write_table",
         side_effect=Exception("Parquet conversion error"),
     )
     def test_parquet_conversion_failure(
-        self,
-        mock_write_table,
-        mock_read_sql,
-        mock_pg_connect,
-        mock_load_creds,
-        caplog
+        self, mock_write_table, mock_read_sql, mock_pg_connect, mock_load_creds, caplog
     ):
         """Test that ingestion fails when converting
         the DataFrame to Parquet format fails."""
