@@ -1,5 +1,3 @@
-import os
-import pytest
 from unittest.mock import patch, MagicMock
 from src.utils.process_all_tables import process_all_tables  
 
