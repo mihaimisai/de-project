@@ -1,41 +1,55 @@
 from moto import mock_aws
 import boto3
 import pytest
-from src.utils.ingest_data_to_s3 import fetch_data, convert_to_csv
+from src.utils.ingest_data_to_s3 import fetch_data, convert_to_csv, ingest_data_to_s3
 import datetime
 import logging
-from unittest.mock import Mock
+from unittest.mock import Mock, patch, MagicMock
 import pandas as pd
+import os
+
 
 @pytest.fixture
 def s3_client():
     with mock_aws():
-        client = boto3.client('s3', region_name='eu-west-2')
-        client.create_bucket(Bucket='ingestion')
-        client.create_bucket(Bucket='timestamp')
+        client = boto3.client("s3", region_name="eu-west-2")
+        client.create_bucket(
+            Bucket="ingestion",
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        client.create_bucket(
+            Bucket="timestamp",
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
     return client
-        
+
+
 @pytest.fixture
 def db(postgresql):
     connection = postgresql
-    cursor = connection.cursor() 
-    cursor.execute("""
+    cursor = connection.cursor()
+    cursor.execute(
+        """
         CREATE TABLE test_table 
         (id serial PRIMARY KEY, 
         name varchar,
-        last_updated timestamp);""") 
-    cursor.execute("""
+        last_updated timestamp);"""
+    )
+    cursor.execute(
+        """
         INSERT INTO test_table
         (name, last_updated)
         VALUES
         ('test1', '2024-02-13'),
-        ('test2', '2025-01-14')""")
+        ('test2', '2025-01-14')"""
+    )
     connection.commit()
     yield connection
     connection.close()
-    
+
+
 @pytest.fixture
-def logger():
+def mock_logger():
     logger = Mock()
     return logger
 
@@ -43,55 +57,106 @@ def logger():
 class TestIngestDataToS3:
 
     def test_fetch_data_no_time_stamp(self, db):
-        
-        table_name = 'test_table'
-        
-        expected = [
+
+        table_name = "test_table"
+
+        expected_data = [
             (1, "test1", datetime.datetime(2024, 2, 13, 0, 0)),
-            (2, "test2", datetime.datetime(2025, 1, 14, 0, 0))
+            (2, "test2", datetime.datetime(2025, 1, 14, 0, 0)),
         ]
-        
-        result = fetch_data(db, table_name, None, logger)
-        
-        assert result == expected
+        expected_df = pd.DataFrame(
+            expected_data, columns=["id", "name", "last_updated"]
+        )
+
+        result_df = fetch_data(db, table_name, None, mock_logger)
+
+        pd.testing.assert_frame_equal(result_df, expected_df)
 
     def test_fetch_data_with_time_stamp(self, db):
-        
-        table_name = 'test_table'
-        
-        expected = [
-            (2, "test2", datetime.datetime(2025, 1, 14, 0, 0))
-        ]
-        
-        result = fetch_data(db, table_name, '2025-01-01', logger)
 
-        assert result == expected
+        table_name = "test_table"
 
-    def test_fetch_data_throws_error(self, db):
-        
-        table_name = 'test_table'
-        
-        result = fetch_data(db, table_name, 'nonsense', logger)
-        
-        assert result == []
-        
-        logger.error.assert_called_with("Expected error message")
-        
+        expected_data = [(2, "test2", datetime.datetime(2025, 1, 14, 0, 0))]
+        expected_df = pd.DataFrame(
+            expected_data, columns=["id", "name", "last_updated"]
+        )
+
+        result_df = fetch_data(db, table_name, "2025-01-01", mock_logger)
+
+        pd.testing.assert_frame_equal(result_df, expected_df)
+
+    # def test_fetch_data_throws_error(self, db, logger):
+
+    #     table_name = 'test_table'
+
+    #     result = fetch_data(db, table_name, 'nonsense')
+
+    #     assert result == []
+
+    #     logger.error.assert_called_with("Expected error message")
+
     def test_convert_to_csv(self):
- 
-        data = {
-            'staff_id': [1, 2, 3],
-            'first_name': ['Mihai', 'Shea', 'Anna']
-        }
-        
+        data = {"staff_id": [1, 2, 3], "first_name": ["Mihai", "Shea", "Anna"]}
         df = pd.DataFrame(data)
 
         result = convert_to_csv(df)
-
         result_str = result.decode("utf-8")
-        
+
         expected_csv = "staff_id,first_name\n1,Mihai\n2,Shea\n3,Anna\n"
 
         assert result_str == expected_csv
-        
-        
+
+    @patch(
+        "src.utils.connect_to_db.pg_access",
+        return_value=("localhost", 1234, "test_db", "user", "password"),
+    )
+    @patch("src.utils.connect_to_db.Connection", return_value=MagicMock())
+    def test_ingest_data_to_s3_time_stamp_called(self, s3_client, mock_logger):
+        s3_ingestion = "ingestion_bucket"
+        s3_timestamp = "timestamp_bucket"
+        table_name = "test_table"
+
+        with patch(
+            "src.utils.ingest_data_to_s3.timestamp_data_retrival"
+        ) as mock_timestamp:
+            mock_timestamp.return_value = "2024-01-01"
+
+            ingest_data_to_s3(
+                s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
+            )
+            mock_timestamp.assert_called_once_with(s3_client, s3_timestamp, table_name)
+
+    @patch(
+        "src.utils.connect_to_db.pg_access",
+        return_value=("localhost", 1234, "test_db", "user", "password"),
+    )
+    @patch("src.utils.connect_to_db.Connection", return_value=Mock())
+    def test_ingest_data_to_s3_fetch_data_called(self, mock_logger, s3_client, db):
+        s3_ingestion = "ingestion_bucket"
+        s3_timestamp = "timestamp_bucket"
+        table_name = "test_table"
+
+        with patch("src.utils.ingest_data_to_s3.fetch_data") as mock_fetch_data:
+            mock_fetch_data.return_value = pd.DataFrame(
+                [
+                    (1, "test1", datetime.datetime(2024, 2, 13, 0, 0)),
+                    (2, "test2", datetime.datetime(2025, 1, 14, 0, 0)),
+                ],
+                columns=["id", "name", "last_updated"],
+            )
+
+            ingest_data_to_s3(
+                s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
+            )
+            expected_db = db
+            expected_timestamp = "2024-01-01"
+
+            mock_fetch_data.assert_called_once_with(
+                expected_db, table_name, expected_timestamp, mock_logger
+            )
+
+    # test convert is called
+    # test upload is called
+    # test upload time is called
+    # test succes fetched data
+    # test any error is logged

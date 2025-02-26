@@ -3,6 +3,7 @@ from .load_credentials_for_pg_access import (
     pg_access,
 )
 
+
 def connect_to_db(logger):
     # Load database credentials
     try:
