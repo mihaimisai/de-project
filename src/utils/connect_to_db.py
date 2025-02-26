@@ -24,7 +24,7 @@ def connect_to_db(logger):
             password=PG_PASSWORD,
         )
 
-    except InterfaceError as e:
+    except Exception as e:
         logger.error(f"Connection failed: {e}")
         raise e
         
