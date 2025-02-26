@@ -23,14 +23,9 @@ variable "db_port" {
   sensitive = true
   }
 
-# variable "log_email" {
-#   type = string
-# }
-
 variable "alert_email" {
     type = string
-    sensitive = true
-    # default = "NotificationStreamBanshee@Gmail.com"   
+    sensitive = true 
 }
 
 variable "log_email_pass" {
@@ -38,11 +33,6 @@ variable "log_email_pass" {
   sensitive = true
 }
 
-
-# variable "state_bucket" { 
-#     type = string
-#     default = "de-project-terraform-state"
-# }
 variable "ingested_data_bucket_prefix" {
     type = string
     default = "de-project-ingested-data-"
