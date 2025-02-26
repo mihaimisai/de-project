@@ -1,13 +1,13 @@
 from pg8000 import Connection
 from src.utils.load_credentials_for_pg_access import (
-    load_credentials_for_pg_access,
+    pg_access
 )
 
 
 def connect_to_db(logger):
     # Load database credentials
     PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = (
-        load_credentials_for_pg_access(logger)
+        pg_access(logger)
     )
 
     try:
