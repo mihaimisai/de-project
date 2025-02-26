@@ -12,7 +12,7 @@ from src.utils.timestamp_data_retrival import timestamp_data_retrival
 from src.utils.upload_time_stamp import upload_time_stamp
 
 # Import functions and constants from lambda_ingestion.
-from northcoders.project.src.process_all_tables import (
+from northcoders.project.src.utils.process_all_tables import (
     process_all_tables,
     # s3_ingestion_bucket,
     # s3_timestamp_bucket,
