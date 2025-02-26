@@ -1,19 +1,26 @@
-from src.utils.upload_time_stamp import upload_time_stamp
-from src.utils.s3_data_upload import s3_data_upload
-from src.utils.connect_to_db import connect_to_db, close_db
-from src.utils.timestamp_data_retrival import timestamp_data_retrival
-import pandas as pd
+from .upload_time_stamp import upload_time_stamp
+from .s3_data_upload import s3_data_upload
+from .connect_to_db import connect_to_db, close_db
+from .timestamp_data_retrival import timestamp_data_retrival
 
-def fetch_data(conn, table_name, time_stamp):
-    
+
+def fetch_data(conn, table_name, time_stamp, logger):
+ 
     if not time_stamp:
-            query = f"SELECT * FROM {table_name};"
-    else:
-        query = (
-            f"SELECT * FROM {table_name} WHERE last_updated > {time_stamp};"  # noqa
-        )
+        query = f"SELECT * FROM {table_name};"
 
-    return pd.read_sql(query, conn)
+    else:
+        query = f"SELECT * FROM {table_name} WHERE last_updated > '{time_stamp}';" # noqa
+        
+    try:
+        result = conn.execute(query)
+        return result.fetchall()
+    except Exception as e:
+        print(f"Logger type: {type(logger)}")
+
+        logger.error('Error')
+        return []
+
 
 def convert_to_csv(df):
     
@@ -27,7 +34,7 @@ def ingest_data_to_s3(
     the ingestion S3 bucket in Parquet format.
     Logs information at each stage for better observability.
     """
-
+    print(type(logger))
     conn = None
 
     try:
@@ -40,7 +47,7 @@ def ingest_data_to_s3(
             table_name
         )
 
-        df = fetch_data(conn, table_name, time_stamp)
+        df = fetch_data(conn, table_name, time_stamp, logger)
         csv_df = convert_to_csv(df)
 
         logger.info(f"Successfully fetched data from table: {table_name}")
