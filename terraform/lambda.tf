@@ -25,6 +25,11 @@ resource "aws_lambda_function" "ingested_lambda_function" {
   role = aws_iam_role.lambda_1_role.arn
   handler = "lambda_function_ingestion.lambda_function.process_all_tables"
   runtime = var.python_runtime
-
   layers = [aws_lambda_layer_version.ingester_lambda_layer.arn]
+  environment {
+    variables = {
+      ingested_data_bucket = aws_s3_bucket.data_bucket.bucket
+      timestamp_bucket = aws_s3_bucket.timestamp_bucket.bucket
+    }
+  }
 }
