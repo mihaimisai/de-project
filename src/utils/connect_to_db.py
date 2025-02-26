@@ -7,11 +7,10 @@ from .load_credentials_for_pg_access import (
 
 def connect_to_db(logger):
     # Load database credentials
-    PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = (
-        pg_access()
-    )
-
     try:
+        PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = (
+            pg_access()
+        )
         # Establish a connection to PostgreSQL database
         logger.info(
             f"Connecting to PostgreSQL database: {PG_DATABASE} on host: {PG_HOST}"  # noqa
@@ -28,7 +27,5 @@ def connect_to_db(logger):
         logger.error(f"Connection failed: {e}")
         raise e
         
-
-
 def close_db(conn):
     conn.close()
