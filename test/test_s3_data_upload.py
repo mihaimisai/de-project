@@ -20,7 +20,7 @@ def test_s3_data_upload_success(mock_s3_client):
     )
 
     mock_logger.info.assert_called_once_with(
-        f"Successfully uploaded Parquet file to S3 bucket '{bucket_name}' for table '{table_name}'"
+        f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"
     )
 
 @patch("src.utils.s3_client.s3_client") 
@@ -38,5 +38,4 @@ def test_s3_data_upload_failed(mock_s3_client):
         s3_data_upload(mock_s3_client, bucket_name, table_name, csv_data, mock_logger, time_stamp)
 
     mock_logger.error.assert_called_once_with(
-        f"Error uploading Parquet file to S3 for table '{table_name}': S3 Upload Error"
-    )
+        f"Error uploading csv file to S3 for table '{table_name}': S3 Upload Error")
