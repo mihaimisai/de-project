@@ -41,7 +41,7 @@ class TestConnectToDb:
                 connect_to_db(test_logger)
             except:
                 pass
-        for x in l:
+        for log in l:
             assert x == ('test_logger', 'ERROR', 'Connection failed: One or more PostgreSQL credentials are missing.')
     
     @patch("src.utils.connect_to_db.pg_access", return_value=("localhost", 1234, "test_db", "user", "password"))
@@ -53,7 +53,7 @@ class TestConnectToDb:
             except:
                 pass
         
-        for x in l:
+        for log in l:
             assert x == ('test_logger', 'INFO', 'Connecting to PostgreSQL database: test_db on host: localhost')
     
     
