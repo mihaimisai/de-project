@@ -1,13 +1,14 @@
-from pg8000 import Connection
-from src.utils.load_credentials_for_pg_access import (
-    load_credentials_for_pg_access,
+from pg8000.native import Connection
+from pg8000.exceptions import InterfaceError, DatabaseError
+from .load_credentials_for_pg_access import (
+    pg_access,
 )
 
 
 def connect_to_db(logger):
     # Load database credentials
     PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = (
-        load_credentials_for_pg_access(logger)
+        pg_access()
     )
 
     try:
@@ -23,9 +24,10 @@ def connect_to_db(logger):
             password=PG_PASSWORD,
         )
 
-    except Exception as e:
+    except InterfaceError as e:
         logger.error(f"Connection failed: {e}")
-        raise Exception(e)
+        raise e
+        
 
 
 def close_db(conn):
