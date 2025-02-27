@@ -9,7 +9,7 @@ resource "aws_lambda_function" "ingested_lambda_function" {
   function_name = var.lambda_1_name
   source_code_hash = data.archive_file.ingestion_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
-  s3_key = "${var.lambda_1_name}/function.zip"
+  s3_key = "ingestion/function.zip"
   role = aws_iam_role.lambda_1_role.arn
   # adjust handler to match
   handler = "ingestion_handler.ingestion_handler"
