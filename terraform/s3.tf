@@ -34,4 +34,5 @@ resource "aws_s3_object" "ingester_layer_code" {
   key = "layers/ingester_layer.zip"
   source = data.archive_file.ingester_layer_code.output_path
   # source = "${path.module}/../ingester_lambda_layer.zip"
+  depends_on = [ data.archive_file.ingester_layer_code ]
 }
