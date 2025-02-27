@@ -35,6 +35,6 @@ resource "aws_lambda_function" "ingested_lambda_function" {
       timestamp_bucket = aws_s3_bucket.timestamp_bucket.bucket
     }
   }
-  depends_on = [aws_s3_object.lingester_lambda_code, aws_s3_object.ingester_layer_code]
+  depends_on = [aws_s3_object.ingester_lambda_code, aws_s3_object.ingester_layer_code]
 
 }
