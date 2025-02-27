@@ -8,15 +8,15 @@ resource "aws_sns_topic_subscription" "email_notification" {
   endpoint  = var.alert_email
 }
 
-# resource "aws_cloudwatch_log_group" "aws_cw_log_access" {
-#   name = "/aws/lambda/lambda_handler"
-# }
+resource "aws_cloudwatch_log_group" "aws_cw_log_access" {
+  name = "/aws/lambda/l${var.lambda_1_name}"
+}
 
 resource "aws_cloudwatch_log_metric_filter" "lambda_error_filter" {
-    name           = "lambda_error_filter"
-    # log_group_name = aws_cloudwatch_log_group.aws_cw_log_access.name
-    log_group_name = "/aws/lambda/${var.lambda_1_name}"
-    pattern = "ERROR"
+  name           = "lambda_error_filter"
+  log_group_name = aws_cloudwatch_log_group.aws_cw_log_access.name
+  # log_group_name = "/aws/lambda/${var.lambda_1_name}"
+  pattern = "ERROR"
 
  metric_transformation {
     name      = "LambdaErrorCount"
