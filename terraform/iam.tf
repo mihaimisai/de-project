@@ -38,13 +38,21 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
     ]
     effect = "Allow"
   }
-   statement {
+  statement {
 
     actions = ["s3:GetObject"]
     resources = [
       "${aws_s3_bucket.timestamp_bucket.arn}/*",
       "${aws_s3_bucket.data_bucket.arn}/*",
       "${aws_s3_bucket.code_bucket.arn}/*"
+    ]
+    effect = "Allow"
+  }
+  statement {
+
+    actions = ["s3:ListBucket"]
+    resources = [
+      "${aws_s3_bucket.timestamp_bucket.arn}/*"
     ]
     effect = "Allow"
   }
