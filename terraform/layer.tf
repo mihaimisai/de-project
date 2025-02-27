@@ -21,4 +21,5 @@ resource "aws_lambda_layer_version" "dependencies" {
   compatible_runtimes = [var.python_runtime]
   s3_bucket           = aws_s3_object.ingestion_layer.bucket
   s3_key              = aws_s3_object.ingestion_layer.key
+  source_code_hash = data.archive_file.ingestion_layer_code.output_base64sha256
 }
