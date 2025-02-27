@@ -1,15 +1,10 @@
-
 from pg8000 import Connection
-from src.utils.load_credentials_for_pg_access import (
-    pg_access
-
+from src.utils.load_credentials_for_pg_access import pg_access
 
 
 def connect_to_db(logger):
     try:
-        PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = (
-          pg_access(logger)
-        )
+        PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = pg_access()
         # Establish a connection to PostgreSQL database
 
         connection = Connection(

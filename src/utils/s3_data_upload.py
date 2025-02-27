@@ -7,10 +7,12 @@ def s3_data_upload(
         s3_key_ingestion = f"{table_name}/{time_stamp}.csv"
 
         # Upload the file to bucket_name
-        client.put_object(Bucket=bucket_name, Body=csv_df, Key=s3_key_ingestion)
+        client.put_object(
+            Bucket=bucket_name, Body=csv_df, Key=s3_key_ingestion
+        )
 
         logger.info(
-            f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  
+            f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'" # noqa 501
         )
 
     except Exception as e:
