@@ -2,7 +2,7 @@ from .utils.s3_client import s3_client
 from .utils.process_all_tables import process_all_tables
 
 
-def ingestion_handler(event, context):
+def lambda_handler(event, context):
 
     client = s3_client()
     process_all_tables(client)
