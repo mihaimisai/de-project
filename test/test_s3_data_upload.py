@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from src.utils.s3_data_upload import s3_data_upload
+from src.ingestion.utils.s3_data_upload import s3_data_upload
 
 
 @patch("src.utils.s3_client.s3_client")

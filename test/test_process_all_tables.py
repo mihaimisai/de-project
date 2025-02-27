@@ -1,5 +1,5 @@
 from unittest.mock import patch, MagicMock
-from src.utils.process_all_tables import process_all_tables
+from src.ingestion.utils.process_all_tables import process_all_tables
 
 
 @patch("src.utils.process_all_tables.ingest_data_to_s3")

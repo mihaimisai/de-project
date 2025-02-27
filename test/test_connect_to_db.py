@@ -1,4 +1,4 @@
-from src.utils.connect_to_db import connect_to_db
+from src.ingestion.utils.connect_to_db import connect_to_db
 import pytest
 import logging
 from unittest.mock import patch

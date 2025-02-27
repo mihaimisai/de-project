@@ -33,4 +33,3 @@ resource "aws_cloudwatch_metric_alarm" "lambda_error_alarm" {
   alarm_description  = "Triggers when Lambda logs contain errors"
   alarm_actions      = [aws_sns_topic.lambda_errors_topic.arn]
 }
-

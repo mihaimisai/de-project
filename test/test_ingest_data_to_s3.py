@@ -1,7 +1,7 @@
 from moto import mock_aws
 import boto3
 import pytest
-from src.utils.ingest_data_to_s3 import (
+from src.ingestion.utils.ingest_data_to_s3 import (
     fetch_data,
     convert_to_csv,
     ingest_data_to_s3,
