@@ -63,11 +63,15 @@ class TestUploadTimeStamp:
                 "ERROR",
                 "Error uploading time_stamp_test-users.txt to S3 bucket: 'Test_bucket': An error occurred (NoSuchBucket) when calling the PutObject operation: The specified bucket does not exist", # noqa
             )
-
+    @mock_aws
     def test_if_wrong_logger_fails(self):
         test_client = boto3.client("s3")
         bucket_name = "Test_bucket"
         table_name = "test-users"
+        test_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"}, # noqa
+        )
         with pytest.raises(AttributeError):
             upload_time_stamp(test_client,
                               bucket_name,
