@@ -2,7 +2,6 @@ from .upload_time_stamp import upload_time_stamp
 from .s3_data_upload import s3_data_upload
 from .connect_to_db import connect_to_db, close_db
 from .timestamp_data_retrival import timestamp_data_retrival
-from pg8000.native import literal
 import pandas as pd
 
 
@@ -24,9 +23,9 @@ def fetch_data(conn, table_name, time_stamp, logger):
     if table_name not in allowed_tables:
         raise ValueError("Invalid table name")
 
-    query = f"SELECT * FROM "
+    query = "SELECT * FROM "
     if not time_stamp:
-        query +=  f"{table_name}"
+        query += f"{table_name}"
         params = ()
     else:
         query += f"{table_name} "
