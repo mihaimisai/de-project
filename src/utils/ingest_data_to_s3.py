@@ -45,7 +45,7 @@ def ingest_data_to_s3(
         conn = connect_to_db(logger)
 
         time_stamp = timestamp_data_retrival(
-            s3_client, s3_timestamp_bucket, table_name
+            s3_client, s3_timestamp_bucket, table_name, logger
         )
 
         df = fetch_data(conn, table_name, time_stamp, logger)

@@ -8,8 +8,10 @@ from src.utils.ingest_data_to_s3 import (
 )
 import datetime
 import logging
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 import pandas as pd
+from testfixtures import LogCapture
+import os
 
 
 @pytest.fixture
@@ -46,13 +48,23 @@ def db(postgresql):
 
 @pytest.fixture
 def mock_logger():
-    logger = Mock()
+    logger = logging.getLogger("test_logger")
+    logger.setLevel(logging.INFO)
     return logger
+
+
+@pytest.fixture(scope="function", autouse=True)
+def aws_credentials():
+    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+    os.environ["AWS_SECURITY_TOKEN"] = "testing"
+    os.environ["AWS_SESSION_TOKEN"] = "testing"
+    os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
 
 
 class TestIngestDataToS3:
 
-    def test_fetch_data_no_time_stamp(self, db):
+    def test_fetch_data_no_time_stamp(self, db, mock_logger):
 
         table_name = "test_table"
 
@@ -68,7 +80,7 @@ class TestIngestDataToS3:
 
         pd.testing.assert_frame_equal(result_df, expected_df)
 
-    def test_fetch_data_with_time_stamp(self, db):
+    def test_fetch_data_with_time_stamp(self, db, mock_logger):
 
         table_name = "test_table"
 
@@ -81,15 +93,16 @@ class TestIngestDataToS3:
 
         pd.testing.assert_frame_equal(result_df, expected_df)
 
-    # def test_fetch_data_throws_error(self, db, logger):
-
-    #     table_name = 'test_table'
-
-    #     result = fetch_data(db, table_name, 'nonsense')
-
-    #     assert result == []
-
-    #     logger.error.assert_called_with("Expected error message")
+    def test_fetch_data_throws_error(self, db):
+        table_name = "test_table"
+        with LogCapture(level=logging.INFO) as logstream:
+            logstream.clear()
+            try:
+                fetch_data(db, table_name, "nonsense")
+            except Exception:
+                pass
+        for log in logstream:
+            assert log == ("test_logger", "ERROR", "Error fetching data: ")
 
     def test_convert_to_csv(self):
         data = {"staff_id": [1, 2, 3], "first_name": ["Mihai", "Shea", "Anna"]}
@@ -207,5 +220,51 @@ class TestIngestDataToS3:
 
             mock_upload.assert_called_once()
 
-    # test succes fetched data
-    # test any error is logged
+    @patch(
+        "src.utils.connect_to_db.pg_access",
+        return_value=("localhost", 1234, "test_db", "user", "password"),
+    )
+    @patch("src.utils.connect_to_db.Connection", return_value=MagicMock())
+    def test_ingest_data_to_s3_success_log(self, conn, mock_logger):
+        table_name = "test_table"
+        with LogCapture(level=logging.INFO) as logstream:
+            logstream.clear()
+            try:
+                fetch_data(conn, table_name, "2024-01-01", mock_logger)
+            except Exception:
+                pass
+        for log in logstream:
+            assert log == (
+                "test_logger",
+                "INFO",
+                f"Successfully fetched data from table: {table_name}",
+            )
+
+    def test_ingest_data_to_s3_check_exception_raised(self, mock_logger):
+        s3_ingestion = "ingestion"
+        s3_timestamp = "timestamp"
+        table_name = "test_table"
+
+        with LogCapture(level=logging.INFO) as logstream:
+            logstream.clear()
+            try:
+                ingest_data_to_s3(
+                    s3_client,
+                    mock_logger,
+                    table_name,
+                    s3_ingestion,
+                    s3_timestamp,
+                )
+            except Exception:
+                pass
+
+        assert logstream[0] == (
+            "test_logger",
+            "ERROR",
+            "Connection failed: One or more PostgreSQL credentials are missing.",  # noqa 501
+        )
+        assert logstream[1] == (
+            "test_logger",
+            "ERROR",
+            """Error connecting to PostgreSQL or executing query for table 'test_table': One or more PostgreSQL credentials are missing.""",  # noqa 501
+        )

@@ -1,5 +1,5 @@
 from src.utils.load_credentials_for_pg_access import pg_access
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 import os
 import pytest
 
@@ -28,10 +28,10 @@ class TestLoadCredentialsForPGAccess:
         }
         with pytest.raises(ValueError):
             with patch.dict(os.environ, env_vars):
-                result = pg_access()
+                pg_access()
 
     def test_load_crededntials_all_missing(self):
         env_vars = {}
         with pytest.raises(ValueError):
             with patch.dict(os.environ, env_vars):
-                result = pg_access()
+                pg_access()
