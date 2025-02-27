@@ -1,4 +1,4 @@
-/* #undef NPY_HAVE_ENDIAN_H */
+#define NPY_HAVE_ENDIAN_H 1
 
 #define NPY_SIZEOF_SHORT 2
 #define NPY_SIZEOF_INT 4
