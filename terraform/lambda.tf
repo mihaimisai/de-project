@@ -13,6 +13,7 @@ resource "aws_lambda_function" "ingested_lambda_function" {
   # adjust handler to match
   handler = "ingestion_handler.ingestion_handler"
   runtime = var.python_runtime
+  timeout = var.default_timeout
   layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
     variables = {
