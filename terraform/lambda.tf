@@ -19,6 +19,11 @@ resource "aws_lambda_function" "ingested_lambda_function" {
     variables = {
       ingested_data_bucket = aws_s3_bucket.data_bucket.bucket
       timestamp_bucket = aws_s3_bucket.timestamp_bucket.bucket
+      DB_HOST = "${var.db_host}"
+      DB_PORT = "${var.db_port}"
+      DB = "${var.db_db}"
+      DB_USER = "${var.db_user}"
+      DB_PASSWORD = "${var.db_password}"
     }
   }
   depends_on = [aws_s3_object.ingestion_lambda_code, aws_s3_object.ingestion_layer]
