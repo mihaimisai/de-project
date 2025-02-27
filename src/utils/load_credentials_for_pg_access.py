@@ -1,7 +1,7 @@
 import os
 
 
-def pg_access():
+def pg_access(logger):
 
     # Retrieve credentials from environment variables
     PG_HOST = os.environ.get("DB_HOST")
