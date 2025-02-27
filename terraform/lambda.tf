@@ -11,7 +11,7 @@ resource "aws_lambda_function" "ingested_lambda_function" {
   s3_key = "ingestion/function.zip"
   role = aws_iam_role.lambda_1_role.arn
   # adjust handler to match
-  handler = "ingestion_handler.ingestion_handler"
+  handler = "${var.ingestion_lambda}.ingestion_handler.ingestion_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
   layers = [aws_lambda_layer_version.dependencies.arn]
