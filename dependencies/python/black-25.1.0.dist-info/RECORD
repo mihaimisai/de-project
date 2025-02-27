@@ -1,5 +1,5 @@
-../../bin/black,sha256=UoCScr2zIWtpPJCK1zCpLCw2uJmbNs6m5AUIgNhcFgc,275
-../../bin/blackd,sha256=uZDaGN4wY0Uu2xTIs8fgbYbSQz0JtWUOhbYw6x2BidE,276
+../../bin/black,sha256=ULqKGZRaMEcIwbFgpFSN6daVup1DFadCV8qcUxzLPc0,260
+../../bin/blackd,sha256=TELmoQZRmy9ZJlaavV6lAphk7wXVRN8OyBl9m_XoXGM,261
 30fcd23745efe32ce681__mypyc.cpython-312-darwin.so,sha256=OSIELohvRPFVpQB1fZffyNckPxazxpwPHtIRt-ZDpko,4184072
 __pycache__/_black_version.cpython-312.pyc,,
 _black_version.py,sha256=FhAjEtEWGP4vzVPv6krA2rMrSoPtKcVJ74gjENa73Zo,19

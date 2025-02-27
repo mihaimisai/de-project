@@ -1,4 +1,4 @@
-#!/Users/meralhewitt/Northcoders/11-13-project/de-project/venv/bin/python
+#!/Users/meralhewitt/.pyenv/versions/3.12.7/bin/python3.12
 
 import sys
 import json

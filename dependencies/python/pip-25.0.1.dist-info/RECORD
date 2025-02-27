@@ -1,6 +1,6 @@
-../../bin/pip,sha256=GLeYGiGIn1zypq7_GYCqiUtgQX11UODH_cakoUIBeIc,276
-../../bin/pip3,sha256=GLeYGiGIn1zypq7_GYCqiUtgQX11UODH_cakoUIBeIc,276
-../../bin/pip3.12,sha256=GLeYGiGIn1zypq7_GYCqiUtgQX11UODH_cakoUIBeIc,276
+../../bin/pip,sha256=ZhJHb4pO5RIyTEs83onDNdrlz25OD91Gu4MgqRsapR0,261
+../../bin/pip3,sha256=ZhJHb4pO5RIyTEs83onDNdrlz25OD91Gu4MgqRsapR0,261
+../../bin/pip3.12,sha256=ZhJHb4pO5RIyTEs83onDNdrlz25OD91Gu4MgqRsapR0,261
 pip-25.0.1.dist-info/AUTHORS.txt,sha256=HqzpBVLfT1lBthqQfiDlVeFkg65hJ7ZQvvWhoq-BAsA,11018
 pip-25.0.1.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
 pip-25.0.1.dist-info/LICENSE.txt,sha256=Y0MApmnUmurmWxLGxIySTFGkzfPR_whtw0VtyLyqIQQ,1093
