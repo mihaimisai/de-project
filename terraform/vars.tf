@@ -70,5 +70,5 @@ variable "python_runtime" {
 
 variable "default_timeout" {
   type    = number
-  default = 10
+  default = 30
 }
