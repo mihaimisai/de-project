@@ -1,5 +1,5 @@
-from utils.s3_client import s3_client
-from utils.process_all_tables import process_all_tables
+from .utils.s3_client import s3_client
+from .utils.process_all_tables import process_all_tables
 
 
 def ingestion_handler(event, context):
