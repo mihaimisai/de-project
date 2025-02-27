@@ -20,19 +20,16 @@ resource "aws_s3_bucket" "code_bucket" {
 }
 
 # Upload the ingester_lambda code to the code_bucket
-resource "aws_s3_object" "ingester_lambda_code" {
+resource "aws_s3_object" "ingestion_lambda_code" {
   bucket = aws_s3_bucket.code_bucket.bucket
-  key = "lambdas/ingester_function.zip"
-  # source = "${path.module}/../ingester_function.zip"
-  # source = "${path.module}/../packages/ingester_function.zip"
-  source = data.archive_file.ingester_lambda_zip.output_path
+  key = "ingestion/function.zip"
+  source = data.archive_file.ingestion_lambda.output_path
 }
 
 # Upload the ingester_lambda layer to the code_bucket if exists
-resource "aws_s3_object" "ingester_layer_code" {
+resource "aws_s3_object" "ingestion_layer" {
   bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/ingester_layer.zip"
-  source = data.archive_file.ingester_layer_code.output_path
-  # source = "${path.module}/../ingester_lambda_layer.zip"
-  depends_on = [ data.archive_file.ingester_layer_code ]
+  key = "layers/ingestion_layer.zip"
+  source = data.archive_file.ingestion_layer_code.output_path
+  depends_on = [ data.archive_file.ingestion_layer_code ]
 }

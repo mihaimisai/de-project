@@ -50,7 +50,7 @@ variable "timestamp_bucket_prefix" {
 
 variable "lambda_1_name" {
     type = string
-    default = "data_ingester_lambda"
+    default = "data_ingestion_lambda"
 }
 
 # variable "lambda_2_name" {

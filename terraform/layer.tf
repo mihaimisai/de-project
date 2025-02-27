@@ -8,16 +8,17 @@ resource "null_resource" "create_dependencies" {
   }
 }
 
-data "archive_file" "ingester_layer_code" {
+data "archive_file" "ingestion_layer_code" {
   type = "zip"
 #   output_file_mode = "0666"
+  output_path = "${path.module}/../packages/layers/ingestion_layer.zip"
   source_dir = "${path.module}/../dependencies" 
-  output_path = "${path.module}/../packages/layers/ingester_layer.zip"
+
 }
 
 resource "aws_lambda_layer_version" "dependencies" {
-  layer_name          = "ingester_lambda_layer"
+  layer_name          = "ingestion_lambda_layer"
   compatible_runtimes = [var.python_runtime]
-  s3_bucket           = aws_s3_bucket.code_bucket.bucket
-  s3_key              = aws_s3_object.ingester_layer_code.key
+  s3_bucket           = aws_s3_object.ingestion_layer_code.bucket
+  s3_key              = aws_s3_object.ingestion_layer_code.key
 }
