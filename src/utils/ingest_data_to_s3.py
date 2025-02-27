@@ -10,7 +10,9 @@ def fetch_data(conn, table_name, time_stamp, logger):
     if not time_stamp:
         query = f"SELECT * FROM {table_name};"
     else:
-        query = f"SELECT * FROM {table_name} WHERE last_updated > '{time_stamp}';"
+        query = (
+            f"SELECT * FROM {table_name} WHERE last_updated > '{time_stamp}';"
+        )
 
     try:
         result = conn.execute(query)
@@ -42,7 +44,9 @@ def ingest_data_to_s3(
 
         conn = connect_to_db(logger)
 
-        time_stamp = timestamp_data_retrival(s3_client, s3_timestamp_bucket, table_name)
+        time_stamp = timestamp_data_retrival(
+            s3_client, s3_timestamp_bucket, table_name
+        )
 
         df = fetch_data(conn, table_name, time_stamp, logger)
         csv_df = convert_to_csv(df)
@@ -50,7 +54,12 @@ def ingest_data_to_s3(
         logger.info(f"Successfully fetched data from table: {table_name}")
 
         s3_data_upload(
-            s3_client, s3_ingestion_bucket, table_name, csv_df, logger, time_stamp
+            s3_client,
+            s3_ingestion_bucket,
+            table_name,
+            csv_df,
+            logger,
+            time_stamp,
         )
 
         upload_time_stamp(s3_client, s3_timestamp_bucket, table_name, logger)

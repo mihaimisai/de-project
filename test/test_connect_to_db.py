@@ -27,7 +27,9 @@ class TestConnectToDb:
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch("src.utils.connect_to_db.Connection", return_value=object())
-    def test_connects_to_db_success(self, mock_access, mock_connection, test_logger):
+    def test_connects_to_db_success(
+        self, mock_access, mock_connection, test_logger
+    ):
         connect_to_db(test_logger)
 
         mock_access.assert_called_once_with(
@@ -56,7 +58,9 @@ class TestConnectToDb:
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch("src.utils.connect_to_db.Connection", return_value=object())
-    def test_connects_to_db_logs_info(self, mock_access, mock_connection, test_logger):
+    def test_connects_to_db_logs_info(
+        self, mock_access, mock_connection, test_logger
+    ):
         with LogCapture() as logstream:
             try:
                 connect_to_db(test_logger)

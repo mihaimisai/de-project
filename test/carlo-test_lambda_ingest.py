@@ -6,7 +6,9 @@ from io import BytesIO
 from moto import mock_aws
 from unittest.mock import patch, call
 from src.utils.ingest_data_to_s3 import ingest_data_to_s3
-from src.utils.load_credentials_for_pg_access import load_credentials_for_pg_access
+from src.utils.load_credentials_for_pg_access import (
+    load_credentials_for_pg_access,
+)
 from src.utils.s3_data_upload import s3_data_upload
 from src.utils.timestamp_data_retrival import timestamp_data_retrival
 from src.utils.upload_time_stamp import upload_time_stamp
@@ -450,7 +452,11 @@ class TestProcessAllTables:
             # Construct the expected function call arguments.
             expected_calls = [
                 call(
-                    mock_client, table, time_stamp, ingestion_bucket, timestamp_bucket
+                    mock_client,
+                    table,
+                    time_stamp,
+                    ingestion_bucket,
+                    timestamp_bucket,
                 )  # noqa: E501
                 for table in self.EXPECTED_TABLES
             ]
