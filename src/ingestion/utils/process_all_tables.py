@@ -1,7 +1,7 @@
 import logging
 import os
-from src.ingestion.utils.ingest_data_to_s3 import ingest_data_to_s3
-from src.ingestion.utils.s3_client import s3_client
+from .ingest_data_to_s3 import ingest_data_to_s3
+from .s3_client import s3_client
 
 # S3 Configuration
 # names obtained from tf
