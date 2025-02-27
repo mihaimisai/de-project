@@ -20,12 +20,13 @@ data "archive_file" "ingester_lambda_zip" {
 #   s3_key              = aws_s3_object.ingester_layer_code.key
 # }
 resource "aws_lambda_function" "ingested_lambda_function" {
-  function_name = "${var.lambda_1_name}"
+  function_name = var.lambda_1_name
+  source_code_hash = data.archive_file.ingester_lambda_zip.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "lambdas/ingester_function.zip"
   role = aws_iam_role.lambda_1_role.arn
   # adjust handler to match
-  handler = "lambda_function_ingestion.lambda_function.process_all_tables"
+  handler = "ingestion_handler.ingestion_handler"
   runtime = var.python_runtime
   layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
@@ -34,4 +35,6 @@ resource "aws_lambda_function" "ingested_lambda_function" {
       timestamp_bucket = aws_s3_bucket.timestamp_bucket.bucket
     }
   }
+  depends_on = [aws_s3_object.lingester_lambda_code, aws_s3_object.ingester_layer_code]
+
 }
