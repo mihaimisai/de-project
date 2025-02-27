@@ -6,16 +6,22 @@ import pandas as pd
 
 
 def fetch_data(conn, table_name, time_stamp, logger):
+    allowed_tables = {"counterparty", "currency", "department", "design", "staff",
+                      "sales_order", "address", "payment", "purchase_order",
+                      "payment_type", "transaction"}
+    
+  
+    if table_name not in allowed_tables:
+        raise ValueError("Invalid table name")
 
     if not time_stamp:
-        query = f"SELECT * FROM {table_name};"
+        query = "SELECT * FROM {}".format(table_name)  
+        params = ()
     else:
-        query = (
-            f"SELECT * FROM {table_name} WHERE last_updated > '{time_stamp}';"
-        )
-
+        query = "SELECT * FROM {} WHERE last_updated > %s".format(table_name)
+        params = (time_stamp,)
     try:
-        result = conn.execute(query)
+        result = conn.execute(query, params)
         columns = [desc[0] for desc in result.description]
         rows = result.fetchall()
         return pd.DataFrame(rows, columns=columns)
