@@ -26,14 +26,18 @@ class TestConnectToDb:
         "src.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "anyyy"),
     )
-    @patch("src.utils.connect_to_db.Connection", return_value=object())
+    @patch("src.utils.connect_to_db.Connection")
     def test_connects_to_db_success(
         self, mock_access, mock_connection, test_logger
     ):
         connect_to_db(test_logger)
 
         mock_access.assert_called_once_with(
-            "localhost", 1234, "test_db", "user", "anyyy"
+            host="localhost",
+            port=1234,
+            database="test_db",
+            user="user",
+            password="anyyy",
         )
 
     def test_connects_to_db_logs_error(self, test_logger):

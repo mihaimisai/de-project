@@ -12,7 +12,7 @@ def s3_data_upload(
         )
 
         logger.info(
-            f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'" # noqa 501
+            f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  # noqa 501
         )
 
     except Exception as e:

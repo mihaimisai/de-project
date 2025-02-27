@@ -93,7 +93,7 @@ class TestTimeStampDataRetrieval:
                     test_client, bucket_name, "users", test_logger
                 )
             except Exception:
-                pass
+                print("Exception in test func")
 
         for log in logstream:
             assert log == (

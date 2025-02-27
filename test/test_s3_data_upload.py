@@ -27,7 +27,7 @@ def test_s3_data_upload_success(mock_s3_client):
     )
 
     mock_logger.info.assert_called_once_with(
-        f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'" # noqa 501
+        f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  # noqa 501
     )
 
 
@@ -53,5 +53,5 @@ def test_s3_data_upload_failed(mock_s3_client):
         )
 
     mock_logger.error.assert_called_once_with(
-        f"Error uploading csv file to S3 for table '{table_name}': S3 Upload Error" # noqa 501
+        f"Error uploading csv file to S3 for table '{table_name}': S3 Upload Error"  # noqa 501
     )

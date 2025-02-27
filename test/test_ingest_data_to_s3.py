@@ -11,7 +11,6 @@ import logging
 from unittest.mock import patch, MagicMock
 import pandas as pd
 from testfixtures import LogCapture
-import os
 
 
 @pytest.fixture
@@ -53,15 +52,6 @@ def mock_logger():
     return logger
 
 
-@pytest.fixture(scope="function", autouse=True)
-def aws_credentials():
-    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
-    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
-    os.environ["AWS_SECURITY_TOKEN"] = "testing"
-    os.environ["AWS_SESSION_TOKEN"] = "testing"
-    os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
-
-
 class TestIngestDataToS3:
 
     def test_fetch_data_no_time_stamp(self, db, mock_logger):
@@ -100,7 +90,7 @@ class TestIngestDataToS3:
             try:
                 fetch_data(db, table_name, "nonsense")
             except Exception:
-                pass
+                print("Exception in test func")
         for log in logstream:
             assert log == ("test_logger", "ERROR", "Error fetching data: ")
 
@@ -232,7 +222,7 @@ class TestIngestDataToS3:
             try:
                 fetch_data(conn, table_name, "2024-01-01", mock_logger)
             except Exception:
-                pass
+                print("Exception in test func")
         for log in logstream:
             assert log == (
                 "test_logger",
@@ -256,7 +246,7 @@ class TestIngestDataToS3:
                     s3_timestamp,
                 )
             except Exception:
-                pass
+                print("Exception in test func")
 
         assert logstream[0] == (
             "test_logger",
