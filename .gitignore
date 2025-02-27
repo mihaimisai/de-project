@@ -5,3 +5,5 @@
 /venv/
 .env
 .env.*
+./ingest_data_to_s3.py
+./test_ingest_data_to_s3.py
