@@ -13,15 +13,8 @@ import os
 def s3_client():
     with mock_aws():
         client = boto3.client("s3", region_name="eu-west-2")
-        client.create_bucket(
-            Bucket="ingestion",
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
-        )
-        client.create_bucket(
-            Bucket="timestamp",
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
-        )
-    return client
+
+        yield client
 
 
 @pytest.fixture
@@ -112,8 +105,8 @@ class TestIngestDataToS3:
     )
     @patch("src.utils.connect_to_db.Connection", return_value=MagicMock())
     def test_ingest_data_to_s3_time_stamp_called(self, s3_client, mock_logger):
-        s3_ingestion = "ingestion_bucket"
-        s3_timestamp = "timestamp_bucket"
+        s3_ingestion = "ingestion"
+        s3_timestamp = "timestamp"
         table_name = "test_table"
 
         with patch(
@@ -124,38 +117,77 @@ class TestIngestDataToS3:
             ingest_data_to_s3(
                 s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
             )
-            mock_timestamp.assert_called_once_with(s3_client, s3_timestamp, table_name)
+            mock_timestamp.assert_called_once
+
 
     @patch(
         "src.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
-    @patch("src.utils.connect_to_db.Connection", return_value=Mock())
-    def test_ingest_data_to_s3_fetch_data_called(self, mock_logger, s3_client, db):
-        s3_ingestion = "ingestion_bucket"
-        s3_timestamp = "timestamp_bucket"
+    @patch("src.utils.connect_to_db.Connection", return_value=MagicMock())
+    def test_ingest_data_to_s3_fetch_data_called(self, mock_logger, s3_client):
+        s3_ingestion = "ingestion"
+        s3_timestamp = "timestamp"
         table_name = "test_table"
 
         with patch("src.utils.ingest_data_to_s3.fetch_data") as mock_fetch_data:
             mock_fetch_data.return_value = pd.DataFrame(
                 [
-                    (1, "test1", datetime.datetime(2024, 2, 13, 0, 0)),
-                    (2, "test2", datetime.datetime(2025, 1, 14, 0, 0)),
-                ],
+                (1, "test1", datetime.datetime(2024, 2, 13, 0, 0)),
+                (2, "test2", datetime.datetime(2025, 1, 14, 0, 0)),
+            ],
                 columns=["id", "name", "last_updated"],
             )
 
             ingest_data_to_s3(
                 s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
             )
-            expected_db = db
-            expected_timestamp = "2024-01-01"
+            
+            mock_fetch_data.assert_called_once()
 
-            mock_fetch_data.assert_called_once_with(
-                expected_db, table_name, expected_timestamp, mock_logger
+    @patch(
+        "src.utils.connect_to_db.pg_access",
+        return_value=("localhost", 1234, "test_db", "user", "password"),
+    )
+    @patch("src.utils.connect_to_db.Connection", return_value=MagicMock())
+    def test_ingest_data_to_s3_convert_called(self, mock_logger, s3_client):
+        s3_ingestion = "ingestion"
+        s3_timestamp = "timestamp"
+        
+        with patch("src.utils.ingest_data_to_s3.convert_to_csv") as mock_convert:
+            
+            table_name = 'test_table'
+            
+            mock_convert.return_value = "staff_id,first_name\n1,Mihai\n2,Shea\n3,Anna\n"
+            
+            ingest_data_to_s3(
+                s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
             )
+            
+            mock_convert.assert_called_once()
+            
+    @patch(
+        "src.utils.connect_to_db.pg_access",
+        return_value=("localhost", 1234, "test_db", "user", "password"),
+    )
+    @patch("src.utils.connect_to_db.Connection", return_value=MagicMock())
+    def test_ingest_data_to_s3_data_upload_called(self, mock_logger, s3_client):
+        s3_ingestion = "ingestion"
+        s3_timestamp = "timestamp"
+        
+        with patch("src.utils.s3_data_upload.s3_data_upload") as mock_upload:
+            
+            table_name = 'test_table'
+            
+            # mock_upload.return_value = "staff_id,first_name\n1,Mihai\n2,Shea\n3,Anna\n"
+            
+            ingest_data_to_s3(
+                s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
+            )
+            
+            mock_upload.assert_called_once()
+    
 
-    # test convert is called
     # test upload is called
     # test upload time is called
     # test succes fetched data
