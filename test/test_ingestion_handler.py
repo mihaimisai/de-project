@@ -1,8 +1,8 @@
-from src.ingestion.ingestion_handler import ingestion_handler
+from src.ingestion.ingestion_handler_fn import ingestion_handler
 from unittest.mock import patch, MagicMock
 
 
-@patch("src.ingestion.ingestion_handler.s3_client")
+@patch("src.ingestion.ingestion_handler_fn.s3_client")
 def test_ingestion_handler(mock_s3_client):
 
     mock_s3_client.return_value = MagicMock()
@@ -11,7 +11,7 @@ def test_ingestion_handler(mock_s3_client):
     context = {}
 
     with patch(
-        "src.ingestion.ingestion_handler.process_all_tables"
+        "src.ingestion.ingestion_handler_fn.process_all_tables"
     ) as mock_process_tables:
         response = ingestion_handler(event, context)
 
