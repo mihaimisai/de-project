@@ -58,12 +58,12 @@ class TestUploadTimeStamp:
             upload_time_stamp(test_client, bucket_name, table_name, "test_logger")
         
     
-    # def test_if_wrong_client_fails(self, test_logger):
-    #     test_client = boto3.client("s3")
-    #     bucket_name = "Test_bucket"
-    #     table_name = "test-users"
-    #     with pytest.raises(Exception):
-    #         upload_time_stamp("test_client", bucket_name, table_name, test_logger)
+    def test_if_wrong_client_fails(self, test_logger):
+        test_client = boto3.client("s3")
+        bucket_name = "Test_bucket"
+        table_name = "test-users"
+        with pytest.raises(Exception):
+            upload_time_stamp("test_client", bucket_name, table_name, test_logger)
     
     @mock_aws
     @freeze_time("2025-01-01 01:00:00")
