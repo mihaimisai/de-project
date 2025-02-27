@@ -33,11 +33,7 @@ class TestConnectToDb:
         connect_to_db(test_logger)
 
         mock_access.assert_called_once_with(
-            host="localhost",
-            port=1234,
-            database="test_db",
-            user="user",
-            password="anyyy",
+            "localhost", 1234, "test_db", "user", "anyyy"
         )
 
     def test_connects_to_db_logs_error(self, test_logger):
@@ -46,12 +42,12 @@ class TestConnectToDb:
                 connect_to_db(test_logger)
             except Exception:
                 test_logger.info("Error in connection in test file")
-
-        assert logstream[0] == (
+        expected_log = (
             "test_logger",
             "ERROR",
             "Connection failed: One or more PostgreSQL credentials are missing.",  # noqa
         )
+        assert logstream[0] == expected_log
 
     @patch(
         "src.utils.connect_to_db.pg_access",
