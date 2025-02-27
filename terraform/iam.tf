@@ -17,45 +17,49 @@ data "aws_iam_policy_document" "trust_policy" {
 }
 
 # Create
-resource "aws_iam_role" "lambda_role" {
-  name_prefix        = "role-${var.lambda_name}"
+resource "aws_iam_role" "lambda_1_role" {
+  name_prefix        = "role-${var.ingestion_lambda}"
   assume_role_policy = data.aws_iam_policy_document.trust_policy.json
 }
 
 
 # ------------------------------
-# Lambda IAM Policy for S3 Write
+# Lambda IAM Policy for S3 Read and Write
 # ------------------------------
 
 # Define
-
-
-
 data "aws_iam_policy_document" "s3_data_policy_doc" {
   statement {
 
-    actions = [
-      "s3:PutObject",
-      "s3:PutObjectACL"
-    ]
+    actions = ["s3:PutObject"]
     resources = [
+      "${aws_s3_bucket.timestamp_bucket.arn}/*",
       "${aws_s3_bucket.data_bucket.arn}/*"
+    ]
+    effect = "Allow"
+  }
+   statement {
+
+    actions = ["s3:GetObject"]
+    resources = [
+      "${aws_s3_bucket.timestamp_bucket.arn}/*",
+      "${aws_s3_bucket.data_bucket.arn}/*",
+      "${aws_s3_bucket.code_bucket.arn}/*"
     ]
     effect = "Allow"
   }
 }
 
 # Create
-resource "aws_iam_policy" "s3_write_policy" {
-  name_prefix = "s3-policy-${var.lambda_name}-write"
+resource "aws_iam_policy" "s3_read_write_policy" {
+  name_prefix = "s3-policy-${var.ingestion_lambda}-read-write"
   policy      = data.aws_iam_policy_document.s3_data_policy_doc.json
 }
 
 # Attach
-resource "aws_iam_role_policy_attachment" "lambda_s3_write_policy_attachment" {
-  #TODO: attach the s3 write policy to the lambda role
-  policy_arn = aws_iam_policy.s3_write_policy.arn
-  role       = aws_iam_role.lambda_role.name
+resource "aws_iam_role_policy_attachment" "lambda_s3_read_write_policy_attachment" {
+  policy_arn = aws_iam_policy.s3_read_write_policy.arn
+  role       = aws_iam_role.lambda_1_role.name
 }
 
 
@@ -66,24 +70,21 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_write_policy_attachment" {
 # Define
 data "aws_iam_policy_document" "cw_document" {
   statement {
-    #TODO: this statement should give permission to create Log Groups in your account
     actions = [
       "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
+    
     ]
-    resources = ["*"]
+    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
     effect    = "Allow"
   }
 
   statement {
-    #TODO: this statement should give permission to create Log Streams and put Log Events in the lambda's own Log Group
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
     resources = [
-      "arn:aws:logs:*:*:log-group:/aws/lambda/${var.lambda_name}:*"
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.ingestion_lambda}:*"
     ]
     effect = "Allow"
   }
@@ -91,14 +92,12 @@ data "aws_iam_policy_document" "cw_document" {
 
 # Create
 resource "aws_iam_policy" "cw_policy" {
-  #TODO: use the policy document defined above
-  name_prefix = "cw-policy-${var.lambda_name}"
+  name_prefix = "cw-policy-${var.ingestion_lambda}"
   policy      = data.aws_iam_policy_document.cw_document.json
 }
 # Attach
 resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
-  #TODO: attach the cw policy to the lambda role
   policy_arn = aws_iam_policy.cw_policy.arn
-  role       = aws_iam_role.lambda_role.name
+  role       = aws_iam_role.lambda_1_role.name
 }
 

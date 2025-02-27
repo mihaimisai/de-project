@@ -3,12 +3,12 @@ terraform {
 
         aws = {
             source = "hashicorp/aws"
-            version = "~. 5.0"
+            version = "~> 5.0"
 
         }
     }
     backend "s3" {
-        bucket = var.state_bucket
+        bucket = "de-project-terraform-state"
         key = "terraform.tfstate"
         region = "eu-west-2"
     }

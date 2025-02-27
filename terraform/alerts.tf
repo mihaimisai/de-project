@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "lambda_errors_topic" {
-  name = "lambda-errors-topic"
+  name = "lambda_errors_topic"
 }
 
 resource "aws_sns_topic_subscription" "email_notification" {
@@ -8,20 +8,16 @@ resource "aws_sns_topic_subscription" "email_notification" {
   endpoint  = var.alert_email
 }
 
-resource "aws_cloudwatch_log_group" "aws_cw_log_access" {
-  name = "/aws/lambda/lambda_handler"
-}
-
 resource "aws_cloudwatch_log_metric_filter" "lambda_error_filter" {
-    name           = "lambda-error-filter"
-    log_group_name = aws_cloudwatch_log_group.aws_cw_log_access.name
-
-    pattern = "ERROR"
+  name           = "lambda_error_filter"
+  log_group_name = "/aws/lambda/${var.ingestion_lambda}"
+  pattern = "ERROR"
 
  metric_transformation {
     name      = "LambdaErrorCount"
-    namespace = "LambdaErrors"
-    value     = "1"
+    namespace = "${var.ingestion_lambda}_Errors"
+    value     = 1
+    default_value = 0
   }
 }
 
@@ -30,7 +26,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_error_alarm" {
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   metric_name         = "LambdaErrorCount"
-  namespace          = "LambdaErrors"
+  namespace          = "${var.ingestion_lambda}_Errors"
   period             = 300
   statistic          = "Sum"
   threshold          = 1
