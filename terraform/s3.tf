@@ -32,6 +32,6 @@ resource "aws_s3_object" "ingester_lambda_code" {
 resource "aws_s3_object" "ingester_layer_code" {
   bucket = aws_s3_bucket.code_bucket.bucket
   key = "layers/ingester_layer.zip"
-  source = data.archive_file.ingester_layer_code_zip.output_path
+  source = data.archive_file.ingester_layer_code.output_path
   # source = "${path.module}/../ingester_lambda_layer.zip"
 }
