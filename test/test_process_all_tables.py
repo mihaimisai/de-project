@@ -2,9 +2,9 @@ from unittest.mock import patch, MagicMock
 from src.ingestion.utils.process_all_tables import process_all_tables
 
 
-@patch("src.utils.process_all_tables.ingest_data_to_s3")
-@patch("src.utils.process_all_tables.s3_client")
-@patch("src.utils.process_all_tables.logger")
+@patch("src.ingestion.utils.process_all_tables.ingest_data_to_s3")
+@patch("src.ingestion.utils.process_all_tables.s3_client")
+@patch("src.ingestion.utils.process_all_tables.logger")
 def test_process_all_tables(
     mock_logger, mock_s3_client, mock_ingest_data_to_s3
 ):
