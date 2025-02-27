@@ -8,14 +8,14 @@ resource "aws_sns_topic_subscription" "email_notification" {
   endpoint  = var.alert_email
 }
 
-resource "aws_cloudwatch_log_group" "aws_cw_log_access" {
-  name = "/aws/lambda/l${var.ingestion_lambda}"
-}
+# resource "aws_cloudwatch_log_group" "aws_cw_log_access" {
+#   name = "/aws/lambda/${var.ingestion_lambda}"
+# }
 
 resource "aws_cloudwatch_log_metric_filter" "lambda_error_filter" {
   name           = "lambda_error_filter"
-  log_group_name = aws_cloudwatch_log_group.aws_cw_log_access.name
-  # log_group_name = "/aws/lambda/${var.ingestion_lambda}"
+  # log_group_name = aws_cloudwatch_log_group.aws_cw_log_access.name
+  log_group_name = "/aws/lambda/${var.ingestion_lambda}"
   pattern = "ERROR"
 
  metric_transformation {
