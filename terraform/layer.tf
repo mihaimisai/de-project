@@ -19,6 +19,6 @@ data "archive_file" "ingestion_layer_code" {
 resource "aws_lambda_layer_version" "dependencies" {
   layer_name          = "ingestion_lambda_layer"
   compatible_runtimes = [var.python_runtime]
-  s3_bucket           = aws_s3_object.ingestion_layer_code.bucket
-  s3_key              = aws_s3_object.ingestion_layer_code.key
+  s3_bucket           = aws_s3_object.ingestion_layer.bucket
+  s3_key              = aws_s3_object.ingestion_layer.key
 }
