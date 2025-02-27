@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "trust_policy" {
 
 # Create
 resource "aws_iam_role" "lambda_1_role" {
-  name_prefix        = "role-${var.lambda_1_name}"
+  name_prefix        = "role-${var.ingestion_lambda}"
   assume_role_policy = data.aws_iam_policy_document.trust_policy.json
 }
 
@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
 
 # Create
 resource "aws_iam_policy" "s3_read_write_policy" {
-  name_prefix = "s3-policy-${var.lambda_1_name}-read-write"
+  name_prefix = "s3-policy-${var.ingestion_lambda}-read-write"
   policy      = data.aws_iam_policy_document.s3_data_policy_doc.json
 }
 
@@ -84,7 +84,7 @@ data "aws_iam_policy_document" "cw_document" {
       "logs:PutLogEvents"
     ]
     resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.lambda_1_name}:*"
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.ingestion_lambda}:*"
     ]
     effect = "Allow"
   }
@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "cw_document" {
 
 # Create
 resource "aws_iam_policy" "cw_policy" {
-  name_prefix = "cw-policy-${var.lambda_1_name}"
+  name_prefix = "cw-policy-${var.ingestion_lambda}"
   policy      = data.aws_iam_policy_document.cw_document.json
 }
 # Attach

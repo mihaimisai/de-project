@@ -2,11 +2,10 @@ data "archive_file" "ingestion_lambda" {
   type             = "zip"
   output_path = "${path.module}/../packages/ingestion/function.zip"
   source_dir      = "${path.module}/../src/ingestion"
-  # dir instead of file 
 }
 
 resource "aws_lambda_function" "ingested_lambda_function" {
-  function_name = var.lambda_1_name
+  function_name = var.ingestion_lambda
   source_code_hash = data.archive_file.ingestion_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "ingestion/function.zip"

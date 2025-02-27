@@ -48,7 +48,7 @@ variable "timestamp_bucket_prefix" {
     default = "de-project-lambda-timestamp-"
 }
 
-variable "lambda_1_name" {
+variable "ingestion_lambda" {
     type = string
     default = "data_ingestion_lambda"
 }

@@ -7,7 +7,7 @@ resource "aws_cloudwatch_event_rule" "every_20_mins_scheduler" {
 #set up trigger as schedule target 
 resource "aws_cloudwatch_event_target" "trigger_lambda_every_20_mins" {
   rule      = aws_cloudwatch_event_rule.every_20_mins_scheduler.name
-  target_id = var.lambda_1_name
+  target_id = var.ingestion_lambda
   arn       = aws_lambda_function.ingested_lambda_function.arn
 }
 #set up permissions to invoke lambda
