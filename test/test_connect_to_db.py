@@ -24,7 +24,7 @@ class TestConnectToDb:
 
     @patch(
         "src.utils.connect_to_db.pg_access",
-        return_value=("localhost", 1234, "test_db", "user", "password"),
+        return_value=("localhost", 1234, "test_db", "user", "anyyy"),
     )
     @patch("src.utils.connect_to_db.Connection", return_value=object())
     def test_connects_to_db_success(
@@ -37,21 +37,21 @@ class TestConnectToDb:
             port=1234,
             database="test_db",
             user="user",
-            password="password",
+            password="anyyy",
         )
 
     def test_connects_to_db_logs_error(self, test_logger):
-        with LogCapture() as logstream:
+        with LogCapture(level=logging.ERROR) as logstream:
             try:
                 connect_to_db(test_logger)
             except Exception:
-                pass
-        for log in logstream:
-            assert log == (
-                "test_logger",
-                "ERROR",
-                "Connection failed: One or more PostgreSQL credentials are missing.",  # noqa
-            )
+                test_logger.info("Error in connection in test file")
+
+        assert logstream[0] == (
+            "test_logger",
+            "ERROR",
+            "Connection failed: One or more PostgreSQL credentials are missing.",  # noqa
+        )
 
     @patch(
         "src.utils.connect_to_db.pg_access",
@@ -61,15 +61,14 @@ class TestConnectToDb:
     def test_connects_to_db_logs_info(
         self, mock_access, mock_connection, test_logger
     ):
-        with LogCapture() as logstream:
+        with LogCapture(level=logging.INFO) as logstream:
             try:
                 connect_to_db(test_logger)
             except Exception:
-                pass
+                test_logger.ERROR("Error in connection in test file")
 
-        for log in logstream:
-            assert log == (
-                "test_logger",
-                "INFO",
-                "Connecting to PostgreSQL database: test_db on host: localhost",  # noqa
-            )
+        assert logstream[0] == (
+            "test_logger",
+            "INFO",
+            "Connecting to PostgreSQL database: test_db on host: localhost",  # noqa
+        )

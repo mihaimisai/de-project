@@ -28,14 +28,14 @@ def db(postgresql):
     cursor = connection.cursor()
     cursor.execute(
         """
-        CREATE TABLE test_table
+        CREATE TABLE counterparty
         (id serial PRIMARY KEY,
         name varchar,
         last_updated timestamp);"""
     )
     cursor.execute(
         """
-        INSERT INTO test_table
+        INSERT INTO counterparty
         (name, last_updated)
         VALUES
         ('test1', '2024-02-13'),
@@ -66,7 +66,7 @@ class TestIngestDataToS3:
 
     def test_fetch_data_no_time_stamp(self, db, mock_logger):
 
-        table_name = "test_table"
+        table_name = "counterparty"
 
         expected_data = [
             (1, "test1", datetime.datetime(2024, 2, 13, 0, 0)),
@@ -82,7 +82,7 @@ class TestIngestDataToS3:
 
     def test_fetch_data_with_time_stamp(self, db, mock_logger):
 
-        table_name = "test_table"
+        table_name = "counterparty"
 
         expected_data = [(2, "test2", datetime.datetime(2025, 1, 14, 0, 0))]
         expected_df = pd.DataFrame(
@@ -94,7 +94,7 @@ class TestIngestDataToS3:
         pd.testing.assert_frame_equal(result_df, expected_df)
 
     def test_fetch_data_throws_error(self, db):
-        table_name = "test_table"
+        table_name = "counterparty"
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
             try:
@@ -123,7 +123,7 @@ class TestIngestDataToS3:
     def test_ingest_data_to_s3_time_stamp_called(self, s3_client, mock_logger):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
-        table_name = "test_table"
+        table_name = "counterparty"
 
         with patch(
             "src.utils.ingest_data_to_s3.timestamp_data_retrival"
@@ -142,7 +142,7 @@ class TestIngestDataToS3:
     def test_ingest_data_to_s3_fetch_data_called(self, mock_logger, s3_client):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
-        table_name = "test_table"
+        table_name = "counterparty"
 
         with patch(
             "src.utils.ingest_data_to_s3.fetch_data"
@@ -162,7 +162,7 @@ class TestIngestDataToS3:
     def test_ingest_data_to_s3_convert_called(self, mock_logger, s3_client):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
-        table_name = "test_table"
+        table_name = "counterparty"
 
         with patch(
             "src.utils.ingest_data_to_s3.convert_to_csv"
@@ -189,7 +189,7 @@ class TestIngestDataToS3:
             "src.utils.ingest_data_to_s3.s3_data_upload"
         ) as mock_upload:
 
-            table_name = "test_table"
+            table_name = "counterparty"
 
             ingest_data_to_s3(
                 s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
@@ -212,7 +212,7 @@ class TestIngestDataToS3:
             "src.utils.ingest_data_to_s3.upload_time_stamp"
         ) as mock_upload:
 
-            table_name = "test_table"
+            table_name = "counterparty"
 
             ingest_data_to_s3(
                 s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
@@ -226,7 +226,7 @@ class TestIngestDataToS3:
     )
     @patch("src.utils.connect_to_db.Connection", return_value=MagicMock())
     def test_ingest_data_to_s3_success_log(self, conn, mock_logger):
-        table_name = "test_table"
+        table_name = "counterparty"
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
             try:
@@ -243,7 +243,7 @@ class TestIngestDataToS3:
     def test_ingest_data_to_s3_check_exception_raised(self, mock_logger):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
-        table_name = "test_table"
+        table_name = "counterparty"
 
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
@@ -266,5 +266,5 @@ class TestIngestDataToS3:
         assert logstream[1] == (
             "test_logger",
             "ERROR",
-            """Error connecting to PostgreSQL or executing query for table 'test_table': One or more PostgreSQL credentials are missing.""",  # noqa 501
+            """Error connecting to PostgreSQL or executing query for table 'counterparty': One or more PostgreSQL credentials are missing.""",  # noqa 501
         )
