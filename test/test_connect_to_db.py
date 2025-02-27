@@ -37,7 +37,7 @@ class TestConnectToDb:
             port=1234,
             database="test_db",
             user="user",
-            password="anyyy",
+            password="anyyy",  # nosec
         )
 
     def test_connects_to_db_logs_error(self, test_logger):
