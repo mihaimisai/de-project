@@ -41,7 +41,7 @@ security:
 #Run tests
 
 check-coverage:
-	source venv/bin/activate && pytest --cov=src test/
+	source venv/bin/activate && export PYTHONPATH=$(PWD) && pytest --cov=src test/
 test:
 	source venv/bin/activate && export PYTHONPATH=$(PWD) && pytest
 
