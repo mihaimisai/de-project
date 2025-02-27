@@ -1,5 +1,7 @@
 import botocore.exceptions
-from src.ingestion.function.utils.timestamp_data_retrival import timestamp_data_retrival
+from src.ingestion.function.utils.timestamp_data_retrival import (
+    timestamp_data_retrival,
+)
 import boto3
 from moto import mock_aws
 import logging
