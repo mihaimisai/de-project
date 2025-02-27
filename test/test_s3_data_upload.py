@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from src.ingestion.utils.s3_data_upload import s3_data_upload
+from src.ingestion.function.utils.s3_data_upload import s3_data_upload
 
 
-@patch("src.ingestion.utils.s3_client.s3_client")
+@patch("src.ingestion.function.utils.s3_client.s3_client")
 def test_s3_data_upload_success(mock_s3_client):
     mock_logger = MagicMock()
 
@@ -31,7 +31,7 @@ def test_s3_data_upload_success(mock_s3_client):
     )
 
 
-@patch("src.ingestion.utils.s3_client.s3_client")
+@patch("src.ingestion.function.utils.s3_client.s3_client")
 def test_s3_data_upload_failed(mock_s3_client):
     mock_logger = MagicMock()
 

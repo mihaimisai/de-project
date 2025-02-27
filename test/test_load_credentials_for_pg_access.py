@@ -1,4 +1,4 @@
-from src.ingestion.utils.load_credentials_for_pg_access import pg_access
+from src.ingestion.function.utils.load_credentials_for_pg_access import pg_access
 from unittest.mock import patch
 import os
 import pytest
