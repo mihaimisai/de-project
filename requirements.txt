@@ -47,7 +47,7 @@ psutil==7.0.0
 psycopg==3.2.5
 py-partiql-parser==0.6.1
 py-serializable==1.1.2
-pyarrow==19.0.1
+# pyarrow==19.0.1
 pycodestyle==2.12.1
 pycparser==2.22
 pyflakes==3.2.0
