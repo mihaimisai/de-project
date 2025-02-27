@@ -5,7 +5,6 @@ from moto import mock_aws
 import logging
 from testfixtures import LogCapture
 import pytest
-import botocore
 
 
 @pytest.fixture
