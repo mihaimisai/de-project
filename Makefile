@@ -32,16 +32,16 @@ format-check: black black-check flake8
 #Run security
 
 bandit:
-	source venv/bin/activate && bandit -r src/ test/
+	source venv/bin/activate && bandit -c .bandit.yml -r src/ test/
 pip-audit:
 	source venv/bin/activate && pip-audit
-
-security: bandit pip-audit
+security:
+	source venv/bin/activate && bandit -c .bandit.yml -r src/ test/ && pip-audit
 
 #Run tests
 
 check-coverage:
-	source venv/bin/activate && pytest --cov=src test/
+	source venv/bin/activate && export PYTHONPATH=$(PWD) && pytest --cov=src test/
 test:
 	source venv/bin/activate && export PYTHONPATH=$(PWD) && pytest
 
