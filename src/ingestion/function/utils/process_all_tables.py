@@ -17,7 +17,7 @@ logging.basicConfig(
 
 
 # Main execution function
-def process_all_tables(client, logger):
+def process_all_tables(client, logger=logger):
     """
     Orchestrates the ingestion and transformation of multiple tables.
     """

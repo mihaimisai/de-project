@@ -1,12 +1,12 @@
-resource "null_resource" "create_dependencies" {
-  provisioner "local-exec" {
-    command = "pip install -r ${path.module}/../lambda_requirements.txt -t ${path.module}/../dependencies/python"
-  }
+# resource "null_resource" "create_dependencies" {
+#   provisioner "local-exec" {
+#     command = "pip install -r ${path.module}/../lambda_requirements.txt -t ${path.module}/../dependencies/python"
+#   }
 
-  triggers = {
-    dependencies = filemd5("${path.module}/../lambda_requirements.txt")
-  }
-}
+#   triggers = {
+#     dependencies = filemd5("${path.module}/../lambda_requirements.txt")
+#   }
+# }
 
 data "archive_file" "ingestion_layer_code" {
   type = "zip"
