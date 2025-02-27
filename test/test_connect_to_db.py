@@ -18,8 +18,7 @@ class TestConnectToDb:
         "src.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
-    def test_fails_with_no_connection_established(self,
-                                                  test_logger):
+    def test_fails_with_no_connection_established(self, test_logger):
         with pytest.raises(InterfaceError):
             connect_to_db(test_logger)
 
@@ -27,12 +26,8 @@ class TestConnectToDb:
         "src.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
-    @patch("src.utils.connect_to_db.Connection",
-           return_value=object())
-    def test_connects_to_db_success(self,
-                                    mock_access,
-                                    mock_connection,
-                                    test_logger):
+    @patch("src.utils.connect_to_db.Connection", return_value=object())
+    def test_connects_to_db_success(self, mock_access, mock_connection, test_logger):
         connect_to_db(test_logger)
 
         mock_access.assert_called_once_with(
@@ -43,8 +38,7 @@ class TestConnectToDb:
             password="password",
         )
 
-    def test_connects_to_db_logs_error(self,
-                                       test_logger):
+    def test_connects_to_db_logs_error(self, test_logger):
         with LogCapture() as logstream:
             try:
                 connect_to_db(test_logger)
@@ -54,19 +48,15 @@ class TestConnectToDb:
             assert log == (
                 "test_logger",
                 "ERROR",
-                "Connection failed: One or more PostgreSQL credentials are missing.", # noqa
+                "Connection failed: One or more PostgreSQL credentials are missing.",  # noqa
             )
 
     @patch(
         "src.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
-    @patch("src.utils.connect_to_db.Connection",
-           return_value=object())
-    def test_connects_to_db_logs_info(self,
-                                      mock_access,
-                                      mock_connection,
-                                      test_logger):
+    @patch("src.utils.connect_to_db.Connection", return_value=object())
+    def test_connects_to_db_logs_info(self, mock_access, mock_connection, test_logger):
         with LogCapture() as logstream:
             try:
                 connect_to_db(test_logger)
@@ -77,5 +67,5 @@ class TestConnectToDb:
             assert log == (
                 "test_logger",
                 "INFO",
-                "Connecting to PostgreSQL database: test_db on host: localhost", # noqa
+                "Connecting to PostgreSQL database: test_db on host: localhost",  # noqa
             )

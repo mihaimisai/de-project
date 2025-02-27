@@ -1,7 +1,8 @@
 import os
 
+
 def pg_access():
-    
+
     # Retrieve credentials from environment variables
     PG_HOST = os.environ.get("DB_HOST")
     PG_PORT = os.environ.get("DB_PORT")
@@ -13,5 +14,3 @@ def pg_access():
         raise ValueError("One or more PostgreSQL credentials are missing.")
 
     return [PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD]
-
-
