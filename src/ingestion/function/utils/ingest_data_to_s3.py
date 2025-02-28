@@ -1,5 +1,5 @@
 from .upload_time_stamp import upload_time_stamp
-from .s3_data_upload import s3_data_upload
+from .s3_data_upload_mod import s3_data_upload_mod
 from .connect_to_db import connect_to_db, close_db
 from .timestamp_data_retrival import timestamp_data_retrival
 import pandas as pd
@@ -71,7 +71,7 @@ def ingest_data_to_s3(
 
         logger.info(f"Successfully fetched data from table: {table_name}")
 
-        s3_data_upload(
+        s3_data_upload_mod(
             s3_client,
             s3_ingestion_bucket,
             table_name,
@@ -80,7 +80,11 @@ def ingest_data_to_s3(
             time_stamp,
         )
 
-        upload_time_stamp(s3_client, s3_timestamp_bucket, table_name, logger)
+        upload_time_stamp(
+            s3_client,
+            s3_timestamp_bucket,
+            table_name,
+            logger)
 
     except Exception as e:
         logger.error(
