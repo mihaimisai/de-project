@@ -6,5 +6,6 @@ def ingestion_handler(event, context):
 
     client = s3_client()
     process_all_tables(client)
+    print("check lambda update with function")
 
     return {"statusCode": 200, "body": "Data ingestion complete"}
