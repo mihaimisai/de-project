@@ -46,6 +46,24 @@ def test_s3_data_upload_success_without_time_stamp(mock_s3_client):
     mock_logger.info.assert_called_once_with(
         f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  # noqa 501
     )
+    
+@patch("src.ingestion.function.utils.s3_client.s3_client")
+def test_s3_data_upload_success_returns_time_stamp(mock_s3_client):
+    mock_logger = MagicMock()
+
+    bucket_name = "test-bucket"
+    table_name = "test-table"
+    csv_data = b"sample,data"
+
+    result = s3_data_upload(
+        mock_s3_client,
+        bucket_name,
+        table_name,
+        csv_data,
+        mock_logger
+    )
+    
+    assert isinstance(result,str)
 
 
 @patch("src.ingestion.function.utils.s3_client.s3_client")
