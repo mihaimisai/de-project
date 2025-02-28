@@ -19,6 +19,8 @@ def s3_data_upload(
         logger.info(
             f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  # noqa 501
         )
+        
+        return time_stamp
 
     except Exception as e:
         logger.error(
