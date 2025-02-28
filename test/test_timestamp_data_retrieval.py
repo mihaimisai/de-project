@@ -66,7 +66,7 @@ class TestTimeStampDataRetrieval:
     @mock_aws
     def test_error_raised_when_file_not_found(self, test_logger):
         test_client = boto3.client("s3")
-        bucket_name = "Test_bucket"
+        bucket_name = None
         test_client.create_bucket(
             Bucket=bucket_name,
             CreateBucketConfiguration={
@@ -75,7 +75,7 @@ class TestTimeStampDataRetrieval:
         )
         with pytest.raises(botocore.exceptions.ClientError):
             timestamp_data_retrival(
-                test_client, bucket_name, "users", test_logger
+                test_client, bucket_name, None, test_logger
             )
 
     @mock_aws

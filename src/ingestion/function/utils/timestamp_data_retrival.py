@@ -10,7 +10,6 @@ def timestamp_data_retrival(client, s3_timestamp_bucket, table_name, logger):
         )
         return time_stamp
     except Exception as e:
-        print(e.response)
         if e.response['Error']['Code'] == 'NoSuchKey':
             return None
         else:
