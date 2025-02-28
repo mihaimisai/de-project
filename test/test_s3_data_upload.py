@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from src.ingestion.function.utils.s3_data_upload import s3_data_upload
+from freezegun import freeze_time
 
 @patch("src.ingestion.function.utils.s3_client.s3_client")
 def test_s3_data_upload_success_with_time_stamp(mock_s3_client):
@@ -23,7 +24,7 @@ def test_s3_data_upload_success_with_time_stamp(mock_s3_client):
     mock_logger.info.assert_called_once_with(
         f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  # noqa 501
     )
-    
+
 @patch("src.ingestion.function.utils.s3_client.s3_client")
 def test_s3_data_upload_success_without_time_stamp(mock_s3_client):
     mock_logger = MagicMock()
@@ -47,6 +48,7 @@ def test_s3_data_upload_success_without_time_stamp(mock_s3_client):
         f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  # noqa 501
     )
     
+@freeze_time("2025-01-01 11:00:00")
 @patch("src.ingestion.function.utils.s3_client.s3_client")
 def test_s3_data_upload_success_returns_time_stamp(mock_s3_client):
     mock_logger = MagicMock()
@@ -64,6 +66,7 @@ def test_s3_data_upload_success_returns_time_stamp(mock_s3_client):
     )
     
     assert isinstance(result,str)
+    assert result == "2025-01-01 11:00:00"
 
 
 @patch("src.ingestion.function.utils.s3_client.s3_client")
