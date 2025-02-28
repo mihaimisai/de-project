@@ -74,12 +74,11 @@ class TestTimeStampDataRetrieval:
             },  # noqa
         )
         
-        with pytest.raises(botocore.exceptions('NoSuchKey')):
+        with pytest.raises(botocore.exceptions.NoSuchKey):
             result = timestamp_data_retrival(
                 test_client, bucket_name, bucket_name, test_logger
             )
-            result()
-            assert result() is None
+            assert result is None
 
     @mock_aws
     def test_error_logged_when_file_not_found(self, test_logger):
