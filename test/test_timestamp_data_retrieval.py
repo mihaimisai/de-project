@@ -74,7 +74,7 @@ class TestTimeStampDataRetrieval:
             },  # noqa
         )
         
-        with pytest.raises(botocore.exceptions.NoSuchKey):
+        with pytest.raises(botocore.exceptions.ClientError):
             result = timestamp_data_retrival(
                 test_client, bucket_name, bucket_name, test_logger
             )
