@@ -31,7 +31,6 @@ def test_s3_data_upload_success_without_time_stamp(mock_s3_client):
     bucket_name = "test-bucket"
     table_name = "test-table"
     csv_data = b"sample,data"
-    time_stamp = None
 
     s3_data_upload(
         mock_s3_client,
@@ -56,7 +55,6 @@ def test_s3_data_upload_failed(mock_s3_client):
     bucket_name = "test-bucket"
     table_name = "test-table"
     csv_data = b"sample,data"
-    time_stamp = "20240221"
 
     mock_s3_client.put_object.side_effect = Exception("S3 Upload Error")
 
