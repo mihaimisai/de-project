@@ -53,7 +53,6 @@ pyflakes==3.2.0
 Pygments==2.19.1
 pyparsing==3.2.1
 pytest==8.3.4
-pytest-asyncio==0.25.3
 pytest-cov==6.0.0
 pytest-postgresql==7.0.0
 pytest-testdox==3.1.0

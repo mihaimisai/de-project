@@ -127,7 +127,6 @@ class TestIngestDataToS3:
             )
             mock_timestamp.assert_called_once
 
-    @pytest.mark.asyncio
     @patch(
         "src.ingestion.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
@@ -136,7 +135,7 @@ class TestIngestDataToS3:
         "src.ingestion.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
-    async def test_ingest_data_to_s3_fetch_data_called(self, mock_logger, s3_client):
+    def test_ingest_data_to_s3_fetch_data_called(self, mock_logger, s3_client):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
         table_name = "counterparty"
@@ -145,13 +144,12 @@ class TestIngestDataToS3:
             "src.ingestion.function.utils.ingest_data_to_s3.fetch_data"
         ) as mock_fetch_data:
 
-            await ingest_data_to_s3(
+            ingest_data_to_s3(
                 s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
             )
 
             mock_fetch_data.assert_called_once()
 
-    @pytest.mark.asyncio
     @patch(
         "src.ingestion.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
@@ -160,7 +158,7 @@ class TestIngestDataToS3:
         "src.ingestion.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
-    async def test_ingest_data_to_s3_convert_called(self, mock_logger, s3_client):
+    def test_ingest_data_to_s3_convert_called(self, mock_logger, s3_client):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
         table_name = "counterparty"
@@ -169,13 +167,12 @@ class TestIngestDataToS3:
             "src.ingestion.function.utils.ingest_data_to_s3.convert_to_csv"
         ) as mock_convert:
 
-            await ingest_data_to_s3(
+            ingest_data_to_s3(
                 s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
             )
 
             mock_convert.assert_called_once()
 
-    @pytest.mark.asyncio
     @patch(
         "src.ingestion.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
@@ -184,7 +181,7 @@ class TestIngestDataToS3:
         "src.ingestion.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
-    async def test_ingest_data_to_s3_data_upload_called(
+    def test_ingest_data_to_s3_data_upload_called(
         self, mock_logger, s3_client
     ):
         s3_ingestion = "ingestion"
@@ -196,13 +193,12 @@ class TestIngestDataToS3:
 
             table_name = "counterparty"
 
-            await ingest_data_to_s3(
+            ingest_data_to_s3(
                 s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
             )
 
             mock_upload.assert_called_once()
 
-    @pytest.mark.asyncio
     @patch(
         "src.ingestion.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
@@ -211,7 +207,7 @@ class TestIngestDataToS3:
         "src.ingestion.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
-    async def test_ingest_data_to_s3_upload_time_stamp_called(
+    def test_ingest_data_to_s3_upload_time_stamp_called(
         self, mock_logger, s3_client
     ):
         s3_ingestion = "ingestion"
@@ -223,7 +219,7 @@ class TestIngestDataToS3:
 
             table_name = "counterparty"
 
-            await ingest_data_to_s3(
+            ingest_data_to_s3(
                 s3_client, mock_logger, table_name, s3_ingestion, s3_timestamp
             )
 
@@ -252,8 +248,8 @@ class TestIngestDataToS3:
                 f"Successfully fetched data from table: {table_name}",
             )
 
-    @pytest.mark.asyncio
-    async def test_ingest_data_to_s3_check_exception_raised(self, mock_logger):
+
+    def test_ingest_data_to_s3_check_exception_raised(self, mock_logger):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
         table_name = "counterparty"
@@ -261,7 +257,7 @@ class TestIngestDataToS3:
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
             try:
-                await ingest_data_to_s3(
+                ingest_data_to_s3(
                     s3_client,
                     mock_logger,
                     table_name,
