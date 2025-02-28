@@ -32,7 +32,8 @@ def fetch_data(conn, table_name, time_stamp, logger):
         query += "WHERE last_updated > %s"
         params = (time_stamp,)
     try:
-        result = conn.execute(query, params)
+        cursor = conn.cursor()
+        result = cursor.execute(query, params)
         columns = [desc[0] for desc in result.description]
         rows = result.fetchall()
         return pd.DataFrame(rows, columns=columns)

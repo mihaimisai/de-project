@@ -10,8 +10,11 @@ def timestamp_data_retrival(client, s3_timestamp_bucket, table_name, logger):
         )
         return time_stamp
     except Exception as e:
-        time_stamp = None
-        logger.error(
-            f"Error retrieving time_stamp_{table_name}.txt from S3 bucket: '{s3_timestamp_bucket}': {e}"  # noqa
-        )
-        raise e
+        print(e.response)
+        if e.response['Error']['Code'] == 'NoSuchKey':
+            return None
+        else:
+            logger.error(
+                f"Error retrieving time_stamp_{table_name}.txt from S3 bucket: '{s3_timestamp_bucket}': {e}"  # noqa
+            )
+            raise e
