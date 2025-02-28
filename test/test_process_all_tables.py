@@ -1,6 +1,6 @@
 from unittest.mock import patch, MagicMock
 from src.ingestion.function.utils.process_all_tables import process_all_tables
-import asyncio
+
 
 @patch("src.ingestion.function.utils.process_all_tables.ingest_data_to_s3")
 @patch("src.ingestion.function.utils.process_all_tables.s3_client")
