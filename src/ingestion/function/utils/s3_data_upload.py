@@ -1,10 +1,19 @@
+from datetime import datetime
+
+
 def s3_data_upload(
-    client, bucket_name, table_name, csv_df, logger, time_stamp
+    client, bucket_name, table_name, csv_df, logger
 ):
     try:
 
-        # Define the file path in the S3 bucket
-        s3_key_ingestion = f"{table_name}/{time_stamp}.csv"
+        now = datetime.now()
+        
+        year = now.strftime("%Y")
+        month = now.strftime("%m")
+        day =now.strftime("%d")
+        time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
+        
+        s3_key_ingestion = f"{table_name}/{year}/{month}/{day}/{time_stamp}.csv"
 
         # Upload the file to bucket_name
         client.put_object(
@@ -14,6 +23,8 @@ def s3_data_upload(
         logger.info(
             f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  # noqa 501
         )
+        
+        return time_stamp
 
     except Exception as e:
         logger.error(

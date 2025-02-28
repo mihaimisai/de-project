@@ -71,16 +71,19 @@ def ingest_data_to_s3(
 
         logger.info(f"Successfully fetched data from table: {table_name}")
 
-        s3_data_upload(
+        new_timestamp = s3_data_upload(
             s3_client,
             s3_ingestion_bucket,
             table_name,
             csv_df,
-            logger,
-            time_stamp,
+            logger
         )
 
-        upload_time_stamp(s3_client, s3_timestamp_bucket, table_name, logger)
+        upload_time_stamp(s3_client,
+                          s3_timestamp_bucket,
+                          table_name,
+                          logger,
+                          new_timestamp)
 
     except Exception as e:
         logger.error(
