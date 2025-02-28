@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from src.ingestion.function.utils.s3_data_upload import s3_data_upload
-from datetime import datetime
 
 @patch("src.ingestion.function.utils.s3_client.s3_client")
 def test_s3_data_upload_success_with_time_stamp(mock_s3_client):
