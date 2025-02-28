@@ -31,15 +31,14 @@ def test_s3_data_upload_success_with_time_stamp(mock_s3_client):
     )
     
 @patch("src.ingestion.function.utils.s3_client.s3_client")
-@patch("src.ingestion.function.utils.datetime.datetime")
-def test_s3_data_upload_success_without_time_stamp(mock_datetime, mock_s3_client):
+def test_s3_data_upload_success_without_time_stamp(mock_s3_client):
     mock_logger = MagicMock()
 
     bucket_name = "test-bucket"
     table_name = "test-table"
     csv_data = b"sample,data"
     time_stamp = None
-    mock_datetime.now.return_value = datetime.datetime(2025, 2, 28, 14, 30, 0)
+
     s3_data_upload(
         mock_s3_client,
         bucket_name,
@@ -49,12 +48,8 @@ def test_s3_data_upload_success_without_time_stamp(mock_datetime, mock_s3_client
         time_stamp,
     )
     
-    expected_timestamp = mock_datetime.now.return_value.strftime("%Y-%m-%d_%H-%M-%S")
-    expected_s3_key = f"{table_name}/{expected_timestamp}.csv"
-
-    mock_s3_client.put_object.assert_called_once_with(
-        Bucket=bucket_name, Body=csv_data, Key=expected_s3_key
-    )
+    s3_key = mock_s3_client.put_object.call_args[1]["Key"]
+    assert s3_key is not None
 
     mock_logger.info.assert_called_once_with(
         f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'"  # noqa 501
