@@ -1,9 +1,15 @@
+from datetime import datetime
+
 def s3_data_upload(
     client, bucket_name, table_name, csv_df, logger, time_stamp
 ):
     try:
 
         # Define the file path in the S3 bucket
+        if not time_stamp:
+            now = datetime.now()
+            time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
+            
         s3_key_ingestion = f"{table_name}/{time_stamp}.csv"
 
         # Upload the file to bucket_name
