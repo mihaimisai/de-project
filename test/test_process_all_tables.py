@@ -1,11 +1,12 @@
 from unittest.mock import patch, MagicMock
 from src.ingestion.function.utils.process_all_tables import process_all_tables
+import pytest
 
-
+@pytest.mark.asyncio
 @patch("src.ingestion.function.utils.process_all_tables.ingest_data_to_s3")
 @patch("src.ingestion.function.utils.process_all_tables.s3_client")
 @patch("src.ingestion.function.utils.process_all_tables.logger")
-def test_process_all_tables(
+async def test_process_all_tables(
     mock_logger, mock_s3_client, mock_ingest_data_to_s3
 ):
     """Test that all tables are processed
@@ -14,7 +15,7 @@ def test_process_all_tables(
     mock_s3_client.return_value = MagicMock()
     mock_ingest_data_to_s3.return_value = None
 
-    process_all_tables(mock_s3_client.return_value, mock_logger)
+    await process_all_tables(mock_s3_client.return_value, mock_logger)
 
     expected_tables = [
         "counterparty",

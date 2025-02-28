@@ -47,7 +47,7 @@ def convert_to_csv(df):
     return df.to_csv(index=False).encode("utf-8")
 
 
-def ingest_data_to_s3(
+async def ingest_data_to_s3(
     s3_client, logger, table_name, s3_ingestion_bucket, s3_timestamp_bucket
 ):
     """
