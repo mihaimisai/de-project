@@ -76,8 +76,7 @@ def ingest_data_to_s3(
             s3_ingestion_bucket,
             table_name,
             csv_df,
-            logger,
-            time_stamp,
+            logger
         )
 
         upload_time_stamp(s3_client,

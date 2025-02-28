@@ -17,7 +17,7 @@ logging.basicConfig(
 
 
 # Main execution function
-async def process_all_tables(client, logger=logger):
+def process_all_tables(client, logger=logger):
     """
     Orchestrates the ingestion and transformation of multiple tables.
     """
@@ -38,6 +38,6 @@ async def process_all_tables(client, logger=logger):
     client = s3_client()
 
     for table in tables:
-        await ingest_data_to_s3(
+        ingest_data_to_s3(
             client, logger, table, s3_ingestion_bucket, s3_timestamp_bucket
         )
