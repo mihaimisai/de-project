@@ -37,8 +37,8 @@ resource "aws_lambda_function" "ingested_lambda_function" {
 
 data "archive_file" "transformation_lambda" {
   type             = "zip"
-  output_path = "${path.module}/../packages/transformation/function.zip"
-  source_dir      = "${path.module}/../src/transformation"
+  output_path = "${path.module}/../packages/transform/function.zip"
+  source_dir      = "${path.module}/../src/transform" 
 }
 
 resource "aws_lambda_function" "transformation_lambda_function" {
