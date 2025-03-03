@@ -1,88 +1,91 @@
-# ingestion_handler
-'''
-Orchestrates ingestion and storage of data from multiple tables in database. 
+# # ingestion_handler
+# '''
+# Orchestrates ingestion and storage of data from multiple tables in database. 
 
-Invokes s3_client and process_all_tables.
+# Invokes s3_client and process_all_tables.
 
-    Parameters:
-        event (dict): empty dictionary
-        context (context object): context object provided by AWS
+#     Parameters:
+#         event (event object): json object - converted to empty dict by lambda python runtime
+#         context (context object): context object provided by AWS
 
-    Returns:
-        dictionary, {'statusCode': 200, "body": "Data ingestion complete" } if successful
-'''
+#     Returns:
+#         dictionary, {'statusCode': 200, "body": "Data ingestion complete" } if successful
+# '''
 
-# upload_time_stamp
-'''
-Uploads txt file containing formatted current timestamp to s3 timestamp bucket. 
+# # upload_time_stamp
+# '''
+# Uploads txt file containing formatted current timestamp to s3 timestamp bucket. 
 
-    Parameters:
-        client (): s3 client
-        bucket_name (str): name of s3 bucket to upload to
-        table_name (str): table that has been queried at this timestamp
-        logger (Logger): logger instance
+    # Parameters:
+    #     client (): s3 client
+    #     bucket_name (str): name of s3 bucket to upload to
+    #     table_name (str): table that has been queried at this timestamp
+    #     logger (Logger): logger instance
+    #     time_stamp (str): timestamp to upload
 
-    Logs:
-        either info f"Successfully uploaded {formatted_now}_{table_name}.txt file to S3 bucket '{bucket_name}'" if successful
-            where formatted_now is a timestamp with format "%Y-%m-%d %H:%M:%S"
-        or error f"Error uploading time_stamp_{table_name}.txt to S3 bucket: '{bucket_name}': {e}"
+    # Logs:
+    #     either info f"Successfully uploaded {formatted_now}_{table_name}.txt file to S3 bucket '{bucket_name}'" if successful
+    #         where formatted_now is a timestamp with format "%Y-%m-%d %H:%M:%S"
+    #     or error f"Error uploading time_stamp_{table_name}.txt to S3 bucket: '{bucket_name}': {e}"
 
-    Raises:
-        Exception if upload unsuccessful
-'''
+    # Raises:
+    #     Exception if upload unsuccessful
+# '''
 
-# timestamp_data_retrival
-'''
-Retrieves timestamp from txt file in s3 timestamp bucket. 
+# # timestamp_data_retrival
+# '''
+# Retrieves timestamp from txt file in s3 timestamp bucket. 
 
-    Parameters:
-        client (): s3 client
-        s3_timestamp_bucket (str): name of s3 bucket to retrieve from
-        table_name (str): table to retrieve timestamp of last query for - referenced in txt file name
-        logger (Logger): logger instance
+#     Parameters:
+#         client (): s3 client
+#         s3_timestamp_bucket (str): name of s3 bucket to retrieve from
+#         table_name (str): table to retrieve timestamp of last query for - referenced in txt file name
+#         logger (Logger): logger instance
 
-    Logs:
-        either info f"Successfully retrieved time_stamp_{table_name}.txt file from S3 bucket '{s3_timestamp_bucket}'" if successful
-        or error f"Error retrieving time_stamp_{table_name}.txt from S3 bucket: '{s3_timestamp_bucket}': {e}"
+#     Logs:
+#         either info f"Successfully retrieved time_stamp_{table_name}.txt file from S3 bucket '{s3_timestamp_bucket}'" if successful
+#         or error f"Error retrieving time_stamp_{table_name}.txt from S3 bucket: '{s3_timestamp_bucket}': {e}"
 
-    Returns:
-        either time_stamp (format "%Y-%m-%d %H:%M:%S") if successful
-        or None if 'NoSuchKey' error - if no timestamp file (first lambda invocation) or incorrect table_name
+#     Returns:
+#         either time_stamp (format "%Y-%m-%d %H:%M:%S") if successful
+#         or None if 'NoSuchKey' error - if no timestamp file (first lambda invocation) or incorrect table_name
         
-    Raises:
-        Exception if retireval unsuccessful unless due to 'NoSuchKey'
-'''
+#     Raises:
+#         Exception if retireval unsuccessful unless due to 'NoSuchKey'
+# '''
 
-# s3_data_upload
-'''
-Uploads csv file containing ingested data to s3 ingested data bucket.  
+# # s3_data_upload
+# '''
+# Uploads csv file containing ingested data to s3 ingested data bucket.  
 
-    Parameters:
-        client (): s3 client
-        bucket_name (str): name of s3 bucket to upload to
-        table_name (str): table data has been retrieved from - referenced in s3 file name
-        csv_df (csv): csv file to upload
-        logger (Logger): logger instance
-        time_stamp (str): timestamp referenced in s3 file name
+#     Parameters:
+#         client (): s3 client
+#         bucket_name (str): name of s3 bucket to upload to
+#         table_name (str): table data has been retrieved from - referenced in s3 file name
+#         csv_df (csv): csv file to upload
+#         logger (Logger): logger instance
+ 
+#     Logs:
+#         either info f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'" if successful
+#         or error f"Error uploading csv file to S3 for table '{table_name}': {e}"
 
-    Logs:
-        either info f"Successfully uploaded csv file to S3 bucket '{bucket_name}' for table '{table_name}'" if successful
-        or error f"Error uploading csv file to S3 for table '{table_name}': {e}"
+#     Returns:
+#         time_stamp (str): time of upload in format "%Y-%m-%d %H:%M:%S"
+       
+#     Raises:
+#         Exception if upload unsuccessful
+# '''
 
-    Raises:
-        Exception if upload unsuccessful
-'''
+# # s3_client
+# '''
+# Initializes s3 client.
 
-# s3_client
-'''
-Initializes s3 client.
+#     Parameters:
+#         region (str): AWS region (default is 'eu-west-2')
 
-    Parameters:
-        region (str): AWS region (default is 'eu-west-2')
-
-    Returns:
-        s3 client
-'''
+#     Returns:
+#         s3 client
+# '''
 
 # process_all_tables
 # why reassigning client when passes in as argument?
