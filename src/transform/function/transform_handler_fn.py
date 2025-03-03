@@ -1,4 +1,3 @@
-import boto3
 from .utils.get_latest_files import get_latest_files
 from .utils.list_s3 import list_s3
 from .utils.s3_client import s3_client
@@ -18,7 +17,7 @@ def transform_handler(event, context):
             context (context object): context object provided by AWS
 
         Returns:
-            dictionary, {'statusCode': 200, "body": "Data ingestion complete" }
+            dictionary, {'statusCode': 200, "body": "Data transformation complete" }
             if successful
     """
     

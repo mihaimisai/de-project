@@ -3,7 +3,6 @@ import boto3
 from moto import mock_aws
 import pytest
 from unittest.mock import MagicMock
-import logging
 
 
 @pytest.fixture
