@@ -50,5 +50,5 @@
         ],
         "End": true
       }
-    }
+    }, "QueryLanguage": "JSONata"
   }
