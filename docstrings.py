@@ -90,107 +90,107 @@
 # process_all_tables
 # why reassigning client when passes in as argument?
 # expand comments describing accessing bucket names from lambda environment variables and configuring logger 
-'''
-Orchestrates ingestion and processing of multiple tables.
+# '''
+# Orchestrates ingestion and processing of multiple tables.
 
-Invokes ingest_data_to_s3 function for list of tables.
+# Invokes ingest_data_to_s3 function for list of tables.
 
-    Parameters:
-        client (): s3 client
-        logger (Logger): logger instance (default is logger - variable defined in enclosing scope)
-'''
+#     Parameters:
+#         client (): s3 client
+#         logger (Logger): logger instance (default is logger - variable defined in enclosing scope)
+# '''
 
 # load_credentials_for_pg_access - pg_access
-'''
-Retrieves database credentials from lambda environment variables. 
+# '''
+# Retrieves database credentials from lambda environment variables. 
 
-    Returns:
-        list of database credential variables
-        [PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD]
+#     Returns:
+#         list of database credential variables
+#         [PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD]
         
-    Raises:
-        ValueError("One or more PostgreSQL credentials are missing.") if unsuccessful
-'''
+#     Raises:
+#         ValueError("One or more PostgreSQL credentials are missing.") if unsuccessful
+# '''
 
-# connect_to_db - connect_to_db
-'''
-Establishes database connection using credentials. 
+# # connect_to_db - connect_to_db
+# '''
+# Establishes database connection using credentials. 
 
-    Parameters:
-        logger (Logger): logger instance
+#     Parameters:
+#         logger (Logger): logger instance
 
-    Logs:
-        either info f"Connecting to PostgreSQL database: {PG_DATABASE} on host: {PG_HOST}" if successful
-        or error f"Connection failed: {e}"
+#     Logs:
+#         either info f"Connecting to PostgreSQL database: {PG_DATABASE} on host: {PG_HOST}" if successful
+#         or error f"Connection failed: {e}"
 
-    Returns:
-        connection (Connection)
+#     Returns:
+#         connection (Connection)
         
-    Raises:
-        Exception if connection unsuccessful
-'''
+#     Raises:
+#         Exception if connection unsuccessful
+# '''
 
-# connect_to_db - close_db
-'''
-Closes database connection.
+# # connect_to_db - close_db
+# '''
+# Closes database connection.
 
-    Parameters:
-        conn (Connection): database connection
-'''
+#     Parameters:
+#         conn (Connection): database connection
+# '''
 
 # ingest_data_to_s3 - fetch_data
-'''
-Fetches new data from table in a database using psql queries.
+# '''
+# Fetches new data from table in a database using psql queries.
 
-Only fetches data added to the table since last data retrival.
+# Only fetches data added to the table since last data retrival.
 
-    Parameters:
-        conn (Connection): database connection
-        table_name (str): table to retrieve data from
-        logger (Logger): logger instance
-        time_stamp (str): timestamp of last data retrival from table
+#     Parameters:
+#         conn (Connection): database connection
+#         table_name (str): table to retrieve data from
+#         logger (Logger): logger instance
+#         time_stamp (str): timestamp of last data retrival from table
 
-    Logs:
-        error f"Error fetching data: {e}") if unsuccessful
+#     Logs:
+#         error f"Error fetching data: {e}") if unsuccessful
 
-    Returns:
-        dataframe (DataFrame): empty if error fetching data
+#     Returns:
+#         dataframe (DataFrame): empty if error fetching data
  
-    Raises:
-        ValueError("Invalid table name") if invalid table_name
-'''
+#     Raises:
+#         ValueError("Invalid table name") if invalid table_name
+# '''
 
 # ingest_data_to_s3 - convert_to_csv
-'''
-Converts pandas dataframe to csv file.
+# '''
+# Converts pandas dataframe to csv file.
 
-Csv file does not include row names (index).
+# Csv file does not include row names (index).
 
-    Parameters:
-        df (DataFrame): pandas dataframe to convert
+#     Parameters:
+#         df (DataFrame): pandas dataframe to convert
 
-    Returns:
-        csv format (str)
-'''
+#     Returns:
+#         csv format (str)
+# '''
 
 # ingest_data_to_s3 - ingest_data_to_s3
-'''
-Orchestrates retrival, conversion and upload of data from a database table to a csv file in an s3 bucket.
+# '''
+# Orchestrates retrival, conversion and upload of data from a database table to a csv file in an s3 bucket.
 
-    Parameters:
-        s3_client (): s3 client
-        logger (Logger): logger instance
-        table_name (str): table to retrieve data from
-        s3_ingestion_bucket (str): name of s3 bucket to upload csv to
-        s3_timestamp_bucket (str): name of s3 bucket to retrieve and upload timestamp to
+#     Parameters:
+#         s3_client (): s3 client
+#         logger (Logger): logger instance
+#         table_name (str): table to retrieve data from
+#         s3_ingestion_bucket (str): name of s3 bucket to upload csv to
+#         s3_timestamp_bucket (str): name of s3 bucket to retrieve and upload timestamp to
     
-    Logs:
-        either info f"Successfully fetched data from table: {table_name}"
-        or error f"Error connecting to PostgreSQL or executing query for table '{table_name}': {e}"
+#     Logs:
+#         either info f"Successfully fetched data from table: {table_name}"
+#         or error f"Error connecting to PostgreSQL or executing query for table '{table_name}': {e}"
     
-    Raises:
-        Exception if unsuccessful
-'''
+#     Raises:
+#         Exception if unsuccessful
+# '''
 
 # generate timestamp - carlo refactor?
 
