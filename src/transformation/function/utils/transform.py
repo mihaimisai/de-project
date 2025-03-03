@@ -3,6 +3,16 @@ from datetime import datetime
 
 
 def transform_fact_sales_order(df_sales_order: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforms the sales order DataFrame into a fact table DataFrame.
+    This function processes the input DataFrame by converting date columns to 
+    datetime format, extracting date and time components, and creating a new 
+    DataFrame structured as a fact table for sales orders.
+    Args:
+        df_sales_order (pd.DataFrame): The input DataFrame containing sales order data.
+    Returns:
+        pd.DataFrame: A transformed DataFrame structured as a fact table for sales orders.
+    """
     # Ensure datetime columns are in datetime format
     df_sales_order["created_at"] = pd.to_datetime(df_sales_order["created_at"])
     df_sales_order["last_updated"] = pd.to_datetime(df_sales_order["last_updated"]) # noqa
@@ -44,9 +54,20 @@ def transform_fact_sales_order(df_sales_order: pd.DataFrame) -> pd.DataFrame:
     return df_fact_sales_order
 
 
-def transform_dim_staff(
-    df_staff: pd.DataFrame, df_department: pd.DataFrame
-) -> pd.DataFrame:
+def transform_dim_staff(df_staff: pd.DataFrame,
+                        df_department: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforms and merges staff and department data into a single DataFrame.
+    This function performs a left join operation between the staff and department
+    DataFrames on the 'department_id' column. It then selects and returns a DataFrame
+    with the following columns: 'staff_id', 'first_name', 'last_name', 'department_name',
+    'location', and 'email_address'.
+    Parameters:
+    df_staff (pd.DataFrame): DataFrame containing staff information.
+    df_department (pd.DataFrame): DataFrame containing department information.
+    Returns:
+    pd.DataFrame: A DataFrame containing the merged and selected staff and department data.
+    """
     # Perform the join operation
     df_dim_staff = pd.merge(
         df_staff,
@@ -71,6 +92,15 @@ def transform_dim_staff(
 
 
 def transform_dim_location(df_address: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforms the input DataFrame by selecting and renaming specific columns.
+
+    Args:
+        df_address (pd.DataFrame): The input DataFrame containing address information.
+
+    Returns:
+        pd.DataFrame: A DataFrame with selected columns renamed for dimensional location.
+    """
     # Select and rename the required columns
     df_dim_location = df_address.rename(columns={"address_id": "location_id"})[
         [
@@ -88,6 +118,16 @@ def transform_dim_location(df_address: pd.DataFrame) -> pd.DataFrame:
 
 
 def transform_dim_design(df_design: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforms the input DataFrame by selecting specific columns related to design.
+
+    Args:
+        df_design (pd.DataFrame): The input DataFrame containing design data.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing only the selected columns: 
+                      'design_id', 'design_name', 'file_location', and 'file_name'.
+    """
     # Select the required columns
     df_dim_design = df_design[
         ["design_id", "design_name", "file_location", "file_name"]
@@ -96,6 +136,21 @@ def transform_dim_design(df_design: pd.DataFrame) -> pd.DataFrame:
 
 
 def transform_dim_date() -> pd.DataFrame:
+    """
+    Generates a DataFrame representing a date dimension table with various date attributes.
+    The date dimension table includes the following columns:
+    - date_id: The date itself.
+    - year: The year of the date.
+    - month: The month of the date.
+    - day: The day of the month.
+    - day_of_week: The day of the week (Monday=1, Sunday=7).
+    - day_name: The name of the day of the week.
+    - month_name: The name of the month.
+    - quarter: The quarter of the year.
+    The date range spans from January 1, 2020, to December 31, 2125.
+    Returns:
+        pd.DataFrame: A DataFrame containing the date dimension table.
+    """
 
     # Define the start and end dates for the date dimension
     start_date = datetime.strptime("2020-01-01", "%Y-%m-%d")
@@ -120,6 +175,16 @@ def transform_dim_date() -> pd.DataFrame:
 
 
 def transform_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforms a DataFrame containing currency information by adding a column
+    with the full currency names and selecting specific columns.
+    Args:
+        df_currency (pd.DataFrame): A DataFrame with currency information. 
+                                    It must contain the columns 'currency_id' and 'currency_code'.
+    Returns:
+        pd.DataFrame: A transformed DataFrame with the columns 'currency_id', 
+                      'currency_code', and 'currency_name'.
+    """
 
     # Create a dictionary for the currency mapping
     currency_mapping = {
@@ -185,9 +250,17 @@ def transform_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
     return df_dim_currency
 
 
-def transform_dim_counterparty(
-    df_counterparty: pd.DataFrame, df_address: pd.DataFrame
-) -> pd.DataFrame:
+def transform_dim_counterparty(df_counterparty: pd.DataFrame,
+                               df_address: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transforms the counterparty DataFrame by performing a left join with the address DataFrame
+    and renaming columns to match the desired output format.
+    Args:
+        df_counterparty (pd.DataFrame): DataFrame containing counterparty information.
+        df_address (pd.DataFrame): DataFrame containing address information.
+    Returns:
+        pd.DataFrame: Transformed DataFrame with selected columns and renamed address fields.
+    """
     # Perform LEFT JOIN
     df_counterparty = df_counterparty.merge(df_address,
                                             left_on="counterparty_id",

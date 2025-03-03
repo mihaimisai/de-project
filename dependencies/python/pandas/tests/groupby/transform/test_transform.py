@@ -19,6 +19,10 @@ from pandas import (
 )
 import pandas._testing as tm
 from pandas.tests.groupby import get_groupby_method_args
+import pandas as pd
+import pytest
+from datetime import datetime
+from transformation.function.utils.transform import transform_fact_sales_order
 
 
 def assert_fp_equal(a, b):
@@ -1700,3 +1704,100 @@ def test_idxmin_idxmax_transform_args(how, skipna, numeric_only):
     with tm.assert_produces_warning(warn, match=msg):
         expected = gb.transform(how, skipna=skipna, numeric_only=numeric_only)
     tm.assert_frame_equal(result, expected)
+    if __name__ == "__main__":
+        pytest.main()
+        def test_transform_fact_sales_order():
+            # Create a sample DataFrame
+            data = {
+                "sales_order_id": [1, 2],
+                "created_at": ["2023-01-01 10:00:00", "2023-01-02 11:00:00"],
+                "last_updated": ["2023-01-01 12:00:00", "2023-01-02 13:00:00"],
+                "staff_id": [101, 102],
+                "counterparty_id": [201, 202],
+                "units_sold": [10, 20],
+                "unit_price": [100.123, 200.456],
+                "currency_id": [1, 2],
+                "design_id": [301, 302],
+                "agreed_payment_date": ["2023-01-05", "2023-01-06"],
+                "agreed_delivery_date": ["2023-01-10", "2023-01-11"],
+                "agreed_delivery_location_id": [401, 402],
+            }
+            df_sales_order = pd.DataFrame(data)
+
+            # Expected DataFrame
+            expected_data = {
+                "sales_record_id": [1, 2],
+                "sales_order_id": [1, 2],
+                "created_date": [datetime(2023, 1, 1).date(), datetime(2023, 1, 2).date()],
+                "created_time": [datetime(2023, 1, 1, 10, 0).time(), datetime(2023, 1, 2, 11, 0).time()],
+                "last_updated_date": [datetime(2023, 1, 1).date(), datetime(2023, 1, 2).date()],
+                "last_updated_time": [datetime(2023, 1, 1, 12, 0).time(), datetime(2023, 1, 2, 13, 0).time()],
+                "sales_staff_id": [101, 102],
+                "counterparty_id": [201, 202],
+                "units_sold": [10, 20],
+                "unit_price": [100.12, 200.46],
+                "currency_id": [1, 2],
+                "design_id": [301, 302],
+                "agreed_payment_date": [datetime(2023, 1, 5).date(), datetime(2023, 1, 6).date()],
+                "agreed_delivery_date": [datetime(2023, 1, 10).date(), datetime(2023, 1, 11).date()],
+                "agreed_delivery_location_id": [401, 402],
+            }
+            expected_df = pd.DataFrame(expected_data)
+
+            # Transform the DataFrame
+            result_df = transform_fact_sales_order(df_sales_order)
+
+            # Assert the DataFrame equality
+            pd.testing.assert_frame_equal(result_df, expected_df)
+
+        if __name__ == "__main__":
+            pytest.main()
+            def test_transform_fact_sales_order():
+                # Create a sample DataFrame
+                data = {
+                    "sales_order_id": [1, 2],
+                    "created_at": ["2023-01-01 10:00:00", "2023-01-02 11:00:00"],
+                    "last_updated": ["2023-01-01 12:00:00", "2023-01-02 13:00:00"],
+                    "staff_id": [101, 102],
+                    "counterparty_id": [201, 202],
+                    "units_sold": [10, 20],
+                    "unit_price": [100.123, 200.456],
+                    "currency_id": [1, 2],
+                    "design_id": [301, 302],
+                    "agreed_payment_date": ["2023-01-05", "2023-01-06"],
+                    "agreed_delivery_date": ["2023-01-10", "2023-01-11"],
+                    "agreed_delivery_location_id": [401, 402],
+                }
+                df_sales_order = pd.DataFrame(data)
+
+                # Expected DataFrame
+                expected_data = {
+                    "sales_record_id": [1, 2],
+                    "sales_order_id": [1, 2],
+                    "created_date": [datetime(2023, 1, 1).date(), datetime(2023, 1, 2).date()],
+                    "created_time": [datetime(2023, 1, 1, 10, 0).time(), datetime(2023, 1, 2, 11, 0).time()],
+                    "last_updated_date": [datetime(2023, 1, 1).date(), datetime(2023, 1, 2).date()],
+                    "last_updated_time": [datetime(2023, 1, 1, 12, 0).time(), datetime(2023, 1, 2, 13, 0).time()],
+                    "sales_staff_id": [101, 102],
+                    "counterparty_id": [201, 202],
+                    "units_sold": [10, 20],
+                    "unit_price": [100.12, 200.46],
+                    "currency_id": [1, 2],
+                    "design_id": [301, 302],
+                    "agreed_payment_date": [datetime(2023, 1, 5).date(), datetime(2023, 1, 6).date()],
+                    "agreed_delivery_date": [datetime(2023, 1, 10).date(), datetime(2023, 1, 11).date()],
+                    "agreed_delivery_location_id": [401, 402],
+                }
+                expected_df = pd.DataFrame(expected_data)
+
+                # Transform the DataFrame
+                result_df = transform_fact_sales_order(df_sales_order)
+
+                # Assert the DataFrame equality
+                pd.testing.assert_frame_equal(result_df, expected_df)
+
+            if __name__ == "__main__":
+                pytest.main()
+
+
+
