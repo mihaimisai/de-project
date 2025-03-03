@@ -47,3 +47,30 @@ resource "aws_iam_role_policy_attachment" "state_machine_policy_attachment" {
   policy_arn = aws_iam_policy.state_machine_policy.arn
   role       = aws_iam_role.state_machine_iam_role.name
 }
+
+######
+resource "aws_iam_role" "state_machine_eventbridge_iam_role" {
+  name_prefix        = "role-scheduler-eventbridge-"
+  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
+}
+
+data "aws_iam_policy_document" "eventbridge_policy_doc" {
+    statement {
+            effect = "Allow"
+            actions = ["states:StartExecution"]
+            resources = [
+                "arn:aws:states:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stateMachine:${var.state_machine_name}"
+            ]
+        }
+}
+
+resource "aws_iam_policy" "eventbridge_policy" {
+  name_prefix = "scheduler-eventbridge-policy-"
+  policy      = data.aws_iam_policy_document.eventbridge_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "eventbridge_policy_attachment" {
+  policy_arn = aws_iam_policy.eventbridge_policy.arn
+  role       = aws_iam_role.state_machine_eventbridge_iam_role.name
+}
+
