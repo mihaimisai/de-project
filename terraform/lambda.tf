@@ -51,7 +51,7 @@ resource "aws_lambda_function" "transformation_lambda_function" {
   handler = "function.transformation_handler_fn.transformation_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
-  layers = #TBA
+  layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
     variables = {
       ingested_data_bucket = aws_s3_bucket.data_bucket.bucket

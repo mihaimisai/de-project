@@ -1,12 +1,3 @@
-# resource "null_resource" "create_dependencies" {
-#   provisioner "local-exec" {
-#     command = "pip install -r ${path.module}/../lambda_requirements.txt -t ${path.module}/../dependencies/python"
-#   }
-
-#   triggers = {
-#     dependencies = filemd5("${path.module}/../lambda_requirements.txt")
-#   }
-# }
 
 ##### LAMBDA ONE #####
 
@@ -34,3 +25,14 @@ data "archive_file" "transformation_layer_code" {
   source_dir = "${path.module}/../dependencies"
 
 }
+
+#Auto-create dependencies folder based on pip install requirements.txt
+# resource "null_resource" "create_dependencies" {
+#   provisioner "local-exec" {
+#     command = "pip install -r ${path.module}/../lambda_requirements.txt -t ${path.module}/../dependencies/python"
+#   }
+
+#   triggers = {
+#     dependencies = filemd5("${path.module}/../lambda_requirements.txt")
+#   }
+# }
