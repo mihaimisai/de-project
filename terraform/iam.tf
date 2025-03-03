@@ -161,7 +161,7 @@ resource "aws_iam_policy" "s3_read_write_policy_lambda_two" {
 }
 
 # Attach
-resource "aws_iam_role_policy_attachment" "lambda_s3_read_write_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "lambda_s3_read_write_policy_attachment_lambda_two" {
   policy_arn = aws_iam_policy.s3_read_write_policy_lambda_two.arn
   role       = aws_iam_role.lambda_2_role.name
 }
