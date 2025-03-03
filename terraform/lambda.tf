@@ -34,10 +34,6 @@ resource "aws_lambda_function" "ingested_lambda_function" {
 
 ##### LAMBDA TWO #####
 
-variable "transformation_lambda" { #MOVE TO .vars FILE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    type = string
-    default = "data_transformation_lambda"
-}
 
 data "archive_file" "transformation_lambda" {
   type             = "zip"

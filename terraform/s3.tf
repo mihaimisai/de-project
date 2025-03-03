@@ -26,11 +26,6 @@ resource "aws_s3_bucket" "processed_bucket" {
   }
 }
 
-variable "processed_data_bucket_prefix" { #MOVE TO .vars FILE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    type = string
-    default = "de-project-processed-data-"
-}
-
 # Upload the ingester_lambda code to the code_bucket
 resource "aws_s3_object" "ingestion_lambda_code" {
   bucket = aws_s3_bucket.code_bucket.bucket
@@ -47,3 +42,32 @@ resource "aws_s3_object" "ingestion_layer" {
   etag = filemd5(data.archive_file.ingestion_layer_code.output_path)
   depends_on = [ data.archive_file.ingestion_layer_code ]
 }
+
+# Upload the transformation_lambda code to the code_bucket
+resource "aws_s3_object" "transformation_lambda_code" {
+  bucket = aws_s3_bucket.code_bucket.bucket
+  key = "transformation/function.zip"
+  source = data.archive_file.transformation_lambda.output_path
+  etag = filemd5(data.archive_file.transformation_lambda.output_path)
+}
+
+# Upload the transformation_lambda layer to the code_bucket if exists
+resource "aws_s3_object" "transformation_layer" {
+  bucket = aws_s3_bucket.code_bucket.bucket
+  key = "layers/transformation_layer.zip"
+  source = data.archive_file.transformation_layer_code.output_path
+  etag = filemd5(data.archive_file.transformation_layer_code.output_path)
+  depends_on = [ data.archive_file.transformation_layer_code ]
+}
+
+
+#SOMETHING TO IMPLEMENT WHEN ALL THREE LAMBDAS EXIST 
+
+# resource "aws_s3_object" "lambda_code" {
+#   for_each = toset([var.ingestion_lambda, var.transformation_lambda, var.load_lambda])
+#   bucket   = aws_s3_bucket.code_bucket.bucket
+#   key      = "${each.key}/function.zip"
+#   source   = "${path.module}/../packages/${each.key}/function.zip"
+#   etag     = filemd5("${path.module}/../packages/${each.key}/function.zip")
+# }
+
