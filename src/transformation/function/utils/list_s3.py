@@ -1,36 +1,30 @@
 import io
 import pandas as pd
-import logging
-from datetime import datetime, timedelta
-# Configure logging
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-temp_bucket = "de-project-ingested-data-20250227143401632000000004"
 
+<<<<<<< HEAD
 def ingested_data_retrival(s3_client,
                            ingested_bucket_name,
                            logger=logger):
+=======
+
+def ingested_data_retrival(
+    s3_client, files_dict: dict, logger, bucket_name: str
+):
+>>>>>>> 08291cdce2fced7780c0c5883e1b591faaf4017b
     """
-    Retrieve and process ingested data from an S3 bucket.
+    Retrieves CSV files from an S3 bucket and changes data into DataFrames.
 
     Args:
-        s3_client (boto3.client):
-        The S3 client to use for accessing the bucket.
-        ingested_bucket_name (str):
-        The name of the S3 bucket containing the ingested data.
-        logger (logging.Logger):
-        The logger instance for logging information and errors.
+        s3_client (boto3.client): A boto3 S3 client object.
+        files_dict (dict): A dictionary where keys are table names and values are S3 file paths.
+        logger (logging.Logger): A logger object for logging messages.
+        bucket_name (str): The name of the S3 bucket.
 
     Returns:
-        tuple: A tuple containing two elements:
-            - dataframes (dict):
-            A dictionary of Pandas DataFrames,
-            where keys are table names prefixed with 'df_'.
-            - dataframes_info (dict):
-            A dictionary containing timestamp information and table names.
+        dict: A dictionary where keys are table names and values are pandas DataFrames containing the CSV data.
+        Returns an empty dictionary if an error occurs or no files are found.
     """
+<<<<<<< HEAD
     try:
         # List objects in the bucket
         objects = []
@@ -50,13 +44,21 @@ def ingested_data_retrival(s3_client,
     except Exception as e:
         logger.error(f"Error: bucket {ingested_bucket_name} does not exist: {e}") # noqa
         raise Exception(f"Error: bucket {ingested_bucket_name} does not exist: {e}") # noqa
+=======
+    retrieved_data = {}
+>>>>>>> 08291cdce2fced7780c0c5883e1b591faaf4017b
 
-    # Ensure we actually have a valid response
-    if "Contents" not in response:
-        logger.error(f"The bucket:{ingested_bucket_name} is empty")
-        # Raise an exception to stop further execution
-        raise ValueError(f"The bucket:{ingested_bucket_name} is empty")
+    for table_name, file_path in files_dict.items():
+        try:
+            response = s3_client.get_object(Bucket=bucket_name, Key=file_path)
+            csv_content = response["Body"].read().decode("utf-8")
+            df = pd.read_csv(io.StringIO(csv_content))
+            retrieved_data[table_name] = df
+            logger.info(
+                f"Successfully retrieved {file_path} for table {table_name}"
+            )
 
+<<<<<<< HEAD
     # Extract keys from the response
     keys = [obj["Key"] for obj in objects]
 
@@ -138,3 +140,13 @@ print("<<dataframes>>")
 pp(dataframes)
 print("<<dataframes_info>>")
 pp(dataframes_info)
+=======
+        except s3_client.exceptions.NoSuchKey as e:
+            logger.error(f"File not found: {file_path}. Error: {e}")
+        except Exception as e:
+            logger.error(
+                f"Error retrieving {file_path} for table {table_name}. Error: {e}"
+            )
+
+    return retrieved_data
+>>>>>>> 08291cdce2fced7780c0c5883e1b591faaf4017b
