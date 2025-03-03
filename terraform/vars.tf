@@ -38,6 +38,11 @@ variable "ingested_data_bucket_prefix" {
     default = "de-project-ingested-data-"
 }
 
+variable "processed_data_bucket_prefix" {
+    type = string
+    default = "de-project-processed-data-"
+}
+
 variable "code_bucket_prefix" {
     type = string
     default = "de-project-lambda-code-"
@@ -53,10 +58,10 @@ variable "ingestion_lambda" {
     default = "data_ingestion_lambda"
 }
 
-# variable "lambda_2_name" {
-#     type = string
-#     default = "data_processer_lambda"
-# }
+variable "transformation_lambda" {
+    type = string
+    default = "data_transformation_lambda"
+}
 
 # variable "lambda_3_name" {
 #     type = string
