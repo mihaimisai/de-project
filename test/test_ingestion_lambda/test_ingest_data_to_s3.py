@@ -248,7 +248,6 @@ class TestIngestDataToS3:
                 f"Successfully fetched data from table: {table_name}",
             )
 
-
     def test_ingest_data_to_s3_check_exception_raised(self, mock_logger):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"

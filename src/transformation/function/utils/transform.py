@@ -5,7 +5,9 @@ from datetime import datetime
 def transform_fact_sales_order(df_sales_order: pd.DataFrame) -> pd.DataFrame:
     # Ensure datetime columns are in datetime format
     df_sales_order["created_at"] = pd.to_datetime(df_sales_order["created_at"])
-    df_sales_order["last_updated"] = pd.to_datetime(df_sales_order["last_updated"]) # noqa
+    df_sales_order["last_updated"] = pd.to_datetime(
+        df_sales_order["last_updated"]
+    )  # noqa
 
     # Convert agreed dates from string to datetime
     # (if not already) then extract date part
@@ -176,12 +178,14 @@ def transform_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
     }
 
     # Add a new column with currency names
-    df_currency["currency_name"] = df_currency["currency_code"].map(currency_mapping) # noqa
+    df_currency["currency_name"] = df_currency["currency_code"].map(
+        currency_mapping
+    )  # noqa
 
     # Select the required columns
-    df_dim_currency = df_currency[["currency_id",
-                                   "currency_code",
-                                   "currency_name"]]
+    df_dim_currency = df_currency[
+        ["currency_id", "currency_code", "currency_name"]
+    ]
     return df_dim_currency
 
 
@@ -189,11 +193,14 @@ def transform_dim_counterparty(
     df_counterparty: pd.DataFrame, df_address: pd.DataFrame
 ) -> pd.DataFrame:
     # Perform LEFT JOIN
-    df_counterparty = df_counterparty.merge(df_address,
-                                            left_on="counterparty_id",
-                                            right_on="address_id",
-                                            how="left").drop(
-                                                columns=["address_id"])  # noqa Dropping the duplicate ID column
+    df_counterparty = df_counterparty.merge(
+        df_address,
+        left_on="counterparty_id",
+        right_on="address_id",
+        how="left",
+    ).drop(
+        columns=["address_id"]
+    )  # noqa Dropping the duplicate ID column
 
     # Rename columns to match SQL output
     df_counterparty.rename(

@@ -4,7 +4,11 @@ from .list_s3 import logger
 
 
 def upload_df_to_s3(
-    s3_client, df, file_key, logger=logger, bucket="project-test-transform-bucket"
+    s3_client,
+    df,
+    file_key,
+    logger=logger,
+    bucket="project-test-transform-bucket",
 ):
     try:
         logger.info(f"Trying to read the file {file_key} from bucket {bucket}")
@@ -24,5 +28,9 @@ def upload_df_to_s3(
     # Write the updated DataFrame back to the S3 bucket
     out_buffer = BytesIO()
     updated_df.to_parquet(out_buffer, index=False)
-    s3_client.put_object(Bucket=bucket, Key=file_key, Body=out_buffer.getvalue()) # noqa
-    logger.info(f"Successfully uploaded the updated DataFrame to {file_key} in bucket {bucket}") # noqa
+    s3_client.put_object(
+        Bucket=bucket, Key=file_key, Body=out_buffer.getvalue()
+    )  # noqa
+    logger.info(
+        f"Successfully uploaded the updated DataFrame to {file_key} in bucket {bucket}"
+    )  # noqa

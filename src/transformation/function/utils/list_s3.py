@@ -1,6 +1,8 @@
 import io
 import pandas as pd
 
+from botocore.exceptions import ClientError
+
 
 def ingested_data_retrival(
     s3_client, files_dict: dict, logger, bucket_name: str
@@ -30,11 +32,17 @@ def ingested_data_retrival(
                 f"Successfully retrieved {file_path} for table {table_name}"
             )
 
-        except s3_client.exceptions.NoSuchKey as e:
-            logger.error(f"File not found: {file_path}. Error: {e}")
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "NoSuchKey":
+                logger.error(f"File not found: {file_path}.")
+            else:
+                logger.error(
+                    f"Error retrieving {file_path} for table {table_name}."
+                )
+
         except Exception as e:
             logger.error(
-                f"Error retrieving {file_path} for table {table_name}. Error: {e}"
+                f"Unexpected error retrieving {file_path} for table {table_name}: {e}"
             )
 
     return retrieved_data

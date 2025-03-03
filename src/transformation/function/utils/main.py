@@ -16,7 +16,7 @@ def main(client, logger=logger, bucket="project-test-transform-bucket"):
             upload_df_to_s3(
                 client,
                 df_star_schema[key],
-                key+".parquet",
+                key + ".parquet",
                 logger=logger,
                 bucket="project-test-transform-bucket",
             )

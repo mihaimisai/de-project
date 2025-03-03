@@ -1,4 +1,3 @@
-
 def upload_time_stamp(client, bucket_name, table_name, logger, time_stamp):
     try:
 

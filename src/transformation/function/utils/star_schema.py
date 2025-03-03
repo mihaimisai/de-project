@@ -14,9 +14,9 @@ from .transform import (
 client = s3_client()
 
 
-def star_schema(client,
-                ingested_bucket_name="cd-test-ingestion-bucket",
-                logger=logger):
+def star_schema(
+    client, ingested_bucket_name="cd-test-ingestion-bucket", logger=logger
+):
     required_dataframes = [
         "df_sales_order",
         "df_staff",
@@ -30,7 +30,9 @@ def star_schema(client,
         client, ingested_bucket_name, logger=logger
     )
 
-    available_dataframes = ["df_" + table for table in dataframes_info["table_names"]] # noqa
+    available_dataframes = [
+        "df_" + table for table in dataframes_info["table_names"]
+    ]  # noqa
     try:
         if set(required_dataframes).issubset(available_dataframes):
             logger.info("All required dataframes are available")
