@@ -17,7 +17,7 @@ def transform_handler(event, context):
             context (context object): context object provided by AWS
 
         Returns:
-            dictionary, {'statusCode': 200, "body": "Data transformation complete" }
+            {'statusCode': 200, "body": "Data transformation complete" }
             if successful
     """
     
