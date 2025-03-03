@@ -3,17 +3,6 @@ import os
 from .ingest_data_to_s3 import ingest_data_to_s3
 from .s3_client import s3_client
 
-"""
-Orchestrates ingestion and processing of multiple tables.
-
-Invokes ingest_data_to_s3 function for list of tables.
-
-    Parameters:
-        client (): s3 client
-        logger (Logger): logger instance (default is logger
-        - variable defined in enclosing scope)
-
-"""
 
 # S3 Configuration
 # names obtained from tf
@@ -32,6 +21,13 @@ logging.basicConfig(
 def process_all_tables(client, logger=logger):
     """
     Orchestrates the ingestion and transformation of multiple tables.
+
+    Invokes ingest_data_to_s3 function for list of tables.
+
+    Parameters:
+        client (): s3 client
+        logger (Logger): logger instance (default is logger
+        - variable defined in enclosing scope)
     """
     tables = [
         "counterparty",
