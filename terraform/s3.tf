@@ -19,6 +19,18 @@ resource "aws_s3_bucket" "code_bucket" {
   }
 }
 
+resource "aws_s3_bucket" "processed_bucket" {
+  bucket_prefix = var.processed_data_bucket_prefix
+  tags = {
+    Name        = "processed data bucket"
+  }
+}
+
+variable "processed_data_bucket_prefix" { #MOVE TO .vars FILE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    type = string
+    default = "de-project-processed-data-"
+}
+
 # Upload the ingester_lambda code to the code_bucket
 resource "aws_s3_object" "ingestion_lambda_code" {
   bucket = aws_s3_bucket.code_bucket.bucket
