@@ -79,5 +79,5 @@ variable "default_timeout" {
 }
 variable "state_machine_name" {
     type = string
-    default = "sfn_state_machine_ingest_to_transform"
+    default = "sfn_ingest_to_transform"
 }
