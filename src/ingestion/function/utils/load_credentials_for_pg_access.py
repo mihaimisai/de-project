@@ -1,15 +1,17 @@
 import os
 
-'''
-Retrieves database credentials from lambda environment variables. 
+"""
+Retrieves database credentials from lambda environment variables.
 
     Returns:
         list of database credential variables
         [PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD]
-        
+
     Raises:
-        ValueError("One or more PostgreSQL credentials are missing.") if unsuccessful
-'''
+        ValueError("One or more PostgreSQL credentials
+        are missing.") if unsuccessful
+"""
+
 
 def pg_access():
 
