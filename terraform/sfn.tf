@@ -7,7 +7,7 @@ resource "aws_sfn_state_machine" "sfn_state_machine_ingest_to_transform" {
       ingestion_function_name     = "${var.ingestion_lambda}"
       transformation_function_name = "${var.transformation_lambda}"
     })
-  role_arn = aws_iam_role.step_function_role.arn
+  role_arn = aws_iam_role.state_machine_iam_role.arn
 }
 
 ###########
