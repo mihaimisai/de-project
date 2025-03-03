@@ -46,7 +46,7 @@ resource "aws_lambda_function" "transformation_lambda_function" {
   source_code_hash = data.archive_file.transformation_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "transformation/function.zip"
-  role = #TBA 
+  role = aws_iam_role.lambda_2_role.arn
   # adjust handler to match
   handler = "function.transformation_handler_fn.transformation_handler"
   runtime = var.python_runtime
