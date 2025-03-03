@@ -6,10 +6,17 @@ from .parquet_upload import upload_df_to_s3
 
 # Initialize the S3 client
 client = s3_client()
+ingested_bucket_name = "de-project-ingested-data-20250227143401632000000004t"
 
-
-def main(client, logger=logger, bucket="project-test-transform-bucket"):
-    df_star_schema = star_schema(client, logger=logger)
+def main(client,
+         logger=logger,
+         ingested_bucket_name = "de-project-ingested-data-20250227143401632000000004t",
+         transform_bucket_name="project-test-transform-bucket"):
+    
+    df_star_schema = star_schema(client,
+                                 ingested_bucket_name,
+                                 logger=logger)
+    
     star_schema_table_names = list(df_star_schema.keys())
     try:
         [
@@ -18,11 +25,14 @@ def main(client, logger=logger, bucket="project-test-transform-bucket"):
                 df_star_schema[key],
                 key+".parquet",
                 logger=logger,
-                bucket="project-test-transform-bucket",
+                transform_bucket_name="project-test-transform-bucket",
             )
             for key in star_schema_table_names
         ]
-        logger.info(f"Successfully uploaded data to {bucket}")
+        logger.info(f"Successfully uploaded data to {transform_bucket_name}")
     except Exception as e:
-        logger.error(f"Failed to upload data to {bucket}: {e}")
+        logger.error(f"Failed to upload data to {transform_bucket_name}: {e}")
         raise
+
+    main(client,
+         logger=logger)

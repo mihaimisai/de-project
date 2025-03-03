@@ -15,7 +15,7 @@ client = s3_client()
 
 
 def star_schema(client,
-                ingested_bucket_name="cd-test-ingestion-bucket",
+                ingested_bucket_name="de-project-ingested-data-20250227143401632000000004t",
                 logger=logger):
     required_dataframes = [
         "df_sales_order",
@@ -26,9 +26,9 @@ def star_schema(client,
         "df_currency",
         "df_counterparty",
     ]
-    dataframes, dataframes_info = ingested_data_retrival(
-        client, ingested_bucket_name, logger=logger
-    )
+    dataframes, dataframes_info = ingested_data_retrival(client,
+                                                         ingested_bucket_name,
+                                                         logger=logger)
 
     available_dataframes = ["df_" + table for table in dataframes_info["table_names"]] # noqa
     try:
