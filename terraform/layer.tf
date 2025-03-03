@@ -34,11 +34,3 @@ data "archive_file" "transformation_layer_code" {
   source_dir = "${path.module}/../dependencies"
 
 }
-
-resource "aws_lambda_layer_version" "dependencies" {
-  layer_name          = "transformation_lambda_layer"
-  compatible_runtimes = [var.python_runtime]
-  s3_bucket           = aws_s3_object.transformation_layer.bucket
-  s3_key              = aws_s3_object.transformation_layer.key
-  source_code_hash = data.archive_file.transformation_layer_code.output_base64sha256
-}
