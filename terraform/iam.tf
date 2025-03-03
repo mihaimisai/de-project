@@ -200,7 +200,7 @@ resource "aws_iam_policy" "cw_policy_lambda_two" {
   policy      = data.aws_iam_policy_document.cw_document_lambda_two.json
 }
 # Attach
-resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment_lambda_two" {
   policy_arn = aws_iam_policy.cw_policy_lambda_two.arn
   role       = aws_iam_role.lambda_2_role.name
 }
