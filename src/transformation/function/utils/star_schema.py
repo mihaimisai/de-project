@@ -15,7 +15,7 @@ client = s3_client()
 
 
 def star_schema(client,
-                ingested_bucket_name="de-project-ingested-data-20250227143401632000000004t",
+                ingested_bucket_name="cd-test-ingestion-bucket ",
                 logger=logger):
     required_dataframes = [
         "df_sales_order",
@@ -48,7 +48,7 @@ def star_schema(client,
             dim_counterparty = transform_dim_counterparty(
                 dataframes["df_counterparty"], dataframes["df_address"]
             )
-            star_schema = {
+            df_star_schema = {
                 "fact_sales_order": df_fact_sales_order,
                 "dim_staff": dim_staff,
                 "dim_location": dim_location,
@@ -58,11 +58,7 @@ def star_schema(client,
                 "dim_counterparty": dim_counterparty,
             }
             logger.info("Star-schema data successfully processed")
-            return star_schema
+            return df_star_schema
     except Exception:
         logger.error("Insuffcient dataframes for star-schema data processing")
         raise
-
-
-# star_schema = star_schema(client, ingested_bucket_name, logger=logger)
-# print(star_schema)

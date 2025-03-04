@@ -42,3 +42,6 @@ def process_all_tables(client, logger=logger):
         ingest_data_to_s3(
             client, logger, table, s3_ingestion_bucket, s3_timestamp_bucket
         )
+        
+client = s3_client()
+process_all_tables(client, logger=logger)

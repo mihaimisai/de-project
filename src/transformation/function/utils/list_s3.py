@@ -2,12 +2,13 @@ import io
 import pandas as pd
 import logging
 from datetime import datetime, timedelta
+from pprint import pprint as pp
 # Configure logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-temp_bucket = "de-project-ingested-data-20250227143401632000000004"
+
 
 def ingested_data_retrival(s3_client,
                            ingested_bucket_name,
@@ -62,7 +63,7 @@ def ingested_data_retrival(s3_client,
 
     tables_keys = [key.split('/')[0] for key in keys]
     table_names = list(set(tables_keys))
-
+    table_names.sort()
     # Extract the timestamp portion from each key
     timestamps = [key[-23:-4] for key in keys]
 
@@ -92,9 +93,6 @@ def ingested_data_retrival(s3_client,
     latest_keys = []
     for i in list(range(len(indexes))):
         latest_keys.append(keys[indexes[i]])
-    # [key for key in keys if key.endswith(latest_time+'.csv')]
-    
-    
     
     # Define dataframes info
     dataframes_info = {
@@ -117,24 +115,27 @@ def ingested_data_retrival(s3_client,
         )
         body_content = obj_response["Body"].read()
         dataframes[f"df_{table_names[i]}"] = pd.read_csv(io.BytesIO(body_content)) # noqa
-
+        logger.info(f"Successfully converted CSV table:'{table_names[i]}' from bucket:{ingested_bucket_name} in pandas dataframe") # noqa
+       
     logger.info(f"Successfully converted CSV tables from bucket:{ingested_bucket_name} in pandas dataframe") # noqa
-
+    
     return dataframes, dataframes_info
 
 
-from .s3_client import s3_client
-from pprint import pprint as pp
-s3_client = s3_client()
-# Specify the bucket name
-ingested_bucket_name = "de-project-ingested-data-20250227143401632000000004"
+# Manually run "ingested_data_retrival"
+# import os
+# from .s3_client import s3_client
+# from pprint import pprint as pp
+# s3_client = s3_client()
+# # Specify the bucket name
+# ingested_bucket_name = os.environ.get("ingested_bucket_name")
 
 
-dataframes, dataframes_info = ingested_data_retrival(
-                                                    s3_client,
-                                                    ingested_bucket_name,
-                                                    logger=logger)
-print("<<dataframes>>")
-pp(dataframes)
-print("<<dataframes_info>>")
-pp(dataframes_info)
+# dataframes, dataframes_info = ingested_data_retrival(
+#                                                     s3_client,
+#                                                     ingested_bucket_name,
+#                                                     logger=logger)
+# print("<<dataframes>>")
+# pp(dataframes)
+# print("<<dataframes_info>>")
+# pp(dataframes_info)

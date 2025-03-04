@@ -8,7 +8,7 @@ def transformation_handler(event, context):
     client = s3_client()
     main(client,
          logger=logger,
-         ingested_bucket_name = "de-project-ingested-data-20250227143401632000000004t",
+         ingested_bucket_name = "cd-test-ingestion-bucket ",
          transform_bucket_name="project-test-transform-bucket")
 
 
