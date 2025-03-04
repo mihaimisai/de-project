@@ -4,6 +4,7 @@ from unittest.mock import patch, MagicMock
 from src.transformation.function.utils.star_schema import star_schema
 from src.transformation.function.utils.s3_client import s3_client
 
+
 class TestStarschema:
 
     @pytest.fixture
@@ -11,14 +12,24 @@ class TestStarschema:
         with mock_aws():
             yield s3_client()
 
-    @patch("src.transformation.function.utils.star_schema.ingested_data_retrival")
-    @patch("src.transformation.function.utils.star_schema.transform_fact_sales_order")
-    @patch("src.transformation.function.utils.star_schema.transform_dim_staff")
-    @patch("src.transformation.function.utils.star_schema.transform_dim_location")
-    @patch("src.transformation.function.utils.star_schema.transform_dim_design")
-    @patch("src.transformation.function.utils.star_schema.transform_dim_date")
-    @patch("src.transformation.function.utils.star_schema.transform_dim_currency")
-    @patch("src.transformation.function.utils.star_schema.transform_dim_counterparty")
+    @patch(
+        "src.transformation.function.utils.star_schema.ingested_data_retrival"
+    )  # noqa
+    @patch(
+        "src.transformation.function.utils.star_schema.transform_fact_sales_order"  # noqa
+    )
+    @patch("src.transformation.function.utils.star_schema.transform_dim_staff")  # noqa
+    @patch(
+        "src.transformation.function.utils.star_schema.transform_dim_location"
+    )  # noqa
+    @patch("src.transformation.function.utils.star_schema.transform_dim_design")  # noqa
+    @patch("src.transformation.function.utils.star_schema.transform_dim_date")  # noqa
+    @patch(
+        "src.transformation.function.utils.star_schema.transform_dim_currency"
+    )  # noqa
+    @patch(
+        "src.transformation.function.utils.star_schema.transform_dim_counterparty"  # noqa
+    )
     def test_star_schema(
         self,
         mock_transform_dim_counterparty,
@@ -42,9 +53,17 @@ class TestStarschema:
                 "df_currency": MagicMock(),
                 "df_counterparty": MagicMock(),
             },
-            {"table_names": [
-                "sales_order", "staff", "department", "address", "design", "currency", "counterparty"
-            ]},
+            {
+                "table_names": [
+                    "sales_order",
+                    "staff",
+                    "department",
+                    "address",
+                    "design",
+                    "currency",
+                    "counterparty",
+                ]
+            },
         )
 
         # Mock transformation functions

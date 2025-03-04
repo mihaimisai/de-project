@@ -13,4 +13,7 @@ def transformation_handler(event, context):
         transform_bucket_name="project-test-transform-bucket",
     )
 
-    return {"statusCode": 200, "body": "Data tranformation and upload completed"} # noqa
+    return {
+        "statusCode": 200,
+        "body": "Data tranformation and upload completed",
+    }  # noqa

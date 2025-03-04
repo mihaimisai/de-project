@@ -147,7 +147,9 @@ class TestTransform:
         assert (
             row_alice["department_name"] == "Sales"
         ), "Alice's department_name is incorrect."
-        assert row_alice["location"] == "New York", "Alice's location is incorrect." # noqa
+        assert (
+            row_alice["location"] == "New York"
+        ), "Alice's location is incorrect."  # noqa
         assert (
             row_alice["email_address"] == "sales@example.com"
         ), "Alice's email_address is incorrect."
@@ -156,7 +158,9 @@ class TestTransform:
         assert (
             row_bob["department_name"] == "Engineering"
         ), "Bob's department_name is incorrect."
-        assert row_bob["location"] == "San Francisco", "Bob's location is incorrect." # noqa
+        assert (
+            row_bob["location"] == "San Francisco"
+        ), "Bob's location is incorrect."  # noqa
         assert (
             row_bob["email_address"] == "eng@example.com"
         ), "Bob's email_address is incorrect."
@@ -167,7 +171,9 @@ class TestTransform:
         assert pd.isna(
             row_charlie["department_name"]
         ), "Expected NaN for Charlie's department_name."
-        assert pd.isna(row_charlie["location"]), "Expected NaN for Charlie's location." # noqa
+        assert pd.isna(
+            row_charlie["location"]
+        ), "Expected NaN for Charlie's location."  # noqa
         assert pd.isna(
             row_charlie["email_address"]
         ), "Expected NaN for Charlie's email_address."
@@ -250,7 +256,12 @@ class TestTransform:
         df_dim_design = transform_dim_design(df_design)
 
         # Define expected columns
-        expected_columns = ["design_id", "design_name", "file_location", "file_name"] # noqa
+        expected_columns = [
+            "design_id",
+            "design_name",
+            "file_location",
+            "file_name",
+        ]  # noqa
 
         # Check that output has exactly the
         # expected columns in the correct order
@@ -312,7 +323,7 @@ class TestTransform:
         # Validate attributes for the first date (2020-01-01)
         first_row = df_dim_date.iloc[0]
         # 2020-01-01 is a Wednesday: Monday=1, so Wednesday=3.
-        assert first_row["year"] == 2020, "Year for the first row is incorrect." # noqa
+        assert first_row["year"] == 2020, "Year for the first row is incorrect."  # noqa
         assert first_row["month"] == 1, "Month for the first row is incorrect."
         assert first_row["day"] == 1, "Day for the first row is incorrect."
         assert (
@@ -342,7 +353,7 @@ class TestTransform:
         assert (
             sample_row["month_name"] == "December"
         ), "Month name for 2021-12-31 is incorrect."
-        assert sample_row["quarter"] == 4, "Quarter for 2021-12-31 should be 4." # noqa
+        assert sample_row["quarter"] == 4, "Quarter for 2021-12-31 should be 4."  # noqa
 
     def test_transform_dim_currency(self):
         # Create sample input data, including an

@@ -15,7 +15,9 @@ def upload_df_to_s3(
             f"Trying to read the file {file_key} from bucket {transform_bucket_name}"  # noqa
         )
         # Try to read the existing file from S3
-        s3_object = s3_client.get_object(Bucket=transform_bucket_name, Key=file_key)  # noqa
+        s3_object = s3_client.get_object(
+            Bucket=transform_bucket_name, Key=file_key
+        )  # noqa
         existing_df = pd.read_parquet(BytesIO(s3_object["Body"].read()))
         logger.info(f"Successfully read the existing {file_key} file")
 

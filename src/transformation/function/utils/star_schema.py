@@ -16,7 +16,7 @@ client = s3_client()
 
 def star_schema(
     client, ingested_bucket_name="cd-test-ingestion-bucket", logger=logger
-):
+):  # noqa
     required_dataframes = [
         "df_sales_order",
         "df_staff",
@@ -29,10 +29,7 @@ def star_schema(
     dataframes, dataframes_info = ingested_data_retrival(
         client, ingested_bucket_name, logger=logger
     )
-
-    available_dataframes = [
-        "df_" + table for table in dataframes_info["table_names"]
-    ]  # noqa
+    available_dataframes = list(dataframes.keys())
     try:
         if set(required_dataframes).issubset(available_dataframes):
             logger.info("All required dataframes are available")

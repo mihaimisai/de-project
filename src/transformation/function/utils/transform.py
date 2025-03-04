@@ -265,7 +265,9 @@ def transform_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
     )  # noqa
 
     # Select the required columns
-    df_dim_currency = df_currency[["currency_id", "currency_code", "currency_name"]]  # noqa
+    df_dim_currency = df_currency[
+        ["currency_id", "currency_code", "currency_name"]
+    ]  # noqa
     return df_dim_currency
 
 
@@ -286,10 +288,11 @@ def transform_dim_counterparty(
     """
     # Perform LEFT JOIN
     df_counterparty = df_counterparty.merge(
-        df_address, left_on="counterparty_id", right_on="address_id", how="left"  # noqa Dropping the duplicate ID column
-    ).drop(
-        columns=["address_id"]
-    )
+        df_address,
+        left_on="counterparty_id",
+        right_on="address_id",
+        how="left",  # noqa Dropping the duplicate ID column
+    ).drop(columns=["address_id"])
 
     # Rename columns to match SQL output
     df_counterparty.rename(

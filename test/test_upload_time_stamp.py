@@ -50,7 +50,9 @@ class TestUploadTimeStamp:
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
             try:
-                upload_time_stamp(test_client, bucket_name, table_name, test_logger)
+                upload_time_stamp(
+                    test_client, bucket_name, table_name, test_logger
+                )  # noqa
             except Exception:
                 print("Exception in test func")
 
@@ -100,7 +102,11 @@ class TestUploadTimeStamp:
         )
 
         upload_time_stamp(
-            test_client, bucket_name, table_name, test_logger, "2025-02-28 14:45:33"
+            test_client,
+            bucket_name,
+            table_name,
+            test_logger,
+            "2025-02-28 14:45:33",  # noqa
         )
         result = test_client.list_objects(Bucket=bucket_name)
         pprint(result["Contents"][0]["Key"])
