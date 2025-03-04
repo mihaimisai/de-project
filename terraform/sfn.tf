@@ -41,13 +41,13 @@ data "aws_iam_policy_document" "state_machine_policy_doc" {
             ]
         }
     statement  {
-            effect = "Allow",
+            effect = "Allow"
             actions = [
                 "xray:PutTraceSegments",
                 "xray:PutTelemetryRecords",
                 "xray:GetSamplingRules",
                 "xray:GetSamplingTargets"
-            ],
+            ]
             resources = [
                 "*"
             ]
