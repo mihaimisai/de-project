@@ -8,7 +8,7 @@
         "OutputPath": "$.Payload",
         "Parameters": {
           "Payload.$": "$",
-          "FunctionName": "arn:aws:lambda:{aws_region}:{aws_account_num}:function:{ingestion_function_name}:$LATEST"
+          "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_num}:function:${ingestion_function_name}:$LATEST"
         },
         "Retry": [
           {
@@ -32,7 +32,7 @@
         "OutputPath": "$.Payload",
         "Parameters": {
           "Payload.$": "$",
-          "FunctionName": "arn:aws:lambda:{aws_region}:{aws_account_num}:function:{transformation_function_name}:$LATEST"
+          "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_num}:function:${transformation_function_name}:$LATEST"
         },
         "Retry": [
           {
