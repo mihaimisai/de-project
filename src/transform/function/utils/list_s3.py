@@ -44,7 +44,7 @@ def ingested_data_retrival(
 
         except Exception as e:
             logger.error(
-                f"Unexpected error retrieving {file_path} for table {table_name}: {e}" # noqa 501
+                f"Unexpected error retrieving {file_path} for table {table_name}: {e}"  # noqa 501
             )
 
     return retrieved_data
