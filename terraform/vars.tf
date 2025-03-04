@@ -63,10 +63,10 @@ variable "transformation_lambda" {
     default = "data_transformation_lambda"
 }
 
-# variable "lambda_3_name" {
-#     type = string
-#     default = "data_storer_lambda"
-# }
+variable "load_lambda" {
+    type = string
+    default = "data_load_lambda"
+}
 
 variable "python_runtime" {
     type = string
