@@ -1,6 +1,24 @@
 from pg8000 import Connection
 from .load_credentials_for_pg_access import pg_access
 
+"""
+Establishes database connection using credentials.
+
+    Parameters:
+        logger (Logger): logger instance
+
+    Logs:
+        either info f"Connecting to PostgreSQL database:
+        {PG_DATABASE} on host: {PG_HOST}" if successful
+        or error f"Connection failed: {e}"
+
+    Returns:
+        connection (Connection)
+
+    Raises:
+        Exception if connection unsuccessful
+"""
+
 
 def connect_to_db(logger):
     try:
@@ -24,6 +42,14 @@ def connect_to_db(logger):
     except Exception as e:
         logger.error(f"Connection failed: {e}")
         raise e
+
+
+"""
+Closes database connection.
+
+    Parameters:
+        conn (Connection): database connection
+"""
 
 
 def close_db(conn):
