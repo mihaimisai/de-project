@@ -10,10 +10,11 @@ data "archive_file" "ingestion_layer_code" {
 }
 
 # refactor when we know if all lambdas use same dependencies
+# - s3 key currently only referencing ingestion layer
 resource "aws_lambda_layer_version" "dependencies" {
   layer_name          = "ingestion_lambda_layer"
   compatible_runtimes = [var.python_runtime]
-  s3_bucket           = aws_s3_object.ingestion_layer.bucket
+  s3_bucket           = aws_s3_bucket.code_bucket.bucket
   s3_key              = aws_s3_object.ingestion_layer.key
   source_code_hash = data.archive_file.ingestion_layer_code.output_base64sha256
 }
