@@ -29,6 +29,7 @@ def process_all_tables(client, logger=logger):
         logger (Logger): logger instance (default is logger
         - variable defined in enclosing scope)
     """
+
     tables = [
         "counterparty",
         "currency",

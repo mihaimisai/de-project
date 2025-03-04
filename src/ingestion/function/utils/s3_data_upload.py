@@ -34,7 +34,12 @@ def s3_data_upload(client, bucket_name, table_name, csv_df, logger):
         year = now.strftime("%Y")
         month = now.strftime("%m")
         day = now.strftime("%d")
+        day = now.strftime("%d")
         time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
+
+        s3_key_ingestion = (
+            f"{table_name}/{year}/{month}/{day}/{time_stamp}.csv"
+        )
 
         s3_key_ingestion = (
             f"{table_name}/{year}/{month}/{day}/{time_stamp}.csv"
