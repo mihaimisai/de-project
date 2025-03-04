@@ -34,15 +34,6 @@ resource "aws_s3_bucket" "processed_bucket" {
 #   etag = filemd5(data.archive_file.ingestion_lambda.output_path)
 # }
 
-# Upload the ingester_lambda layer to the code_bucket if exists
-resource "aws_s3_object" "ingestion_layer" {
-  bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/ingestion_layer.zip"
-  source = data.archive_file.ingestion_layer_code.output_path
-  etag = filemd5(data.archive_file.ingestion_layer_code.output_path)
-  depends_on = [ data.archive_file.ingestion_layer_code ]
-}
-
 # Upload the transformation_lambda code to the code_bucket
 # resource "aws_s3_object" "transformation_lambda_code" {
 #   bucket = aws_s3_bucket.code_bucket.bucket
@@ -50,15 +41,6 @@ resource "aws_s3_object" "ingestion_layer" {
 #   source = data.archive_file.transformation_lambda.output_path
 #   etag = filemd5(data.archive_file.transformation_lambda.output_path)
 # }
-
-# Upload the transformation_lambda layer to the code_bucket if exists
-resource "aws_s3_object" "transformation_layer" {
-  bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/transformation_layer.zip"
-  source = data.archive_file.transformation_layer_code.output_path
-  etag = filemd5(data.archive_file.transformation_layer_code.output_path)
-  depends_on = [ data.archive_file.transformation_layer_code ]
-}
 
 
 #SOMETHING TO IMPLEMENT WHEN ALL THREE LAMBDAS EXIST 
@@ -72,6 +54,26 @@ resource "aws_s3_object" "lambda_code" {
 }
 
 
+# once lambda code complete - can be combined if all lambdas have same dependencies
+
+# Upload the ingester_lambda layer to the code_bucket if exists
+resource "aws_s3_object" "ingestion_layer" {
+  bucket = aws_s3_bucket.code_bucket.bucket
+  key = "layers/ingestion_layer.zip"
+  source = data.archive_file.ingestion_layer_code.output_path
+  etag = filemd5(data.archive_file.ingestion_layer_code.output_path)
+  depends_on = [ data.archive_file.ingestion_layer_code ]
+}
+
+# Upload the transformation_lambda layer to the code_bucket if exists
+resource "aws_s3_object" "transformation_layer" {
+  bucket = aws_s3_bucket.code_bucket.bucket
+  key = "layers/transformation_layer.zip"
+  source = data.archive_file.transformation_layer_code.output_path
+  etag = filemd5(data.archive_file.transformation_layer_code.output_path)
+  depends_on = [ data.archive_file.transformation_layer_code ]
+}
+
 resource "aws_s3_object" "load_layer" {
   bucket = aws_s3_bucket.code_bucket.bucket
   key = "layers/load_layer.zip"
@@ -79,4 +81,3 @@ resource "aws_s3_object" "load_layer" {
   etag = filemd5(data.archive_file.load_layer_code.output_path)
   depends_on = [ data.archive_file.load_layer_code ]
 }
-#load_layer to be created 

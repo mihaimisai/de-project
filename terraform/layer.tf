@@ -9,6 +9,7 @@ data "archive_file" "ingestion_layer_code" {
 
 }
 
+# refactor when we know if all lambdas use same dependencies
 resource "aws_lambda_layer_version" "dependencies" {
   layer_name          = "ingestion_lambda_layer"
   compatible_runtimes = [var.python_runtime]
@@ -16,6 +17,7 @@ resource "aws_lambda_layer_version" "dependencies" {
   s3_key              = aws_s3_object.ingestion_layer.key
   source_code_hash = data.archive_file.ingestion_layer_code.output_base64sha256
 }
+
 
 ##### LAMBDA TWO #####
 
