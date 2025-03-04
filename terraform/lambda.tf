@@ -37,7 +37,7 @@ resource "aws_lambda_function" "ingested_lambda_function" {
 
 data "archive_file" "transformation_lambda" {
   type             = "zip"
-  output_path = "${path.module}/../packages/transform/function.zip"
+  output_path = "${path.module}/../packages/transformation/function.zip"
   source_dir      = "${path.module}/../src/transform" 
 }
 
@@ -65,3 +65,32 @@ resource "aws_lambda_function" "transformation_lambda_function" {
   }
   depends_on = [aws_s3_object.transformation_lambda_code]
 }
+
+##### LAMBDA THREE #####
+
+
+data "archive_file" "load_lambda" {
+  type             = "zip"
+  output_path = "${path.module}/../packages/load/function.zip"
+  source_dir      = "${path.module}/../src/load" 
+}
+
+resource "aws_lambda_function" "load_lambda_function" {
+  function_name = var.load_lambda
+  source_code_hash = data.archive_file.load_lambda.output_base64sha256
+  s3_bucket = aws_s3_bucket.code_bucket.bucket
+  s3_key = "load/function.zip"
+  role = aws_iam_role.lambda_3_role.arn
+  # fix role name
+  handler = "function.load_handler_fn.load_handler"
+  runtime = var.python_runtime
+  timeout = var.default_timeout
+  layers = [aws_lambda_layer_version.dependencies.arn]
+  environment {
+    variables = {
+      processed_data_bucket = aws_s3_bucket.processed_bucket.bucket
+    }
+  }
+  depends_on = [aws_s3_object.load_lambda_code]
+}
+# load_lambda_code to be confirmed

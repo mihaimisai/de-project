@@ -26,6 +26,14 @@ data "archive_file" "transformation_layer_code" {
 
 }
 
+##### LAMBDA THREE #####
+
+data "archive_file" "load_layer_code" {
+  type = "zip"
+  output_path = "${path.module}/../packages/layers/load_layer.zip"
+  source_dir = "${path.module}/../dependencies"
+
+}
 #Auto-create dependencies folder based on pip install requirements.txt
 # resource "null_resource" "create_dependencies" {
 #   provisioner "local-exec" {
