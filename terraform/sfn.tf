@@ -8,6 +8,11 @@ resource "aws_sfn_state_machine" "sfn_state_machine_ingest_to_transform" {
       transformation_function_name = "${var.transformation_lambda}"
     })
   role_arn = aws_iam_role.state_machine_iam_role.arn
+  logging_configuration {
+    log_destination        = "${aws_cloudwatch_log_group.log_group_for_sfn.arn}:*"
+    include_execution_data = true
+    level                  = "ERROR"
+  }
 }
 
 ###########
@@ -33,6 +38,18 @@ data "aws_iam_policy_document" "state_machine_policy_doc" {
             resources = [
                 "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.ingestion_lambda}",
                 "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.transformation_lambda}"
+            ]
+        }
+    statement  {
+            effect = "Allow",
+            actions = [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets"
+            ],
+            resources = [
+                "*"
             ]
         }
 }
