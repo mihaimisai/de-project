@@ -15,7 +15,7 @@ client = s3_client()
 
 
 def star_schema(
-    client, ingested_bucket_name="cd-test-ingestion-bucket ", logger=logger
+    client, ingested_bucket_name="cd-test-ingestion-bucket", logger=logger
 ):
     required_dataframes = [
         "df_sales_order",
