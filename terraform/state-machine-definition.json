@@ -1,14 +1,14 @@
-{
+  {
     "Comment": "Lambda Transform will be triggered by successful Lambda Ingest invocation.",
     "StartAt": "Lambda Ingest",
     "States": {
       "Lambda Ingest": {
         "Type": "Task",
         "Resource": "arn:aws:states:::lambda:invoke",
-        "Output": "{% $states.result.Payload %}",
-        "Arguments": {
-          "FunctionName": "arn:aws:lambda:{aws_region}:{aws_account_num}:function:{ingestion_function_name}:$LATEST",
-          "Payload": "{% $states.input %}"
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "Payload.$": "$",
+          "FunctionName": "arn:aws:lambda:{aws_region}:{aws_account_num}:function:{ingestion_function_name}:$LATEST"
         },
         "Retry": [
           {
@@ -24,15 +24,15 @@
             "JitterStrategy": "FULL"
           }
         ],
-        "Next": "Lambda transform"
+        "Next": "Lambda Transform"
       },
-      "Lambda transform": {
+      "Lambda Transform": {
         "Type": "Task",
         "Resource": "arn:aws:states:::lambda:invoke",
-        "Output": "{% $states.result.Payload %}",
-        "Arguments": {
-          "FunctionName": "arn:aws:lambda:{aws_region}:{aws_account_num}:function:{transformation_function_name}:$LATEST",
-          "Payload": "{% $states.input %}"
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "Payload.$": "$",
+          "FunctionName": "arn:aws:lambda:{aws_region}:{aws_account_num}:function:{transformation_function_name}:$LATEST"
         },
         "Retry": [
           {
@@ -50,5 +50,6 @@
         ],
         "End": true
       }
-    }, "QueryLanguage": "JSONata"
+    },
+    "QueryLanguage": "JSONPath"
   }
