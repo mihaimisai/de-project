@@ -1,14 +1,13 @@
 import pandas as pd
 from io import BytesIO
-from .list_s3 import logger
 
 
 def upload_df_to_s3(
     s3_client,
     df,
     file_key,
-    logger=logger,
-    transform_bucket_name="project-test-transform-bucket",
+    logger,
+    transform_bucket_name,
 ):
     try:
         logger.info(

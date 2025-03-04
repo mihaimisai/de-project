@@ -4,6 +4,7 @@ import pandas as pd
 from moto import mock_aws
 from testfixtures import LogCapture
 from unittest.mock import MagicMock
+import logging
 
 from src.transform.function.utils.parquet_upload import upload_df_to_s3
 
@@ -21,6 +22,11 @@ class TestParquetUpload:
     @mock_aws
     def test_upload_df_to_s3_existing_file(self, s3_client):
         """Test behavior when the file already exists in S3."""
+        logger = logging.getLogger(__name__)
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+        )
         existing_df = pd.DataFrame({"col": [1, 2]})
         existing_buffer = BytesIO()
         existing_df.to_parquet(existing_buffer, index=False)
@@ -38,6 +44,7 @@ class TestParquetUpload:
                 s3_client,
                 new_df,
                 file_key,
+                logger,
                 transform_bucket_name=transform_bucket_name,  # noqa
             )  # noqa
 
@@ -59,6 +66,11 @@ class TestParquetUpload:
     @mock_aws
     def test_upload_df_to_s3_no_existing_file(self, s3_client):
         """Test behavior when the file does not exist in S3."""
+        logger = logging.getLogger(__name__)
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+        )
         s3_client.get_object.side_effect = s3_client.exceptions.NoSuchKey(
             "No such key"
         )  # noqa
@@ -73,6 +85,7 @@ class TestParquetUpload:
                 s3_client,
                 new_df,
                 file_key,
+                logger,
                 transform_bucket_name=transform_bucket_name,  # noqa
             )  # noqa
 

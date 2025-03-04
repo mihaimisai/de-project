@@ -8,7 +8,7 @@ def test_transform_handler_called_files_dict():
         "src.transform.function.transform_handler_fn.get_latest_files"
     ) as mock_files:
         with patch(
-            "src.transform.function.transform_handler_fn.ingested_data_retrival"  # noqa 501
+            "src.transform.function.transform_handler_fn.star_schema"  # noqa 501
         ):
             result = transform_handler({}, {})
             mock_files.assert_called_once()
@@ -24,7 +24,7 @@ def test_transform_handler_called_list_s3():
 
     with patch("src.transform.function.transform_handler_fn.get_latest_files"):
         with patch(
-            "src.transform.function.transform_handler_fn.ingested_data_retrival"  # noqa 501
+            "src.transform.function.transform_handler_fn.star_schema"  # noqa 501
         ) as mock_list:
             result = transform_handler({}, {})
             mock_list.assert_called_once()

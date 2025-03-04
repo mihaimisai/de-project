@@ -1,5 +1,4 @@
-from .s3_client import s3_client
-from .list_s3 import ingested_data_retrival, logger
+from .list_s3 import ingested_data_retrival
 from .transform import (
     transform_fact_sales_order,
     transform_dim_staff,
@@ -10,13 +9,8 @@ from .transform import (
     transform_dim_counterparty,
 )
 
-# s3 client
-client = s3_client()
 
-
-def star_schema(
-    client, ingested_bucket_name="cd-test-ingestion-bucket", logger=logger
-):  # noqa
+def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
     required_dataframes = [
         "df_sales_order",
         "df_staff",
@@ -26,8 +20,8 @@ def star_schema(
         "df_currency",
         "df_counterparty",
     ]
-    dataframes, dataframes_info = ingested_data_retrival(
-        client, ingested_bucket_name, logger=logger
+    dataframes = ingested_data_retrival(
+        client, files_dict, logger, ingested_bucket_name
     )
     available_dataframes = list(dataframes.keys())
     try:
