@@ -33,6 +33,7 @@ def process_all_tables(client, logger=logger):
     """
     Orchestrates the ingestion and transformation of multiple tables.
     """
+
     tables = [
         "counterparty",
         "currency",
