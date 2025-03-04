@@ -13,7 +13,6 @@ resource "aws_lambda_function" "ingested_lambda_function" {
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "ingestion/function.zip"
   role = aws_iam_role.lambda_1_role.arn
-  # adjust handler to match
   handler = "function.ingestion_handler_fn.ingestion_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
@@ -47,7 +46,6 @@ resource "aws_lambda_function" "transformation_lambda_function" {
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "transformation/function.zip"
   role = aws_iam_role.lambda_2_role.arn
-  # adjust handler to match
   handler = "function.transformation_handler_fn.transformation_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
@@ -76,7 +74,6 @@ resource "aws_lambda_function" "load_lambda_function" {
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "load/function.zip"
   role = aws_iam_role.lambda_3_role.arn
-  # fix role name
   handler = "function.load_handler_fn.load_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
