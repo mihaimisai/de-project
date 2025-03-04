@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 import pytest
 from botocore.exceptions import ClientError
-from src.transformation.function.utils.list_s3 import ingested_data_retrival
+from transform.function.utils.list_s3 import ingested_data_retrival
 import pandas as pd
 import io
 
