@@ -4,8 +4,8 @@ from .utils.s3_client import s3_client
 import logging
 import os
 
+
 def transform_handler(event, context):
-    
     """
     Is invoked when triggered by an event
 
@@ -20,18 +20,16 @@ def transform_handler(event, context):
             {'statusCode': 200, "body": "Data transformation complete" }
             if successful
     """
-    
+
     logger = logging.getLogger(__name__)
     logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-    
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
+
     bucket_name = os.environ.get("ingested_data_bucket")
-    
+
     files_dict = get_latest_files(s3_client, bucket_name, logger)
-    
+
     ingested_data_retrival(s3_client, files_dict, logger, bucket_name)
-    
+
     return {"statusCode": 200, "body": "Data transformation complete"}
-
-
