@@ -7,14 +7,11 @@ resource "aws_cloudwatch_event_rule" "every_20_mins_scheduler" {
 #set up trigger as schedule target 
 resource "aws_cloudwatch_event_target" "trigger_lambda_every_20_mins" {
   rule      = aws_cloudwatch_event_rule.every_20_mins_scheduler.name
-  target_id = var.ingestion_lambda
-  arn       = aws_lambda_function.ingested_lambda_function.arn
+  target_id = var.state_machine_name
+  arn       = aws_sfn_state_machine.sfn_state_machine_ingest_to_transform.arn
+  role_arn = aws_iam_role.state_machine_eventbridge_iam_role.arn
+  input = jsonencode({})
 }
 #set up permissions to invoke lambda
-resource "aws_lambda_permission" "allow_cloudwatch" {
-  statement_id  = "AllowExecutionFromCloudWatch"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.ingested_lambda_function.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_20_mins_scheduler.arn
-}
+
+
