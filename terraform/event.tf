@@ -11,10 +11,5 @@ resource "aws_cloudwatch_event_target" "trigger_lambda_every_20_mins" {
   arn       = aws_sfn_state_machine.sfn_state_machine_ingest_to_transform.arn
 }
 #set up permissions to invoke lambda
-resource "aws_lambda_permission" "allow_cloudwatch" {
-  statement_id  = "AllowExecutionFromCloudWatch"
-  action        = "states:StartExecution"
-  function_name = aws_sfn_state_machine.sfn_state_machine_ingest_to_transform.name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_20_mins_scheduler.arn
-}
+
+
