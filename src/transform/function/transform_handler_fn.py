@@ -27,20 +27,21 @@ def transform_handler(event, context):
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
     )
 
+    client = s3_client()
     ingested_bucket_name = os.environ.get("ingested_data_bucket")
     transform_bucket_name = os.environ.get("processed_data_bucket")
 
-    files_dict = get_latest_files(s3_client, ingested_bucket_name, logger)
+    files_dict = get_latest_files(client, ingested_bucket_name, logger)
 
     df_star_schema = star_schema(
-        s3_client, ingested_bucket_name, logger, files_dict
+        client, ingested_bucket_name, logger, files_dict
     )
 
     star_schema_table_names = list(df_star_schema.keys())
     try:
         [
             upload_df_to_s3(
-                s3_client,
+                client,
                 df_star_schema[key],
                 key + ".parquet",
                 logger=logger,
