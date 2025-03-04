@@ -181,9 +181,7 @@ class TestIngestDataToS3:
         "src.ingestion.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
-    def test_ingest_data_to_s3_data_upload_called(
-        self, mock_logger, s3_client
-    ):
+    def test_ingest_data_to_s3_data_upload_called(self, mock_logger, s3_client):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
 
@@ -207,9 +205,7 @@ class TestIngestDataToS3:
         "src.ingestion.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
-    def test_ingest_data_to_s3_upload_time_stamp_called(
-        self, mock_logger, s3_client
-    ):
+    def test_ingest_data_to_s3_upload_time_stamp_called(self, mock_logger, s3_client):
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
 
@@ -247,7 +243,6 @@ class TestIngestDataToS3:
                 "INFO",
                 f"Successfully fetched data from table: {table_name}",
             )
-
 
     def test_ingest_data_to_s3_check_exception_raised(self, mock_logger):
         s3_ingestion = "ingestion"

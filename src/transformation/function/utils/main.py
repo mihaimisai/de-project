@@ -13,22 +13,23 @@ client = s3_client()
 ingested_bucket_name = os.environ.get("ingested_bucket_name")
 transform_bucket_name = os.environ.get("transform_bucket_name")
 
-def main(client,
-         logger=logger,
-         ingested_bucket_name = "cd-test-ingestion-bucket ",
-         transform_bucket_name="project-test-transform-bucket"):
-    
-    df_star_schema = star_schema(client,
-                                 ingested_bucket_name,
-                                 logger=logger)
-    
+
+def main(
+    client,
+    logger=logger,
+    ingested_bucket_name="cd-test-ingestion-bucket ",
+    transform_bucket_name="project-test-transform-bucket",
+):
+
+    df_star_schema = star_schema(client, ingested_bucket_name, logger=logger)
+
     star_schema_table_names = list(df_star_schema.keys())
     try:
         [
             upload_df_to_s3(
                 client,
                 df_star_schema[key],
-                key+".parquet",
+                key + ".parquet",
                 logger=logger,
                 transform_bucket_name="project-test-transform-bucket",
             )
@@ -39,7 +40,10 @@ def main(client,
         logger.error(f"Failed to upload data to {transform_bucket_name}: {e}")
         raise
 
-main(client,
+
+main(
+    client,
     logger=logger,
-    ingested_bucket_name = ingested_bucket_name,
-    transform_bucket_name = transform_bucket_name)
+    ingested_bucket_name=ingested_bucket_name,
+    transform_bucket_name=transform_bucket_name,
+)

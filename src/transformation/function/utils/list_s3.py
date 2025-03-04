@@ -1,8 +1,7 @@
 import io
 import pandas as pd
 import logging
-from datetime import datetime, timedelta
-from pprint import pprint as pp
+from datetime import datetime
 # Configure logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -10,9 +9,7 @@ logging.basicConfig(
 )
 
 
-def ingested_data_retrival(s3_client,
-                           ingested_bucket_name,
-                           logger=logger):
+def ingested_data_retrival(s3_client, ingested_bucket_name, logger=logger):
     """
     Retrieve and process ingested data from an S3 bucket.
 
@@ -36,21 +33,26 @@ def ingested_data_retrival(s3_client,
         # List objects in the bucket
         objects = []
         response = s3_client.list_objects_v2(Bucket=ingested_bucket_name)
-        
-        while response['IsTruncated']:
-            objects.extend(response['Contents'])  
+
+        while response["IsTruncated"]:
+            objects.extend(response["Contents"])
             response = s3_client.list_objects_v2(
-                Bucket=ingested_bucket_name, 
-                ContinuationToken=response['NextContinuationToken']
+                Bucket=ingested_bucket_name,
+                ContinuationToken=response["NextContinuationToken"],
             )
         # Adding the last set of objects
-        objects.extend(response['Contents'])
+        objects.extend(response["Contents"])
 
-
-        logger.info(f"Successfully listed objects from bucket:{ingested_bucket_name}") # noqa
+        logger.info(
+            f"Successfully listed objects from bucket:{ingested_bucket_name}"
+        )  # noqa
     except Exception as e:
-        logger.error(f"Error: bucket {ingested_bucket_name} does not exist: {e}") # noqa
-        raise Exception(f"Error: bucket {ingested_bucket_name} does not exist: {e}") # noqa
+        logger.error(
+            f"Error: bucket {ingested_bucket_name} does not exist: {e}"
+        )  # noqa
+        raise Exception(
+            f"Error: bucket {ingested_bucket_name} does not exist: {e}"
+        )  # noqa
 
     # Ensure we actually have a valid response
     if "Contents" not in response:
@@ -61,25 +63,24 @@ def ingested_data_retrival(s3_client,
     # Extract keys from the response
     keys = [obj["Key"] for obj in objects]
 
-    tables_keys = [key.split('/')[0] for key in keys]
+    tables_keys = [key.split("/")[0] for key in keys]
     table_names = list(set(tables_keys))
     table_names.sort()
     # Extract the timestamp portion from each key
     timestamps = [key[-23:-4] for key in keys]
 
     # Convert strings to datetime objects
-    dt_objects = [datetime.strptime(ts, "%Y-%m-%d %H:%M:%S") for ts in timestamps]
+    dt_objects = [datetime.strptime(ts, "%Y-%m-%d %H:%M:%S") for ts in timestamps] # noqa
 
     # Find the latest timestamp
     latest_time = max(dt_objects)
 
     # Define the 2-minute threshold
-    delta = [(time-latest_time).total_seconds() for time in dt_objects]
+    delta = [(time - latest_time).total_seconds() for time in dt_objects]
 
     # Get indexes of timestamps within the last 2 minutes
     indexes = [i for i, dt in enumerate(delta) if dt >= -120]
 
-    
     # Find the maximum (latest) timestamp
 
     year = str(latest_time)[0:4]
@@ -88,12 +89,11 @@ def ingested_data_retrival(s3_client,
     hour = str(latest_time)[11:13]
     minute = str(latest_time)[14:16]
 
-
     # Filter keys that start with the latest timestamp
     latest_keys = []
     for i in list(range(len(indexes))):
         latest_keys.append(keys[indexes[i]])
-    
+
     # Define dataframes info
     dataframes_info = {
         "timestamp": {
@@ -114,11 +114,17 @@ def ingested_data_retrival(s3_client,
             Bucket=ingested_bucket_name, Key=latest_keys[i]
         )
         body_content = obj_response["Body"].read()
-        dataframes[f"df_{table_names[i]}"] = pd.read_csv(io.BytesIO(body_content)) # noqa
-        logger.info(f"Successfully converted CSV table:'{table_names[i]}' from bucket:{ingested_bucket_name} in pandas dataframe") # noqa
-       
-    logger.info(f"Successfully converted CSV tables from bucket:{ingested_bucket_name} in pandas dataframe") # noqa
-    
+        dataframes[f"df_{table_names[i]}"] = pd.read_csv(
+            io.BytesIO(body_content)
+        )
+        logger.info(
+            f"Successfully converted CSV table:'{table_names[i]}' from bucket:{ingested_bucket_name} in pandas dataframe" # noqa
+        )
+
+    logger.info(
+        f"Successfully converted all CSV tables from bucket:{ingested_bucket_name} in pandas dataframe" # noqa
+    )
+
     return dataframes, dataframes_info
 
 
