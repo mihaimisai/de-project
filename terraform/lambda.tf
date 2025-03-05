@@ -55,12 +55,7 @@ resource "aws_lambda_function" "transformation_lambda_function" {
   environment {
     variables = {
       ingested_data_bucket = aws_s3_bucket.data_bucket.bucket
-      timestamp_bucket = aws_s3_bucket.timestamp_bucket.bucket
-      DB_HOST = "${var.db_host}"
-      DB_PORT = "${var.db_port}"
-      DB = "${var.db_db}"
-      DB_USER = "${var.db_user}"
-      DB_PASSWORD = "${var.db_password}"
+      processed_data_bucket = aws_s3_bucket.processed_bucket.bucket
     }
   }
   depends_on = [aws_s3_object.transformation_lambda_code]
