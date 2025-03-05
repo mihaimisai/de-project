@@ -25,13 +25,13 @@
 #define ARROW_SO_VERSION "1900"
 #define ARROW_FULL_SO_VERSION "1900.1.0"
 
-#define ARROW_CXX_COMPILER_ID "AppleClang"
-#define ARROW_CXX_COMPILER_VERSION "15.0.0.15000100"
-#define ARROW_CXX_COMPILER_FLAGS " -fno-aligned-new  -Qunused-arguments -fcolor-diagnostics  -Wall -Wno-unknown-warning-option -Wno-pass-failed -msse4.2 "
+#define ARROW_CXX_COMPILER_ID "GNU"
+#define ARROW_CXX_COMPILER_VERSION "12.2.1"
+#define ARROW_CXX_COMPILER_FLAGS " -Wno-noexcept-type -Wno-subobject-linkage  -fdiagnostics-color=always  -Wall -fno-semantic-interposition -msse4.2 "
 
 #define ARROW_BUILD_TYPE "RELEASE"
 
-#define ARROW_PACKAGE_KIND "python-wheel-macos"
+#define ARROW_PACKAGE_KIND "python-wheel-manylinux228"
 
 #define ARROW_COMPUTE
 #define ARROW_CSV
