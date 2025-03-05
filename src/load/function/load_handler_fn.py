@@ -1,8 +1,8 @@
-from .utils.s3_client import s3_client
-from utils.get_parquet_from_s3 import get_parquet_from_s3
-from utils.create_table_in_db import create_table_in_db
-from utils.insert_dataframe_in_db import insert_dataframe_in_db
-from utils.connect_to_dw import connect_to_db
+from src.load.function.utils.s3_client import s3_client
+from src.load.function.utils.get_parquet_from_s3 import get_parquet_from_s3
+from src.load.function.utils.create_table_in_db import create_table_in_db
+from src.load.function.utils.insert_dataframe_in_db import insert_dataframe_in_db
+from src.load.function.utils.connect_to_dw import connect_to_db
 import logging
 import os
 
@@ -25,6 +25,7 @@ def load_handler(event, context):
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
     )
+    conn = None
     client = s3_client()
     load_bucket_name = os.environ.get("processed_data_bucket")
     try:
@@ -41,5 +42,5 @@ def load_handler(event, context):
         logger.error(f"Error in load_handler: {e}")
         return {"statusCode": 500, "body": f"Error: {e}"}
     finally:
-        if "conn" in locals() and conn:
+        if conn is not None:
             conn.close()

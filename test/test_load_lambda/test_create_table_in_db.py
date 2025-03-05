@@ -31,17 +31,21 @@ def test_create_table_success(mock_conn, mock_logger):
     table_name = "test_table"
     table_columns = "id INT PRIMARY KEY, name TEXT, age INT"
 
+    mock_cursor = mock_conn.cursor.return_value 
+
     create_table_in_db(mock_conn, table_name, table_columns, mock_logger)
 
-    mock_conn.cursor.return_value.execute.assert_called_once_with(
+    mock_cursor.execute.assert_called_once_with(
         f"CREATE TABLE IF NOT EXISTS {table_name} ({table_columns})"
     )
 
     mock_conn.commit.assert_called_once()
+
     mock_logger.info.assert_called_once_with(
         f"Successfully created table {table_name}"
     )
-    mock_conn.cursor.close.assert_called_once()
+    mock_cursor.close.assert_called_once()
+
 
 
 def test_create_table_failure(mock_conn, mock_logger):
