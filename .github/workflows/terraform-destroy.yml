@@ -1,0 +1,13 @@
+name: Terraform Destroy (Manual)
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  test-job:
+    name: Run Hello World
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Hello World
+        run: echo "Hello, world!"
