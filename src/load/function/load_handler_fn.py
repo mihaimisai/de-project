@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from .utils.s3_client import s3_client
 
 
@@ -21,7 +20,3 @@ def load_handler(event, context):
     client = s3_client()
 
     return {"statusCode": 200, "body": "Data ingestion complete"}
-=======
-def load_handler(event, context):
-    pass
->>>>>>> d3490b77b09293fa569396239a617bf47b8a06d9
