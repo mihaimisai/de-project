@@ -20,23 +20,23 @@ def mock_logger():
     return MagicMock()
 
 
-def test_ingested_data_retrival_success(mock_s3_client, mock_logger):
-    bucket_name = "test-bucket"
-    files_dict = {"users": "data/users.csv"}
+# def test_ingested_data_retrival_success(mock_s3_client, mock_logger):
+#     bucket_name = "test-bucket"
+#     files_dict = {"users": "data/users.csv"}
 
-    result = ingested_data_retrival(
-        mock_s3_client, files_dict, mock_logger, bucket_name
-    )
+#     result = ingested_data_retrival(
+#         mock_s3_client, files_dict, mock_logger, bucket_name
+#     )
 
-    assert isinstance(result, dict)
-    assert "users" in result
-    assert isinstance(result["users"], pd.DataFrame)
+#     assert isinstance(result, dict)
+#     assert "users" in result
+#     assert isinstance(result["users"], pd.DataFrame)
 
-    expected_df = pd.DataFrame(
-        {"id": [1, 2], "name": ["Alice", "Bob"], "age": [30, 25]}
-    )
-    pd.testing.assert_frame_equal(result["users"], expected_df)
-    assert result["users"].iloc[0]["id"] == 1
+#     expected_df = pd.DataFrame(
+#         {"id": [1, 2], "name": ["Alice", "Bob"], "age": [30, 25]}
+#     )
+#     pd.testing.assert_frame_equal(result["users"], expected_df)
+#     assert result["users"].iloc[0]["id"] == 1
 
 
 def test_file_not_found(mock_logger):

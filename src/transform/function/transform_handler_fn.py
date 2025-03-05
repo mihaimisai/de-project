@@ -44,8 +44,8 @@ def transform_handler(event, context):
                 client,
                 df_star_schema[key],
                 key + ".parquet",
-                logger=logger,
-                transform_bucket_name="",
+                logger,
+                transform_bucket_name,
             )
             for key in star_schema_table_names
         ]

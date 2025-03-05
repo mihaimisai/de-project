@@ -27,9 +27,9 @@ def ingested_data_retrival(
     for table_name, file_path in files_dict.items():
         try:
             response = s3_client.get_object(Bucket=bucket_name, Key=file_path)
-            csv_content = response["Body"].read().decode("utf-8")
-            df = pd.read_csv(io.StringIO(csv_content))
-            retrieved_data[table_name] = df
+
+            df = pd.read_csv(response['Body'], sep=',')
+            retrieved_data[f'df_{table_name}'] = df
             logger.info(
                 f"Successfully retrieved {file_path} for table {table_name}"
             )
