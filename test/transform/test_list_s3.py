@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 import pytest
 from botocore.exceptions import ClientError
 from src.transform.function.utils.list_s3 import ingested_data_retrival
-import pandas as pd
+# import pandas as pd
 import io
 
 

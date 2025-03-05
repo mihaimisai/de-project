@@ -1,4 +1,3 @@
-import io
 import pandas as pd
 
 from botocore.exceptions import ClientError
