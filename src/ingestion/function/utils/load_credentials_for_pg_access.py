@@ -1,5 +1,6 @@
 import os
 
+
 def pg_access():
     """
     Retrieves database credentials from lambda environment variables.

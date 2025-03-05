@@ -54,20 +54,20 @@ def test_get_latest_files_returns_the_most_recent_files(s3_client):
     mock_logger = MagicMock()
 
     test_files = {
-        "table1/2025/02/03/12:00:00.csv": "file 1",
-        "table1/2025/02/03/12:05:00.csv": "file 2",
-        "table2/2025/02/03/12:05:00.csv": "file 3",
-        "table3/2025/02/03/12:02:00.csv": "file 4",
-        "table3/2025/02/03/13:00:00.csv": "file 5",
+        "table1/2025/02/03/2025-03-04 12:00:00.csv": "file 1",
+        "table1/2025/02/03/2025-03-04 12:05:00.csv": "file 2",
+        "table2/2025/02/03/2025-03-04 12:05:00.csv": "file 3",
+        "table3/2025/02/03/2025-03-04 12:02:00.csv": "file 4",
+        "table3/2025/02/03/2025-03-04 13:00:00.csv": "file 5",
     }
 
     for key, content in test_files.items():
         s3_client.put_object(Bucket=bucket_name, Key=key, Body=content)
 
     expected_files = {
-        "table1": "table1/2025/02/03/12:05:00.csv",
-        "table2": "table2/2025/02/03/12:05:00.csv",
-        "table3": "table3/2025/02/03/13:00:00.csv",
+        "table1": "table1/2025/02/03/2025-03-04 12:05:00.csv",
+        "table2": "table2/2025/02/03/2025-03-04 12:05:00.csv",
+        "table3": "table3/2025/02/03/2025-03-04 13:00:00.csv",
     }
 
     result = get_latest_files(s3_client, "test-bucket", mock_logger)
