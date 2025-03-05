@@ -4,6 +4,7 @@ import io
 def get_parquet_from_s3(logger,
                         client,
                         s3_processed_bucket):
+    
     """
     Collects parquet files from s3 Processed Data Bucket
     and places data into df_dict.
@@ -26,6 +27,7 @@ def get_parquet_from_s3(logger,
         "dim_currency",
         "dim_counterparty"
         ]
+    
     try:
         df_dict = {}
         for key in key_list:
