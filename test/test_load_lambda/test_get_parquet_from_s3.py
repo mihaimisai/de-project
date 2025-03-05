@@ -63,7 +63,8 @@ class TestGetParquetFromS3:
     @mock_aws
     @patch(
         "src.load.function.utils.get_parquet_from_s3.table_list",
-        return_value=["fact_test"])
+        return_value=["fact_test"],
+    )
     def test_retrieves_dataframe_from_bucket(self, test_logger, test_parquet):
         mock_client = boto3.client("s3", region_name="eu-west-2")
         bucket_name = "test-bucket"
@@ -80,8 +81,10 @@ class TestGetParquetFromS3:
         assert isinstance(result["fact_test"], pd.DataFrame)
 
     @mock_aws
-    @patch("src.load.function.utils.get_parquet_from_s3.table_list",
-           return_value=["fact_test", "fact_test_two"])
+    @patch(
+        "src.load.function.utils.get_parquet_from_s3.table_list",
+        return_value=["fact_test", "fact_test_two"],
+    )
     def test_retrieves_multiple_dataframes_from_bucket(
         self, test_logger, test_parquet, test_parquet_two
     ):
@@ -97,16 +100,14 @@ class TestGetParquetFromS3:
         mock_client.put_object(
             Bucket=bucket_name,
             Key="fact_test_two",
-            Body=test_parquet_two.getvalue()
+            Body=test_parquet_two.getvalue(),
         )
         result = get_parquet_from_s3(test_logger, mock_client, bucket_name)
 
         assert len(result) == 2
 
     @mock_aws
-    def test_logs_info_when_retrieved(self,
-                                      test_logger,
-                                      test_parquet):
+    def test_logs_info_when_retrieved(self, test_logger, test_parquet):
         mock_client = boto3.client("s3", region_name="eu-west-2")
         bucket_name = "test-bucket"
         mock_client.create_bucket(
@@ -114,9 +115,7 @@ class TestGetParquetFromS3:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         mock_client.put_object(
-            Bucket=bucket_name,
-            Key="fact_test",
-            Body=test_parquet.getvalue()
+            Bucket=bucket_name, Key="fact_test", Body=test_parquet.getvalue()
         )
 
         with patch(
@@ -137,9 +136,9 @@ class TestGetParquetFromS3:
         )
 
     @mock_aws
-    def test_logs_error_when_fails_to_find_obj(self,
-                                               test_logger,
-                                               test_parquet):
+    def test_logs_error_when_fails_to_find_obj(
+        self, test_logger, test_parquet
+    ):
         mock_client = boto3.client("s3", region_name="eu-west-2")
         bucket_name = "test-bucket"
         mock_client.create_bucket(
@@ -162,5 +161,5 @@ class TestGetParquetFromS3:
         assert logstream[0] == (
             "test_logger",
             "ERROR",
-            "Error loading in the parquet data within Load Lambda: An error occurred (NoSuchKey) when calling the GetObject operation: The specified key does not exist.", # noqa
+            "Error loading in the parquet data within Load Lambda: An error occurred (NoSuchKey) when calling the GetObject operation: The specified key does not exist.",  # noqa
         )

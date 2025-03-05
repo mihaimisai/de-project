@@ -1,5 +1,3 @@
-import pandas as pd
-
 def insert_dataframe_in_db(conn, table_name, df, logger):
     """
     Inserts a pandas DataFrame into a PostgreSQL table row by row.
@@ -11,18 +9,25 @@ def insert_dataframe_in_db(conn, table_name, df, logger):
         logger (logging.Logger): A logger object for logging messages.
 
     Raises:
-        Exception: If an error occurs during the insertion process, the transaction is rolled back,
+        Exception:
+            If an error the transaction is rolled back,
         and the exception is re-raised.
     """
     cur = conn.cursor()
     try:
         for index, row in df.iterrows():
-            sql = f"INSERT INTO {table_name} ({', '.join(df.columns)}) VALUES ({', '.join(['%s'] * len(df.columns))})"
+            columns_str = ", ".join(df.columns)
+            placeholders_str = ", ".join(["%s"] * len(df.columns))
+
+            sql = (
+                f"INSERT INTO {table_name} ({columns_str}) "
+                f"VALUES ({placeholders_str})"
+            )
             cur.execute(sql, tuple(row))
         conn.commit()
         logger.info(f"Successfully inserted {len(df)} rows into {table_name}")
     except Exception as e:
         conn.rollback()
         logger.error(f"General Error inserting data into {table_name}: {e}")
-        raise 
-    cur.close() 
+        raise
+    cur.close()

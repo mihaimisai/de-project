@@ -22,6 +22,8 @@ def dw_access():
     PG_PASSWORD = os.environ.get("DB_PASSWORD_DW")
 
     if not all([PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD]):
-        raise ValueError("One or more PostgreSQL credentials for the Data Warehouse are missing.") # noqa
+        raise ValueError(
+            "Missing one or more PostgreSQL credentials for the Warehouse."
+        )  # noqa
 
     return [PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD]

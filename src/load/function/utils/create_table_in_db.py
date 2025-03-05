@@ -1,18 +1,22 @@
 import logging
 
-def create_table_in_db(conn, table_name: str, table_columns: str, logger: logging.Logger):
+
+def create_table_in_db(
+    conn, table_name: str, table_columns: str, logger: logging.Logger
+):
     """
     Creates a table in the database if it does not already exist.
 
     Args:
         conn: The database connection object.
         table_name: The name of the table to create.
-        table_columns: A string defining the table columns and their data types.
-                       Example: "id SERIAL PRIMARY KEY, name VARCHAR(255), age INTEGER"
+        table_columns:
+            A string defining the table columns and their data types.
         logger: A logger object for logging messages.
 
     Raises:
-        Exception: If an error occurs during the table creation, the transaction is rolled back,
+        Exception:
+            If an error the transaction is rolled back,
                    and the exception is re-raised.
     """
     cur = conn.cursor()

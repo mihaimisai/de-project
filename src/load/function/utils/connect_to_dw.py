@@ -22,7 +22,9 @@ def connect_to_db(logger):
             Exception if connection unsuccessful
     """
     try:
-        PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = dw_access() # noqa
+        PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = (
+            dw_access()
+        )  # noqa
         # Establish a connection to PostgreSQL database
 
         connection = Connection(
@@ -42,13 +44,3 @@ def connect_to_db(logger):
     except Exception as e:
         logger.error(f"Connection failed: {e}")
         raise e
-
-
-def close_db(conn):
-    """
-    Closes database connection.
-
-        Parameters:
-            conn (Connection): database connection
-    """
-    conn.close()
