@@ -4,8 +4,9 @@ resource "aws_sfn_state_machine" "sfn_state_machine_ingest_to_transform" {
   definition = templatefile("${path.module}/state-machine-definition.json",
     { aws_region        = "${data.aws_region.current.name}",
       aws_account_num   = "${data.aws_caller_identity.current.account_id}",
-      ingestion_function_name     = "${var.ingestion_lambda}"
-      transformation_function_name = "${var.transformation_lambda}"
+      ingestion_function_name     = "${var.ingestion_lambda}",
+      transformation_function_name = "${var.transformation_lambda}",
+      load_function_name = "${var.load_lambda}"
     })
   role_arn = aws_iam_role.state_machine_iam_role.arn
 #   logging_configuration {
@@ -23,35 +24,54 @@ resource "aws_iam_role" "state_machine_iam_role" {
 }
 
 data "aws_iam_policy_document" "state_machine_policy_doc" {
-    #"Version": "2012-10-17",
-    statement {
-            effect = "Allow"
-            actions = ["lambda:InvokeFunction"]
-            resources = [
-                "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.ingestion_lambda}:*",
-                "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.transformation_lambda}:*"
-            ]
-        }
-    statement {
-            effect = "Allow"
-            actions = ["lambda:InvokeFunction"]
-            resources = [
-                "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.ingestion_lambda}",
-                "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.transformation_lambda}"
-            ]
-        }
-    statement  {
-            effect = "Allow"
-            actions = [
-                "xray:PutTraceSegments",
-                "xray:PutTelemetryRecords",
-                "xray:GetSamplingRules",
-                "xray:GetSamplingTargets"
-            ]
-            resources = [
-                "*"
-            ]
-        }
+  #"Version": "2012-10-17",
+  statement {
+    effect = "Allow"
+    actions = ["lambda:InvokeFunction"]
+    resources = [
+        "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.ingestion_lambda}:*",
+        "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.transformation_lambda}:*",
+        "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.load_lambda}:*"
+    ]
+  }
+  # statement {
+  #   effect = "Allow"
+  #   actions = ["lambda:InvokeFunction"]
+  #   resources = [
+  #       "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.ingestion_lambda}",
+  #       "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.transformation_lambda}",
+  #       "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.load_lambda}:*"
+  #   ]
+  # }
+  statement  {
+    effect = "Allow"
+    actions = [
+        "xray:PutTraceSegments",
+        "xray:PutTelemetryRecords",
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets"
+    ]
+    resources = ["*"]
+  }
+    # statement {
+    #         actions = [
+    #           "logs:CreateLogGroup",
+            
+    #         ]
+    #         resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+    #         effect    = "Allow"
+    #       }
+
+    # statement {
+    #       actions = [
+    #         "logs:CreateLogStream",
+    #         "logs:PutLogEvents"
+    #       ]
+    #       resources = [
+    #         "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.state_machine_name}:*"
+    #       ]
+    #       effect = "Allow"
+    #     }
 }
 
 
@@ -90,4 +110,3 @@ resource "aws_iam_role_policy_attachment" "eventbridge_policy_attachment" {
   policy_arn = aws_iam_policy.eventbridge_policy.arn
   role       = aws_iam_role.state_machine_eventbridge_iam_role.name
 }
-
