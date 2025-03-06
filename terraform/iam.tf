@@ -141,15 +141,16 @@ data "aws_iam_policy_document" "s3_data_policy_doc_lambda_two" {
       "${aws_s3_bucket.code_bucket.arn}/*"
     ]
     effect = "Allow"
-  }
-  # statement {
+  }  
+  statement {
 
-  #   actions = ["s3:ListBucket"]
-  #   resources = [
-  #     "${aws_s3_bucket.processed_bucket.arn}"
-  #   ]
-  #   effect = "Allow"
-  # }
+    actions = ["s3:ListBucket"]
+    resources = [
+      "${aws_s3_bucket.processed_bucket.arn}",
+      "${aws_s3_bucket.data_bucket.arn}"
+    ]
+  effect = "Allow"
+  }
 }
 
 # Create
