@@ -22,21 +22,21 @@ def connect_to_db(logger):
             Exception if connection unsuccessful
     """
     try:
-        PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD = (
+        PG_HOST_DW, PG_PORT_DW, PG_DATABASE_DW, PG_USER_DW, PG_PASSWORD_DW = (
             dw_access()
         )  # noqa
         # Establish a connection to PostgreSQL database
 
         connection = Connection(
-            host=PG_HOST,
-            port=PG_PORT,
-            database=PG_DATABASE,
-            user=PG_USER,
-            password=PG_PASSWORD,
+            host=PG_HOST_DW,
+            port=PG_PORT_DW,
+            database=PG_DATABASE_DW,
+            user=PG_USER_DW,
+            password=PG_PASSWORD_DW,
         )
 
         logger.info(
-            f"Connecting to Data Warehouse database: {PG_DATABASE} on host: {PG_HOST}"  # noqa
+            f"Connecting to Data Warehouse database: {PG_DATABASE_DW} on host: {PG_HOST_DW}"  # noqa
         )
 
         return connection
