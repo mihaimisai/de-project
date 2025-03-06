@@ -81,6 +81,12 @@ resource "aws_lambda_function" "load_lambda_function" {
   environment {
     variables = {
       processed_data_bucket = aws_s3_bucket.processed_bucket.bucket
+
+      DB_HOST_DW = "${var.db_host_dw}"
+      DB_PORT_DW = "${var.db_port_dw}"
+      DB_DW  = "${var.db_db_dw}"
+      DB_USER_DW  = "${var.db_user_dw}"
+      DB_PASSWORD_DW  = "${var.db_password_dw}"
     }
   }
   depends_on = [aws_s3_object.lambda_code, aws_s3_object.load_layer]
