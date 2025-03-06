@@ -12,9 +12,7 @@ def test_s3_data_upload_success_with_time_stamp(mock_s3_client):
     table_name = "test-table"
     csv_data = b"sample,data"
 
-    s3_data_upload(
-        mock_s3_client, bucket_name, table_name, csv_data, mock_logger
-    )
+    s3_data_upload(mock_s3_client, bucket_name, table_name, csv_data, mock_logger)
 
     mock_s3_client.put_object.assert_called_once()
 
@@ -31,9 +29,7 @@ def test_s3_data_upload_success_without_time_stamp(mock_s3_client):
     table_name = "test-table"
     csv_data = b"sample,data"
 
-    s3_data_upload(
-        mock_s3_client, bucket_name, table_name, csv_data, mock_logger
-    )
+    s3_data_upload(mock_s3_client, bucket_name, table_name, csv_data, mock_logger)
 
     s3_key = mock_s3_client.put_object.call_args[1]["Key"]
     assert s3_key is not None
@@ -71,9 +67,7 @@ def test_s3_data_upload_failed(mock_s3_client):
     mock_s3_client.put_object.side_effect = Exception("S3 Upload Error")
 
     with pytest.raises(Exception, match="S3 Upload Error"):
-        s3_data_upload(
-            mock_s3_client, bucket_name, table_name, csv_data, mock_logger
-        )
+        s3_data_upload(mock_s3_client, bucket_name, table_name, csv_data, mock_logger)
 
     mock_logger.error.assert_called_once_with(
         f"Error uploading csv file to S3 for table '{table_name}': S3 Upload Error"  # noqa 501
