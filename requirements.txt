@@ -17,9 +17,10 @@ dotenv==0.9.9
 filelock==3.17.0
 flake8==7.1.2
 freezegun==1.5.1
+greenlet==3.1.1
 idna==3.10
 iniconfig==2.0.0
-Jinja2==3.1.5
+Jinja2==3.1.6
 jmespath==1.0.1
 license-expression==30.4.1
 markdown-it-py==3.0.0
@@ -47,6 +48,7 @@ psutil==7.0.0
 psycopg==3.2.5
 py-partiql-parser==0.6.1
 py-serializable==1.1.2
+pyarrow==19.0.1
 pycodestyle==2.12.1
 pycparser==2.22
 pyflakes==3.2.0
@@ -68,9 +70,11 @@ scramp==1.4.5
 setuptools==75.8.0
 six==1.17.0
 sortedcontainers==2.4.0
+SQLAlchemy==2.0.38
 stevedore==5.4.1
 testfixtures==8.3.0
 toml==0.10.2
+typing_extensions==4.12.2
 tzdata==2025.1
 urllib3==2.3.0
 Werkzeug==3.1.3
