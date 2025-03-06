@@ -36,7 +36,7 @@ def connect_to_db(logger):
         )
 
         logger.info(
-            f"Connecting to Data Warehouse database: {PG_DATABASE_DW} on host: {PG_HOST_DW}"  # noqa
+            f"Connecting to Warehouse: {PG_DATABASE_DW} on host: {PG_HOST_DW}"  # noqa
         )
 
         return connection
