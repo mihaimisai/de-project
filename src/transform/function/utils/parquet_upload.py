@@ -1,6 +1,7 @@
 from io import BytesIO
 from datetime import datetime
 
+
 def upload_df_to_s3(
     s3_client,
     df,
@@ -9,7 +10,8 @@ def upload_df_to_s3(
     transform_bucket_name,
 ):
     """
-    Uploads a DataFrame to an S3 bucket in Parquet format using an in-memory buffer.
+    Uploads a DataFrame to an S3 bucket in Parquet format
+    using an in-memory buffer.
     Args:
         s3_client (boto3.client): The S3 client used to upload the file.
         df (pandas.DataFrame): The DataFrame to be uploaded.
@@ -32,14 +34,14 @@ def upload_df_to_s3(
         df.to_parquet(buffer, engine="pyarrow")
         buffer.seek(0)  # Reset the pointer to the beginning of the buffer
     except Exception as e:
-        logger.error(f"Failed to convert DataFrame to Parquet for {file_key}: {e}")
+        logger.error(f"Failed to convert DataFrame to Parquet for {file_key}: {e}") # noqa
         raise
 
     # Upload the in-memory buffer to S3.
     try:
-        s3_client.upload_fileobj(buffer, transform_bucket_name, s3_key_transform)
+        s3_client.upload_fileobj(buffer, transform_bucket_name, s3_key_transform) # noqa
     except Exception as e:
-        logger.error(f"Failed to upload file {file_key} to S3 bucket {transform_bucket_name}: {e}")
+        logger.error(f"Failed to upload file {file_key} to S3 bucket {transform_bucket_name}: {e}") # noqa
         raise
 
-    logger.info(f"Successfully uploaded DataFrame to {file_key} in bucket {transform_bucket_name}")
+    logger.info(f"Successfully uploaded DataFrame to {file_key} in bucket {transform_bucket_name}") # noqa
