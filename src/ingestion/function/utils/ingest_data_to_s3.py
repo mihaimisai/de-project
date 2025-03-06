@@ -100,7 +100,7 @@ def ingest_data_to_s3(
         Raises:
             Exception if unsuccessful
     """
-   
+
     conn = None
 
     try:
@@ -134,7 +134,6 @@ def ingest_data_to_s3(
         if conn:
             close_db(conn)
 
-    
     # """
     # Extracts data from a PostgreSQL table and uploads it to
     # the ingestion S3 bucket in Parquet format.
