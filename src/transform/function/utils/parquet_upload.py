@@ -1,5 +1,5 @@
-import pandas as pd
-from io import BytesIO
+import os
+from datetime import datetime
 
 
 def upload_df_to_s3(
@@ -9,31 +9,59 @@ def upload_df_to_s3(
     logger,
     transform_bucket_name,
 ):
+    """
+    Uploads a DataFrame to an S3 bucket in Parquet format.
+    Args:
+        s3_client (boto3.client):
+        The S3 client used to upload the file.
+        df (pandas.DataFrame):
+        The DataFrame to be uploaded.
+        file_key (str):
+        The key (path) for the file to be uploaded.
+        logger (logging.Logger):
+        The logger for logging messages.
+        transform_bucket_name (str):
+        The name of the S3 bucket where the file will be uploaded.
+    Raises:
+        Exception:
+        If the DataFrame cannot be converted to Parquet
+        or if the file cannot be uploaded to S3.
+    """
+    now = datetime.now()
+
+    year = now.strftime("%Y")
+    month = now.strftime("%m")
+    day = now.strftime("%d")
+    time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
+    s3_key_transformation = f"{file_key}/{year}/{month}/{day}/{time_stamp}.parquet"
+
+    # Try to convert DataFrame to Parquet
     try:
-        logger.info(
-            f"Trying to read the file {file_key} from bucket {transform_bucket_name}"  # noqa
-        )
-        # Try to read the existing file from S3
-        s3_object = s3_client.get_object(
-            Bucket=transform_bucket_name, Key=file_key
+        df.to_parquet(file_key, engine="pyarrow")
+    except Exception as e:
+        logger.error(
+            f"Failed to convert DataFrame to Parquet for {file_key}: {e}"
         )  # noqa
-        existing_df = pd.read_parquet(BytesIO(s3_object["Body"].read()))
-        logger.info(f"Successfully read the existing {file_key} file")
+        raise  # Stop execution and propagate the error
 
-        # Append the new data to the existing DataFrame
-        updated_df = pd.concat([existing_df, df], ignore_index=True)
-        logger.info("Appended new data to the existing DataFrame")
-    except s3_client.exceptions.NoSuchKey:
-        # If the file doesn't exist, use the new DataFrame as is
-        logger.info("File not found. Using the new DataFrame")
-        updated_df = df
+    # Try to upload file to S3
+    try:
+        s3_client.upload_file(file_key, transform_bucket_name, s3_key_transformation)  # noqa
+    except Exception as e:
+        logger.error(
+            f"Failed to upload file {file_key} to S3 bucket {transform_bucket_name}: {e}"  # noqa
+        )
+        raise  # Stop execution and propagate the error
 
-    # Write the updated DataFrame back to the S3 bucket
-    out_buffer = BytesIO()
-    updated_df.to_parquet(out_buffer, index=False)
-    s3_client.put_object(
-        Bucket=transform_bucket_name, Key=file_key, Body=out_buffer.getvalue()
-    )  # noqa
     logger.info(
-        f"Successfully uploaded the updated DataFrame to {file_key} in bucket {transform_bucket_name}"  # noqa
-    )  # noqa
+        f"Successfully uploaded DataFrame to {file_key} in bucket {transform_bucket_name}"  # noqa
+    )
+
+    # Try to remove the local file after upload
+    try:
+        os.remove(file_key)
+        logger.info(f"Successfully removed local copy of {file_key}")
+    except Exception as e:
+        logger.warning(
+            f"File {file_key} could not be removed after upload: {e}"
+        )  # noqa

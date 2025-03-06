@@ -35,7 +35,7 @@ def transform_handler(event, context):
 
     df_star_schema = star_schema(
         client, ingested_bucket_name, logger, files_dict
-    )
+    )  # noqa
 
     star_schema_table_names = list(df_star_schema.keys())
     try:
@@ -43,7 +43,7 @@ def transform_handler(event, context):
             upload_df_to_s3(
                 client,
                 df_star_schema[key],
-                key + ".parquet",
+                key,
                 logger,
                 transform_bucket_name,
             )
