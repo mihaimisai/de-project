@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+  
 
 def upload_df_to_s3(
     s3_client,
@@ -33,11 +33,13 @@ def upload_df_to_s3(
     month = now.strftime("%m")
     day = now.strftime("%d")
     time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
-    s3_key_transformation = f"{file_key}/{year}/{month}/{day}/{time_stamp}.parquet"
+    s3_key_transform = f"{file_key}/{year}/{month}/{day}/{time_stamp}.parquet"
 
     # Try to convert DataFrame to Parquet
     try:
-        df.to_parquet(file_key, engine="pyarrow")
+        # current_directory = os.getcwd()
+        file_key_path = '/tmp/'+file_key
+        df.to_parquet(file_key_path, engine="pyarrow")
     except Exception as e:
         logger.error(
             f"Failed to convert DataFrame to Parquet for {file_key}: {e}"
@@ -46,7 +48,7 @@ def upload_df_to_s3(
 
     # Try to upload file to S3
     try:
-        s3_client.upload_file(file_key, transform_bucket_name, s3_key_transformation)  # noqa
+        s3_client.upload_file(file_key_path, transform_bucket_name, s3_key_transform)  # noqa
     except Exception as e:
         logger.error(
             f"Failed to upload file {file_key} to S3 bucket {transform_bucket_name}: {e}"  # noqa
@@ -59,7 +61,7 @@ def upload_df_to_s3(
 
     # Try to remove the local file after upload
     try:
-        os.remove(file_key)
+        os.remove(file_key_path)
         logger.info(f"Successfully removed local copy of {file_key}")
     except Exception as e:
         logger.warning(
