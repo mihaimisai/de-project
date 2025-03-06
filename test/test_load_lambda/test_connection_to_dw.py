@@ -72,6 +72,6 @@ class TestConnectToDw:
 
         expected = ('test_logger',
                     'INFO',
-                    'Connecting to Data Warehouse database: test_db on host: localhost') # noqa
-
+                    'Connecting to Data Warehouse database: test_db on host: localhost') # noqa: E501
+                                                                                        # noqa: E501
         assert logstream[0] == expected
