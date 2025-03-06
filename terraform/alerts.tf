@@ -20,6 +20,11 @@ resource "aws_cloudwatch_log_metric_filter" "lambda_error_filter" {
     value     = 1
     default_value = 0
   }
+  depends_on = [
+    aws_lambda_function.ingested_lambda_function,
+    aws_lambda_function.transformation_lambda_function,
+    aws_lambda_function.load_lambda_function,
+  ]
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_error_alarm" {
