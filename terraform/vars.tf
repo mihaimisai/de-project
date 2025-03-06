@@ -55,18 +55,18 @@ variable "timestamp_bucket_prefix" {
 
 variable "ingestion_lambda" {
     type = string
-    default = "data_ingestion_lambda"
+    default = "ingestion_lambda"
 }
 
 variable "transformation_lambda" {
     type = string
-    default = "data_transformation_lambda"
+    default = "transformation_lambda"
 }
 
-# variable "lambda_3_name" {
-#     type = string
-#     default = "data_storer_lambda"
-# }
+variable "load_lambda" {
+    type = string
+    default = "load_lambda"
+}
 
 variable "python_runtime" {
     type = string

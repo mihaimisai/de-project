@@ -1,4 +1,4 @@
-from src.ingestion.function.utils.connect_to_db import connect_to_db
+from src.load.function.utils.connect_to_dw import connect_to_db
 import pytest
 import logging
 from unittest.mock import patch
@@ -13,9 +13,9 @@ def test_logger():
     return logger
 
 
-class TestConnectToDb:
+class TestConnectToDw:
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.load.function.utils.connect_to_dw.dw_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     def test_fails_with_no_connection_established(self, test_logger):
@@ -23,11 +23,13 @@ class TestConnectToDb:
             connect_to_db(test_logger)
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.load.function.utils.connect_to_dw.dw_access",
         return_value=("localhost", 1234, "test_db", "user", "anyyy"),
     )
-    @patch("src.ingestion.function.utils.connect_to_db.Connection")
-    def test_connects_to_db_success(self, mock_access, mock_connection, test_logger):
+    @patch("src.load.function.utils.connect_to_dw.Connection")
+    def test_connects_to_db_success(
+        self, mock_access, mock_connection, test_logger
+    ):
         connect_to_db(test_logger)
 
         mock_access.assert_called_once_with(
@@ -47,27 +49,31 @@ class TestConnectToDb:
         expected_log = (
             "test_logger",
             "ERROR",
-            "Connection failed: One or more PostgreSQL credentials are missing.",  # noqa
+            "Connection failed: Missing one or more PostgreSQL credentials for the Warehouse.",  # noqa
         )
         assert logstream[0] == expected_log
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.load.function.utils.connect_to_dw.dw_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch(
-        "src.ingestion.function.utils.connect_to_db.Connection",
+        "src.load.function.utils.connect_to_dw.Connection",
         return_value=object(),
     )
-    def test_connects_to_db_logs_info(self, mock_access, mock_connection, test_logger):
+    def test_connects_to_db_logs_info(
+        self, mock_access, mock_connection, test_logger
+    ):
         with LogCapture(level=logging.INFO) as logstream:
             try:
                 connect_to_db(test_logger)
             except Exception:
-                test_logger.ERROR("Error in connection in test file")
+                test_logger.error("Error in connection in test file")
 
-        assert logstream[0] == (
+        expected = (
             "test_logger",
             "INFO",
-            "Connecting to PostgreSQL database: test_db on host: localhost",  # noqa
+            "Connecting to Warehouse: test_db on host: localhost",  # noqa
         )
+
+        assert logstream[0] == expected

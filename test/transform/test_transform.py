@@ -323,9 +323,7 @@ class TestTransform:
         # Validate attributes for the first date (2020-01-01)
         first_row = df_dim_date.iloc[0]
         # 2020-01-01 is a Wednesday: Monday=1, so Wednesday=3.
-        assert (
-            first_row["year"] == 2020
-        ), "Year for the first row is incorrect."  # noqa
+        assert first_row["year"] == 2020, "Year for the first row is incorrect."  # noqa
         assert first_row["month"] == 1, "Month for the first row is incorrect."
         assert first_row["day"] == 1, "Day for the first row is incorrect."
         assert (
@@ -355,9 +353,7 @@ class TestTransform:
         assert (
             sample_row["month_name"] == "December"
         ), "Month name for 2021-12-31 is incorrect."
-        assert (
-            sample_row["quarter"] == 4
-        ), "Quarter for 2021-12-31 should be 4."  # noqa
+        assert sample_row["quarter"] == 4, "Quarter for 2021-12-31 should be 4."  # noqa
 
     def test_transform_dim_currency(self):
         # Create sample input data, including an

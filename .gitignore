@@ -5,3 +5,6 @@
 /venv/
 .env
 .env.*
+.DS_Store
+src/load/function/utils/get_parquet_from_s3.py
+test/test_load_lambda/test_get_parquet_from_s3.py

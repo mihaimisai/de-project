@@ -25,9 +25,7 @@ class TestUploadTimeStamp:
         time_stamp = "2025-02-28 14:45:33"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={
-                "LocationConstraint": "eu-west-2"
-            },  # noqa
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
         )
 
         with LogCapture(level=logging.INFO) as logstream:
@@ -52,9 +50,7 @@ class TestUploadTimeStamp:
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
             try:
-                upload_time_stamp(
-                    test_client, bucket_name, table_name, test_logger
-                )
+                upload_time_stamp(test_client, bucket_name, table_name, test_logger)
             except Exception:
                 print("Exception in test func")
 
@@ -73,9 +69,7 @@ class TestUploadTimeStamp:
         time_stamp = "2025-02-28 14:45:33"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={
-                "LocationConstraint": "eu-west-2"
-            },  # noqa
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
         )
         with pytest.raises(AttributeError):
             upload_time_stamp(
