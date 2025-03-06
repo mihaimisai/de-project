@@ -9,14 +9,14 @@ resource "aws_sfn_state_machine" "sfn_state_machine_ingest_to_transform" {
       load_function_name = "${var.load_lambda}"
     })
   role_arn = aws_iam_role.state_machine_iam_role.arn
-#   logging_configuration {
-#     log_destination        = "${aws_cloudwatch_log_group.log_group_for_sfn.arn}:*"
-#     include_execution_data = true
-#     level                  = "ERROR"
-#   }
+   logging_configuration {
+     log_destination        = "${aws_cloudwatch_log_group.log_group_for_sfn.arn}:*"
+     include_execution_data = true
+     level                  = "ERROR"
+   }
 }
 
-###########
+
 
 resource "aws_iam_role" "state_machine_iam_role" {
   name_prefix        = "role-${var.state_machine_name}"
