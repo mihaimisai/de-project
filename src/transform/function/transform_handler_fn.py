@@ -23,9 +23,7 @@ def transform_handler(event, context):
     """
 
     logger = logging.getLogger(__name__)
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logger.setLevel(logging.DEBUG)
 
     client = s3_client()
     ingested_bucket_name = os.environ.get("ingested_data_bucket")
