@@ -43,7 +43,7 @@ def transform_handler(event, context):
             upload_df_to_s3(
                 client,
                 df_star_schema[key],
-                key + ".parquet",
+                key,
                 logger,
                 transform_bucket_name,
             )
