@@ -33,7 +33,7 @@ def upload_df_to_s3(
     month = now.strftime("%m")
     day = now.strftime("%d")
     time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
-    s3_key_ingestion = f"{file_key}/{year}/{month}/{day}/{time_stamp}.parquet"
+    s3_key_transformation = f"{file_key}/{year}/{month}/{day}/{time_stamp}.parquet"
 
     # Try to convert DataFrame to Parquet
     try:
@@ -46,7 +46,7 @@ def upload_df_to_s3(
 
     # Try to upload file to S3
     try:
-        s3_client.upload_file(file_key, transform_bucket_name, s3_key_ingestion)  # noqa
+        s3_client.upload_file(file_key, transform_bucket_name, s3_key_transformation)  # noqa
     except Exception as e:
         logger.error(
             f"Failed to upload file {file_key} to S3 bucket {transform_bucket_name}: {e}"  # noqa
