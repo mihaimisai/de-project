@@ -50,7 +50,7 @@ class TestUploadTimeStamp:
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
             try:
-                upload_time_stamp(test_client, bucket_name, table_name, test_logger)
+                upload_time_stamp(test_client, bucket_name, table_name, test_logger) # noqa
             except Exception:
                 print("Exception in test func")
 

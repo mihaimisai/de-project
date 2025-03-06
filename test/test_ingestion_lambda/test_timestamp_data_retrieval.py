@@ -50,7 +50,7 @@ class TestTimeStampDataRetrieval:
 
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
-            timestamp_data_retrival(test_client, bucket_name, "users", test_logger)
+            timestamp_data_retrival(test_client, bucket_name, "users", test_logger) # noqa
 
         for log in logstream:
             assert log == (
@@ -90,7 +90,7 @@ class TestTimeStampDataRetrieval:
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
             try:
-                timestamp_data_retrival(test_client, bucket_name, "users", test_logger)
+                timestamp_data_retrival(test_client, bucket_name, "users", test_logger) # noqa
             except Exception:
                 print("Exception in test func")
 
