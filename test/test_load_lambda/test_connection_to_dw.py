@@ -70,9 +70,10 @@ class TestConnectToDw:
             except Exception:
                 test_logger.error("Error in connection in test file")
 
-        expected = ('test_logger',
-                    'INFO',
-                    'Connecting to Warehouse: test_db on host: localhost', # noqa
-                    ) 
-                                                                                     
+        expected = (
+            "test_logger",
+            "INFO",
+            "Connecting to Warehouse: test_db on host: localhost",  # noqa
+        )
+
         assert logstream[0] == expected

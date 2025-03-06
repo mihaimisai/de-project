@@ -1,4 +1,6 @@
-from src.load.function.utils.load_credentials_for_data_warehouse import dw_access # noqa
+from src.load.function.utils.load_credentials_for_data_warehouse import (
+    dw_access,
+)  # noqa
 from unittest.mock import patch
 import os
 import pytest
