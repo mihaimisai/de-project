@@ -20,7 +20,7 @@ def dummy_df():
     return pd.DataFrame({"a": [1, 2, 3]})
 
 
-# Fixture to provide an S3 client wrapped in moto's generic AWS mock.
+# Fixture to provide an S3 client wrapped in moto's AWS mock.
 @pytest.fixture
 def s3_client():
     with mock_aws():
@@ -28,31 +28,40 @@ def s3_client():
         yield s3
 
 
-# 1) Test successful upload to S3 with proper log messages and file removal.
+def get_uploaded_keys(file_key, s3_client, bucket_name):
+    """
+    Helper function: lists object keys in the bucket that start with file_key.
+    """
+    response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=file_key)
+    if "Contents" in response:
+        return [obj["Key"] for obj in response["Contents"]]
+    return []
+
+
+# 1) Test successful upload to S3 with proper log messages.
 def test_success_upload(dummy_df, dummy_logger, s3_client):
     file_key = "test_table"
     bucket_name = "dummy-bucket"
-
-    # Create the bucket in the mocked AWS environment.
     s3_client.create_bucket(Bucket=bucket_name)
 
-    # Call the function
-    # (this should perform parquet conversion, upload, and file removal)
+    # Call the function which now uses an in-memory buffer.
     upload_df_to_s3(s3_client, dummy_df, file_key, dummy_logger, bucket_name)
 
-    # Check that the local file was removed.
+    # Since we no longer save to disk, verify that no local file exists.
+
     assert not os.path.exists(file_key)
 
-    # Verify that logger.info was called with messages indicating success.
-    info_calls = [call_arg[0][0] for call_arg in dummy_logger.info.call_args_list] # noqa
+    # Verify that an object was uploaded to S3.
+    keys = get_uploaded_keys(file_key, s3_client, bucket_name)
+    assert len(keys) >= 1
+
+    # Verify that logger.info was called with the success message.
+    info_calls = [args[0] for args, kwargs in dummy_logger.info.call_args_list]
     assert any("Successfully uploaded DataFrame" in msg for msg in info_calls)
-    assert any("Successfully removed local copy" in msg for msg in info_calls)
 
 
 # 2) Test that a failure in Parquet conversion
 # raises an error and logs properly.
-
-
 def test_parquet_conversion_error(dummy_df, dummy_logger, s3_client, monkeypatch): # noqa
     file_key = "test_table"
     bucket_name = "dummy-bucket"
@@ -67,30 +76,26 @@ def test_parquet_conversion_error(dummy_df, dummy_logger, s3_client, monkeypatch
     with pytest.raises(Exception, match="Parquet conversion error"):
         upload_df_to_s3(s3_client, dummy_df, file_key, dummy_logger, bucket_name) # noqa
 
-    # Assert that logger.error was called with the expected message.
     dummy_logger.error.assert_called_with(
         f"Failed to convert DataFrame to Parquet for {file_key}: Parquet conversion error" # noqa
     )
-    # The file should not exist since conversion failed.
+    # No local file should exist.
+
     assert not os.path.exists(file_key)
 
 
 # 3) Test that a failure during S3 upload raises an error,
-# logs properly, and the file remains.
-
-
+# logs properly, and no local file exists.
 def test_s3_upload_error(dummy_df, dummy_logger, s3_client, monkeypatch):
     file_key = "test_table"
     bucket_name = "dummy-bucket"
-
-    # Create the bucket so that the parquet conversion succeeds.
     s3_client.create_bucket(Bucket=bucket_name)
 
-    # Monkeypatch the S3 client's upload_file to simulate an upload failure.
-    def failing_upload_file(file_name, bucket, s3_key):
+    # Monkeypatch s3_client.upload_fileobj to simulate an upload failure.
+    def failing_upload_fileobj(fileobj, bucket, s3_key):
         raise Exception("S3 upload failed")
 
-    monkeypatch.setattr(s3_client, "upload_file", failing_upload_file)
+    monkeypatch.setattr(s3_client, "upload_fileobj", failing_upload_fileobj)
 
     with pytest.raises(Exception, match="S3 upload failed"):
         upload_df_to_s3(s3_client, dummy_df, file_key, dummy_logger, bucket_name) # noqa
@@ -98,48 +103,6 @@ def test_s3_upload_error(dummy_df, dummy_logger, s3_client, monkeypatch):
     dummy_logger.error.assert_called_with(
         f"Failed to upload file {file_key} to S3 bucket {bucket_name}: S3 upload failed" # noqa
     )
-    # Since upload failed, the file should remain.
-    assert os.path.exists(file_key)
-    os.remove(file_key)  # Clean up
+    # No local file should exist.
 
-
-# 4) Test that file removal is successful with proper logging.
-
-
-def test_file_removal_success(dummy_df, dummy_logger, s3_client):
-    file_key = "test_table"
-    bucket_name = "dummy-bucket"
-    s3_client.create_bucket(Bucket=bucket_name)
-
-    upload_df_to_s3(s3_client, dummy_df, file_key, dummy_logger, bucket_name)
-
-    # Verify that the file was removed.
     assert not os.path.exists(file_key)
-    info_calls = [call_arg[0][0] for call_arg in dummy_logger.info.call_args_list] # noqa
-    assert any("Successfully removed local copy" in msg for msg in info_calls)
-
-
-# 5) Test that a failure in file removal logs
-# a warning and leaves the file on disk.
-
-def test_file_removal_failure(dummy_df, dummy_logger, s3_client, monkeypatch):
-    file_key = "test_table"
-    bucket_name = "dummy-bucket"
-    s3_client.create_bucket(Bucket=bucket_name)
-
-    # Monkeypatch os.remove to simulate a removal failure.
-    def fake_remove(file):
-        raise Exception("Removal failed")
-
-    monkeypatch.setattr(os, "remove", fake_remove)
-
-    upload_df_to_s3(s3_client, dummy_df, file_key, dummy_logger, bucket_name)
-
-    dummy_logger.warning.assert_called_with(
-        f"File {file_key} could not be removed after upload: Removal failed"
-    )
-    # The file should still exist due to the removal failure.
-    assert os.path.exists(file_key)
-    # manually undo mokeypatch to remove the created file file_key
-    monkeypatch.undo()
-    os.remove(file_key)
