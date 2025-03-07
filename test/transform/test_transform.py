@@ -36,7 +36,6 @@ class TestTransform:
 
         # Expected column names
         expected_columns = [
-            "sales_record_id",
             "sales_order_id",
             "created_date",
             "created_time",
@@ -55,9 +54,6 @@ class TestTransform:
 
         # Verify columns match
         assert list(df_fact_sales_order.columns) == expected_columns
-
-        # Verify sales_record_id is sequential
-        assert list(df_fact_sales_order["sales_record_id"]) == [1, 2]
 
         # Verify datetime conversions
         assert (
@@ -303,7 +299,7 @@ class TestTransform:
 
         # Define the expected start and end dates as Timestamps
         first_date = pd.Timestamp("2020-01-01")
-        last_date = pd.Timestamp("2125-12-31")
+        last_date = pd.Timestamp("2025-12-31")
 
         # Verify that the first and last dates in the DataFrame are correct
         assert (
@@ -311,7 +307,7 @@ class TestTransform:
         ), "The first date is not 2020-01-01."
         assert (
             df_dim_date.iloc[-1]["date_id"] == last_date
-        ), "The last date is not 2125-12-31."
+        ), "The last date is not 2025-12-31."
 
         # Check that the total number of rows equals
         # (last_date - first_date).days + 1
