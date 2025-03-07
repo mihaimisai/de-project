@@ -85,7 +85,9 @@ def test_error_get_latest_files(s3_client):
     bucket_name = "test-bucket"
     mock_logger = MagicMock()
 
-    s3_client.list_objects_v2 = MagicMock(side_effect=Exception("S3 error occurred"))
+    s3_client.list_objects_v2 = MagicMock(
+        side_effect=Exception("S3 error occurred")
+    )
 
     with pytest.raises(Exception):
         get_latest_files(s3_client, bucket_name, mock_logger)

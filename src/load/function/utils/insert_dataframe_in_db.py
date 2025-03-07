@@ -23,9 +23,9 @@ def insert_dataframe_in_db(conn, table_name, df, logger):
             placeholders_str = ", ".join(["%s"] * len(df.columns))
 
             query = "INSERT INTO "
-            query += f"{identifier(table_name)} ({identifier(columns_str)}) "
+            query += f"{identifier(table_name)} ({columns_str}) "
             query += "VALUES "
-            query += f"({identifier(placeholders_str)})"
+            query += f"({placeholders_str})"
             cur.execute(query, tuple(row))
         conn.commit()
         logger.info(f"Successfully inserted {len(df)} rows into {table_name}")

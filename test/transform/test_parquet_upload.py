@@ -62,7 +62,9 @@ def test_success_upload(dummy_df, dummy_logger, s3_client):
 
 # 2) Test that a failure in Parquet conversion
 # raises an error and logs properly.
-def test_parquet_conversion_error(dummy_df, dummy_logger, s3_client, monkeypatch): # noqa
+def test_parquet_conversion_error(
+    dummy_df, dummy_logger, s3_client, monkeypatch
+):  # noqa
     file_key = "test_table"
     bucket_name = "dummy-bucket"
     s3_client.create_bucket(Bucket=bucket_name)
@@ -74,10 +76,12 @@ def test_parquet_conversion_error(dummy_df, dummy_logger, s3_client, monkeypatch
     monkeypatch.setattr(dummy_df, "to_parquet", failing_to_parquet)
 
     with pytest.raises(Exception, match="Parquet conversion error"):
-        upload_df_to_s3(s3_client, dummy_df, file_key, dummy_logger, bucket_name) # noqa
+        upload_df_to_s3(
+            s3_client, dummy_df, file_key, dummy_logger, bucket_name
+        )  # noqa
 
     dummy_logger.error.assert_called_with(
-        f"Failed to convert DataFrame to Parquet for {file_key}: Parquet conversion error" # noqa
+        f"Failed to convert DataFrame to Parquet for {file_key}: Parquet conversion error"  # noqa
     )
     # No local file should exist.
 
@@ -98,10 +102,12 @@ def test_s3_upload_error(dummy_df, dummy_logger, s3_client, monkeypatch):
     monkeypatch.setattr(s3_client, "upload_fileobj", failing_upload_fileobj)
 
     with pytest.raises(Exception, match="S3 upload failed"):
-        upload_df_to_s3(s3_client, dummy_df, file_key, dummy_logger, bucket_name) # noqa
+        upload_df_to_s3(
+            s3_client, dummy_df, file_key, dummy_logger, bucket_name
+        )  # noqa
 
     dummy_logger.error.assert_called_with(
-        f"Failed to upload file {file_key} to S3 bucket {bucket_name}: S3 upload failed" # noqa
+        f"Failed to upload file {file_key} to S3 bucket {bucket_name}: S3 upload failed"  # noqa
     )
     # No local file should exist.
 

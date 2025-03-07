@@ -5,7 +5,9 @@ from src.ingestion.function.utils.process_all_tables import process_all_tables
 @patch("src.ingestion.function.utils.process_all_tables.ingest_data_to_s3")
 @patch("src.ingestion.function.utils.process_all_tables.s3_client")
 @patch("src.ingestion.function.utils.process_all_tables.logger")
-def test_process_all_tables(mock_logger, mock_s3_client, mock_ingest_data_to_s3):
+def test_process_all_tables(
+    mock_logger, mock_s3_client, mock_ingest_data_to_s3
+):
     """Test that all tables are processed
     and ingest_data_to_s3 is properly mocked"""
 

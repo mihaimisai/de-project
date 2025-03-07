@@ -1,12 +1,11 @@
-from src.load.function.utils.s3_client import s3_client
-from src.load.function.utils.get_parquet_v2 import (
+from .utils.s3_client import s3_client
+from .utils.get_parquet_v2 import (
     get_recent_parquet_files_from_s3,
 )
-from src.load.function.utils.create_table_in_db import create_table_in_db
-from src.load.function.utils.insert_dataframe_in_db import (
+from .utils.insert_dataframe_in_db import (
     insert_dataframe_in_db,
 )
-from src.load.function.utils.connect_to_dw import connect_to_db
+from .utils.connect_to_dw import connect_to_db
 import logging
 import os
 
@@ -26,9 +25,7 @@ def load_handler(event, context):
         if successful
     """
     logger = logging.getLogger(__name__)
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logger.setLevel(logging.DEBUG)
     conn = None
     client = s3_client()
     load_bucket_name = os.environ.get("processed_data_bucket")
@@ -38,9 +35,9 @@ def load_handler(event, context):
             bucket_name=load_bucket_name, client=client, logger=logger
         )
 
-        for table_name, df in df_data_tables.items():
-            table_columns = ", ".join(df.columns)
-            create_table_in_db(conn, table_name, table_columns, logger)
+        sorted_tables = sorted(df_data_tables.items())
+        for table_name, df in sorted_tables:
+            logger.debug(table_name)
             insert_dataframe_in_db(conn, table_name, df, logger)
 
         return {"statusCode": 200, "body": "Data ingestion complete"}
