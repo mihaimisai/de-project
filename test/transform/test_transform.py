@@ -1,15 +1,48 @@
 import pandas as pd
+import pytest
+import requests
+from unittest.mock import patch
 from src.transform.function.utils.transform import (
     transform_fact_sales_order,
     transform_dim_staff,
     transform_dim_location,
     transform_dim_design,
     transform_dim_date,
+    fetch_exchange_rates,
     transform_dim_currency,
     transform_dim_counterparty,
 )
 
+# DummyResponse class to simulate requests.Response
+class DummyResponse:
+    def __init__(self, status_code, json_data):
+        self.status_code = status_code
+        self._json_data = json_data
 
+    def json(self):
+        return self._json_data
+
+# Dummy functions to simulate API responses
+def dummy_get_success(url):
+    return DummyResponse(200, {"eur": {"usd": 1.12, "eur": 1.0, "gbp": 0.85}})
+
+def dummy_get_failure(url):
+    return DummyResponse(404, {})
+
+class TestFetchExchangeRates:
+    def test_fetch_exchange_rates_success(self, monkeypatch):
+        # Replace requests.get with the dummy success function
+        monkeypatch.setattr(requests, "get", dummy_get_success)
+        result = fetch_exchange_rates()
+        expected = {"eur": {"usd": 1.12, "eur": 1.0, "gbp": 0.85}}
+        assert result == expected
+
+    def test_fetch_exchange_rates_failure(self, monkeypatch):
+        # Replace requests.get with the dummy failure function
+        monkeypatch.setattr(requests, "get", dummy_get_failure)
+        with pytest.raises(Exception) as excinfo:
+            fetch_exchange_rates()
+        assert "Failed to fetch data from API" in str(excinfo.value)
 class TestTransform:
     def test_transform_fact_sales_order(self):
         # Sample input data
@@ -355,50 +388,84 @@ class TestTransform:
         ), "Month name for 2021-12-31 is incorrect."
         assert sample_row["quarter"] == 4, "Quarter for 2021-12-31 should be 4."  # noqa
 
-    def test_transform_dim_currency(self):
-        # Create sample input data, including an
-        # extra column that should be dropped.
-        data = {
-            "currency_id": [1, 2, 3, 4],
-            "currency_code": ["USD", "EUR", "ABC", "JPY"],
-            "extra_col": [
-                "ignore1",
-                "ignore2",
-                "ignore3",
-                "ignore4",
-            ],  # Extra column that should be ignored.
+    @staticmethod
+    def dummy_fetch_exchange_rates():
+        # Return a complete set of dummy exchange rates in lowercase keys.
+        dummy_rates = {
+            "usd": 1.12,
+            "eur": 1.0,
+            "jpy": 110.0,
+            "gbp": 0.85,
+            "aud": 1.5,
+            "cad": 1.4,
+            "chf": 0.95,
+            "cny": 7.0,
+            "hkd": 8.8,
+            "nzd": 1.7,
+            "sek": 10.0,
+            "krw": 1300,
+            "sgd": 1.6,
+            "nok": 11.0,
+            "mxn": 22.0,
+            "inr": 80.0,
+            "rub": 90.0,
+            "zar": 20.0,
+            "try": 20.0,
+            "brl": 6.0,
+            "twd": 32.0,
+            "dkk": 7.0,
+            "pln": 4.5,
+            "thb": 35.0,
+            "idr": 16000,
+            "huf": 350.0,
+            "czk": 25.0,
+            "ils": 3.5,
+            "clp": 900.0,
+            "php": 56.0,
+            "aed": 4.0,
+            "cop": 4500.0,
+            "sar": 4.2,
+            "myr": 4.7,
+            "ron": 4.9,
+            "pen": 3.8,
+            "vnd": 26000,
+            "egp": 17.0,
+            "ngn": 450.0,
+            "pkr": 230.0,
+            "bdt": 102.0,
+            "uah": 36.0,
+            "kzt": 510.0,
+            "qar": 4.0,
+            "kwd": 0.33,
+            "omr": 0.38,
+            "dzd": 150.0,
+            "mad": 10.0,
+            "ars": 130.0,
+            "lkr": 365.0,
         }
-        df_currency = pd.DataFrame(data)
+        return {"eur": dummy_rates}
 
-        # Run the transformation function
-        result = transform_dim_currency(df_currency)
+    @patch("src.transform.function.utils.transform.fetch_exchange_rates", new=dummy_fetch_exchange_rates.__func__)
+    def test_transform_dim_currency_success(self):
+        # Create a sample input DataFrame mimicking your df_currency
+        df_currency = pd.DataFrame({
+            "currency_id": [1, 2, 3],
+            "currency_code": ["GBP", "USD", "EUR"]
+        })
 
-        # Define the expected columns and check that
-        # the output DataFrame has exactly these columns in order.
-        expected_columns = ["currency_id", "currency_code", "currency_name"]
-        assert (
-            list(result.columns) == expected_columns
-        ), "Output columns do not match expected columns."
+        # Call the function under test
+        result_df = transform_dim_currency(df_currency)
 
-        # Define the expected mapping for currency codes:
-        # "USD" -> "US Dollar"
-        # "EUR" -> "Euro"
-        # "ABC" -> not in mapping, should result in NaN (or None)
-        # "JPY" -> "Japanese Yen"
-        expected_currency_names = ["US Dollar", "Euro", None, "Japanese Yen"]
+        # Define the expected output DataFrame
+        expected_df = pd.DataFrame({
+            "currency_id": [1, 2, 3],
+            "currency_code": ["GBP", "USD", "EUR"],
+            "currency_name": ["British Pound", "US Dollar", "Euro"],
+            "currency_exchange_rate_eur_based": [0.85, 1.12, 1.0]
+        })
 
-        # Check that each row's currency_name matches the expected value.
-        for i, expected_name in enumerate(expected_currency_names):
-            actual_name = result.loc[i, "currency_name"]
-            if expected_name is None:
-                # For an unmapped currency code, the value should be NaN.
-                assert pd.isna(
-                    actual_name
-                ), f"Expected NaN for currency_code 'ABC', got {actual_name}"
-            else:
-                assert (
-                    actual_name == expected_name
-                ), f"Row {i}: expected '{expected_name}', got '{actual_name}'"
+        # Compare the result with the expected DataFrame
+        pd.testing.assert_frame_equal(result_df.reset_index(drop=True), expected_df)
 
     def test_transform_dim_counterparty(self):
         # Create sample counterparty data
@@ -467,3 +534,5 @@ class TestTransform:
         assert pd.isna(row2["counterparty_legal_postal_code"])
         assert pd.isna(row2["counterparty_legal_country"])
         assert pd.isna(row2["counterparty_legal_phone_number"])
+
+

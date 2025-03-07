@@ -5,3 +5,8 @@
 /venv/
 .env
 .env.*
+func_insp.py
+.vscode/settings.json
+currency_exc.py
+test_sql_queries.sql
+warehouse_cred.env.json
