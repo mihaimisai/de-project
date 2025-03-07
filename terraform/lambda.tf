@@ -49,6 +49,7 @@ resource "aws_lambda_function" "transformation_lambda_function" {
   handler = "function.transform_handler_fn.transform_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
+  memory_size = 256
   layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
     variables = {
@@ -76,7 +77,8 @@ resource "aws_lambda_function" "load_lambda_function" {
   role = aws_iam_role.lambda_3_role.arn
   handler = "function.load_handler_fn.load_handler"
   runtime = var.python_runtime
-  timeout = var.default_timeout
+  timeout = 600
+  memory_size = 256
   layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
     variables = {

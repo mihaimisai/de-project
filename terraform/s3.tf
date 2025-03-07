@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "data_bucket" {
   bucket_prefix = var.ingested_data_bucket_prefix
+  force_destroy = true
   tags = {
     Name        = "ingested data bucket"
   }
@@ -7,6 +8,7 @@ resource "aws_s3_bucket" "data_bucket" {
 
 resource "aws_s3_bucket" "timestamp_bucket" {
   bucket_prefix = var.timestamp_bucket_prefix
+  force_destroy = true
   tags = {
     Name        = "timestamp of last lambda call bucket"
   }
@@ -14,6 +16,7 @@ resource "aws_s3_bucket" "timestamp_bucket" {
 
 resource "aws_s3_bucket" "code_bucket" {
   bucket_prefix  = var.code_bucket_prefix
+  force_destroy = true
   tags = {
     Name        = "lambda code bucket"
   }
@@ -21,6 +24,7 @@ resource "aws_s3_bucket" "code_bucket" {
 
 resource "aws_s3_bucket" "processed_bucket" {
   bucket_prefix = var.processed_data_bucket_prefix
+  force_destroy = true
   tags = {
     Name        = "processed data bucket"
   }
@@ -81,3 +85,12 @@ resource "aws_s3_object" "load_layer" {
   etag = filemd5(data.archive_file.load_layer_code.output_path)
   depends_on = [ data.archive_file.load_layer_code ]
 }
+
+# for all lambdas using one layer
+# resource "aws_s3_object" "layer" {
+#   bucket = aws_s3_bucket.code_bucket.bucket
+#   key = "layers/layer.zip"
+#   source = data.archive_file.layer_code.output_path
+#   etag = filemd5(data.archive_file.layer_code.output_path)
+#   depends_on = [ data.archive_file.layer_code ]
+# }
