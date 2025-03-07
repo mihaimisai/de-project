@@ -27,7 +27,9 @@ def get_latest_files(client, bucket, logger):
 
         list_objects = [
             obj["Key"]
-            for obj in sorted(objects, key=get_last_modified, reverse=True)
+            for obj in sorted(
+                objects, key=get_last_modified, reverse=True
+            )  # noqa
         ]
 
         files_dict = {}

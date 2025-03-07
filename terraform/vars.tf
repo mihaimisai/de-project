@@ -81,3 +81,28 @@ variable "state_machine_name" {
     type = string
     default = "sfn_ingest_to_transform"
 }
+
+variable "db_host_dw" { 
+  type = string 
+  sensitive = true
+  }
+
+variable "db_db_dw" { 
+  type = string 
+  sensitive = true
+  }
+
+variable "db_port_dw" { 
+  type = number 
+  sensitive = true
+  }
+
+variable "db_user_dw" { 
+  type = string 
+  sensitive = true
+  }
+
+variable "db_password_dw" { 
+  type = string 
+  sensitive = true
+  }
