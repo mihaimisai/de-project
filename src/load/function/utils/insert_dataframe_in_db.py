@@ -18,6 +18,13 @@ def insert_dataframe_in_db(conn, table_name, df, logger):
     """
     cur = conn.cursor()
     try:
+        if table_name == "dim_date":
+            cur.execute("SELECT * FROM dim_date LIMIT 1")
+            result = cur.fetchone()
+            logger.debug(result)
+            if result:
+                logger.info("dim_date already has data. Skipping insertion.")
+                return
         for index, row in df.iterrows():
             columns_str = ", ".join(df.columns)
             placeholders_str = ", ".join(["%s"] * len(df.columns))
