@@ -10,7 +10,7 @@ from .transform import (
     transform_fact_purchase_order,
     transform_fact_payment,
     transform_dim_payment_type,
-    transform_dim_transaction
+    transform_dim_transaction,
 )
 
 
@@ -19,13 +19,16 @@ def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
     Transforms ingested data into a star schema format.
     Args:
         client (object): The client object used for data retrieval.
-        ingested_bucket_name (str): The name of the bucket where ingested data is stored.
+        ingested_bucket_name (str): The name of the bucket where
+        ingested data is stored.
         logger (object): Logger object for logging information and errors.
-        files_dict (dict): Dictionary containing file paths and related information.
+        files_dict (dict): Dictionary containing file paths
+        and related information.
     Returns:
-        dict: A dictionary containing transformed dataframes in star schema format.
+        dict: A dictionary containing transformed dataframes
+        in star schema format.
     Raises:
-        Exception: If required dataframes are not available or any 
+        Exception: If required dataframes are not available or any
                     error occurs during transformation.
     The returned dictionary contains the following keys:
         - "fact_sales_order": Transformed sales order fact dataframe.
@@ -63,13 +66,11 @@ def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
 
             df_fact_sales_order = transform_fact_sales_order(
                 dataframes["df_sales_order"]
-            )            
+            )
             df_fact_purchase_order = transform_fact_purchase_order(
                 dataframes["df_purchase_order"]
             )
-            df_fact_payment = transform_fact_payment(
-                dataframes["df_payment"]
-            )
+            df_fact_payment = transform_fact_payment(dataframes["df_payment"])
             dim_staff = transform_dim_staff(
                 dataframes["df_staff"], dataframes["df_department"]
             )
@@ -82,10 +83,10 @@ def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
             )
             dim_payment_type = transform_dim_payment_type(
                 dataframes["df_payment_type"]
-            )
+            )  # noqa
             dim_transaction = transform_dim_transaction(
                 dataframes["df_transaction"]
-            )
+            )  # noqa
             df_star_schema = {
                 "fact_sales_order": df_fact_sales_order,
                 "fact_purchase_order": df_fact_purchase_order,
@@ -98,8 +99,6 @@ def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
                 "dim_counterparty": dim_counterparty,
                 "dim_payment_type": dim_payment_type,
                 "dim_transaction": dim_transaction,
-
-
             }
             logger.info("Star-schema data successfully processed")
             return df_star_schema

@@ -5,13 +5,16 @@ from datetime import datetime
 
 def transform_fact_sales_order(df_sales_order: pd.DataFrame) -> pd.DataFrame:
     """
-    Transforms the sales order DataFrame into a fact table DataFrame for sales orders.
+    Transforms the sales order DataFrame into a fact table
+    DataFrame for sales orders.
     This function performs the following transformations:
-    - Ensures datetime columns ('created_at' and 'last_updated') are in datetime format.
+    - Ensures datetime columns ('created_at' and 'last_updated')
+    are in datetime format.
     - Converts agreed dates ('agreed_payment_date' and 'agreed_delivery_date')
     from string to datetime and extracts the date part.
     - Creates a new DataFrame with the following columns:
-        - 'sales_record_id': A unique identifier for each sales record, starting from 1.
+        - 'sales_record_id': A unique identifier for
+        each sales record, starting from 1.
         - 'sales_order_id': The sales order ID.
         - 'created_date': The date part of the 'created_at' column.
         - 'created_time': The time part of the 'created_at' column.
@@ -25,11 +28,14 @@ def transform_fact_sales_order(df_sales_order: pd.DataFrame) -> pd.DataFrame:
         - 'design_id': The ID of the design.
         - 'agreed_payment_date': The agreed payment date.
         - 'agreed_delivery_date': The agreed delivery date.
-        - 'agreed_delivery_location_id': The ID of the agreed delivery location.
+        - 'agreed_delivery_location_id': The ID of the
+        agreed delivery location.
     Args:
-        df_sales_order (pd.DataFrame): The input DataFrame containing sales order data.
+        df_sales_order (pd.DataFrame): The input DataFrame
+        containing sales order data.
     Returns:
-        pd.DataFrame: The transformed fact table DataFrame for sales orders.
+        pd.DataFrame: The transformed fact table DataFrame
+        for sales orders.
     """
 
     # Ensure datetime columns are in datetime format
@@ -79,10 +85,13 @@ def transform_dim_staff(
     df_staff: pd.DataFrame, df_department: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Transforms and merges staff and department data into a dimensional staff DataFrame.
-    This function performs a left join operation between the staff and department DataFrames
-    on the 'department_id' column. It then selects and returns a DataFrame with the following
-    columns: 
+    Transforms and merges staff and department data into
+    a dimensional staff DataFrame.
+    This function performs a left join operation between
+    the staff and department DataFrames
+    on the 'department_id' column. It then selects and
+    returns a DataFrame with the following
+    columns:
         'staff_id',
         'first_name',
         'last_name',
@@ -90,10 +99,13 @@ def transform_dim_staff(
         'location',
         'email_address'.
     Args:
-        df_staff (pd.DataFrame): DataFrame containing staff information.
-        df_department (pd.DataFrame): DataFrame containing department information.
+        df_staff (pd.DataFrame): DataFrame containing
+        staff information.
+        df_department (pd.DataFrame): DataFrame containing
+        department information.
     Returns:
-        pd.DataFrame: A DataFrame containing the merged and transformed staff data.
+        pd.DataFrame: A DataFrame containing the
+        merged and transformed staff data.
     """
 
     # Perform the join operation
@@ -123,9 +135,11 @@ def transform_dim_location(df_address: pd.DataFrame) -> pd.DataFrame:
     """
     Transforms the input DataFrame by selecting and renaming specific columns.
     Args:
-        df_address (pd.DataFrame): The input DataFrame containing address information.
+        df_address (pd.DataFrame): The input DataFrame
+        containing address information.
     Returns:
-        pd.DataFrame: A DataFrame with selected columns renamed for dimensional location.
+        pd.DataFrame: A DataFrame with selected columns
+        renamed for dimensional location.
     """
 
     # Select and rename the required columns
@@ -205,32 +219,40 @@ def transform_dim_date() -> pd.DataFrame:
     df_dim_date = pd.DataFrame(data)
     return df_dim_date
 
+
 # Function to fetch exchange rates
 def fetch_exchange_rates():
-    url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json" # noqa
+    url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json"  # noqa
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
     else:
         raise Exception("Failed to fetch data from API")
 
+
 def transform_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
     """
-    Transforms the currency DataFrame by adding currency names and exchange rates.
-    This function takes a DataFrame containing currency information, maps the currency codes
-    to their respective currency names, fetches the latest exchange rates based on EUR, and
-    adds these details as new columns to the DataFrame.
+    Transforms the currency DataFrame by adding currency
+    names and exchange rates. This function takes a DataFrame
+    containing currency information, maps the currency codes
+    to their respective currency names, fetches the latest
+    exchange rates, based on EUR and adds
+    these details as new columns to the DataFrame.
     Args:
-        df_currency (pd.DataFrame): A DataFrame containing currency information with at least
-                                    the following columns:
-                                    - "currency_id": Unique identifier for the currency.
-                                    - "currency_code": ISO currency code.
+        df_currency (pd.DataFrame):
+        A DataFrame containing currency information
+        with at leastthe following columns:
+                            - "currency_id":
+                            Unique identifier for the currency.
+                            - "currency_code":
+                            ISO currency code.
     Returns:
         pd.DataFrame: A transformed DataFrame with the following columns:
                       - "currency_id": Unique identifier for the currency.
                       - "currency_code": ISO currency code.
                       - "currency_name": Full name of the currency.
-                      - "currency_exchange_rate_eur_based": Latest exchange rate based on EUR.
+                      - "currency_exchange_rate_eur_based":
+                      Latest exchange rate based on EUR.
     """
 
     # Create a dictionary for the currency mapping
@@ -289,16 +311,29 @@ def transform_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
 
     # Fetch latest exchange rates EUR based
     exch_rates = fetch_exchange_rates()
-    xc = {key: exch_rates['eur'][key.lower()] for key in list(currency_mapping.keys())}
+    xc = {
+        key: exch_rates["eur"][key.lower()] for key in list(currency_mapping.keys()) # noqa
+    }
 
     # Add a new column with currency names using the mapping
-    df_currency["currency_name"] = df_currency["currency_code"].map(currency_mapping)
+    df_currency["currency_name"] = df_currency["currency_code"].map(
+        currency_mapping
+    )  # noqa
     # Add a new column with the exchange rate using the xc dictionary
-    df_currency["currency_exchange_rate_eur_based"] = df_currency["currency_code"].map(xc)
+    df_currency["currency_exchange_rate_eur_based"] = df_currency[
+        "currency_code"
+    ].map(  # noqa
+        xc
+    )
 
     # Select the required columns
     df_dim_currency = df_currency[
-        ["currency_id", "currency_code", "currency_name", "currency_exchange_rate_eur_based"]
+        [
+            "currency_id",
+            "currency_code",
+            "currency_name",
+            "currency_exchange_rate_eur_based",
+        ]
     ]
     return df_dim_currency
 
@@ -311,14 +346,16 @@ def transform_dim_counterparty(
     to create a dimension table for counterparties. This function
     performs a LEFT JOIN on the `df_counterparty` and `df_address`
     dataframes based on the `counterparty_id` and `address_id` columns,
-    respectively. It then renames the address columns to match 
+    respectively. It then renames the address columns to match
     the required output format and selects only the necessary columns
     for the final dataframe.
     Args:
-        df_counterparty (pd.DataFrame): DataFrame containing counterparty information.
+        df_counterparty (pd.DataFrame): DataFrame containing
+        counterparty information.
         df_address (pd.DataFrame): DataFrame containing address information.
     Returns:
-        pd.DataFrame: A transformed DataFrame with the selected and renamed columns.
+        pd.DataFrame: A transformed DataFrame with
+        the selected and renamed columns.
     """
 
     # Perform LEFT JOIN
@@ -359,21 +396,28 @@ def transform_dim_counterparty(
     df_dim_counterparty = df_counterparty[columns_to_keep]
     return df_dim_counterparty
 
-def transform_fact_purchase_order(df_purchase_order: pd.DataFrame) -> pd.DataFrame:
+
+def transform_fact_purchase_order(
+    df_purchase_order: pd.DataFrame,
+) -> pd.DataFrame:  # noqa
     """
     Transforms the purchase order DataFrame into a fact table DataFrame.
     This function processes the input DataFrame by ensuring datetime columns
-    are in the correct format, converting agreed dates to datetime and extracting
-    the date part, and creating a new DataFrame structured as a fact table
-    with specific columns.
+    are in the correct format, converting agreed dates to datetime
+    and extracting the date part, and creating a new DataFrame
+    structured as a fact table with specific columns.
     Args:
-        df_purchase_order (pd.DataFrame): The input DataFrame containing purchase order data.
+        df_purchase_order (pd.DataFrame): The input DataFrame
+        containing purchase order data.
     Returns:
-        pd.DataFrame: A new DataFrame structured as a fact table with transformed and additional columns.
+        pd.DataFrame: A new DataFrame structured as a fact table
+        with transformed and additional columns.
     """
 
     # Ensure datetime columns are in datetime format
-    df_purchase_order["created_at"] = pd.to_datetime(df_purchase_order["created_at"])
+    df_purchase_order["created_at"] = pd.to_datetime(
+        df_purchase_order["created_at"]
+    )  # noqa
     df_purchase_order["last_updated"] = pd.to_datetime(
         df_purchase_order["last_updated"]
     )  # noqa
@@ -419,7 +463,8 @@ def transform_fact_payment(df_payment: pd.DataFrame) -> pd.DataFrame:
     """
     Transforms the payment DataFrame into a fact table DataFrame for payments.
     Args:
-        df_payment (pd.DataFrame): DataFrame containing payment data with the following columns:
+        df_payment (pd.DataFrame): DataFrame containing payment data
+        with the following columns:
             - payment_id
             - created_at
             - last_updated
@@ -451,9 +496,7 @@ def transform_fact_payment(df_payment: pd.DataFrame) -> pd.DataFrame:
 
     # Ensure datetime columns are in datetime format
     df_payment["created_at"] = pd.to_datetime(df_payment["created_at"])
-    df_payment["last_updated"] = pd.to_datetime(
-        df_payment["last_updated"]
-    )  # noqa
+    df_payment["last_updated"] = pd.to_datetime(df_payment["last_updated"])  # noqa
 
     # Convert agreed dates from string to datetime
     # (if not already) then extract date part
@@ -488,26 +531,35 @@ def transform_fact_payment(df_payment: pd.DataFrame) -> pd.DataFrame:
     return df_fact_payment
 
 
-def transform_dim_payment_type(
-    df_payment_type: pd.DataFrame
-) -> pd.DataFrame:
+def transform_dim_payment_type(df_payment_type: pd.DataFrame) -> pd.DataFrame:
     """
-    Transforms the payment type DataFrame by ensuring datetime columns are in the correct format
-    and creating a new DataFrame with specific columns for a fact table.
+    Transforms the payment type DataFrame by ensuring datetime
+    columns are in the correct format and creating a new DataFrame
+    with specific columns for a fact table.
     Args:
-        df_payment_type (pd.DataFrame): The input DataFrame containing payment type data.
+        df_payment_type (pd.DataFrame): The input DataFrame
+        containing payment type data.
     Returns:
-        pd.DataFrame: A transformed DataFrame with the following columns:
-            - payment_type_id: The ID of the payment type.
-            - payment_type_name: The name of the payment type.
-            - created_date: The date when the payment type was created.
-            - created_time: The time when the payment type was created.
-            - last_updated_date: The date when the payment type was last updated.
-            - last_updated_time: The time when the payment type was last updated.
+        pd.DataFrame: A transformed DataFrame with
+        the following columns:
+            - payment_type_id: The ID of the
+            payment type.
+            - payment_type_name: The name of
+            the payment type.
+            - created_date: The date when the
+            payment type was created.
+            - created_time: The time when the
+            payment type was created.
+            - last_updated_date: The date when
+            the payment type was last updated.
+            - last_updated_time: The time when
+            the payment type was last updated.
     """
 
-# Ensure datetime columns are in datetime format
-    df_payment_type["created_at"] = pd.to_datetime(df_payment_type["created_at"])
+    # Ensure datetime columns are in datetime format
+    df_payment_type["created_at"] = pd.to_datetime(
+        df_payment_type["created_at"]
+    )  # noqa
     df_payment_type["last_updated"] = pd.to_datetime(
         df_payment_type["last_updated"]
     )  # noqa
@@ -522,29 +574,28 @@ def transform_dim_payment_type(
             "created_time": df_payment_type["created_at"].dt.time,
             "last_updated_date": df_payment_type["last_updated"].dt.date,
             "last_updated_time": df_payment_type["last_updated"].dt.time,
-            
         }
     )
 
     return df_dim_payment_type
 
 
-
-def transform_dim_transaction(
-    df_transaction: pd.DataFrame
-) -> pd.DataFrame:
+def transform_dim_transaction(df_transaction: pd.DataFrame) -> pd.DataFrame:
     """
-    Transforms the transaction DataFrame by converting datetime columns to the appropriate format
+    Transforms the transaction DataFrame by converting
+    datetime columns to the appropriate format
     and creating a new DataFrame with specific columns for a fact table.
     Args:
-        df_transaction (pd.DataFrame): The input DataFrame containing transaction data.
+        df_transaction (pd.DataFrame): The input DataFrame
+                                        containing transaction data.
     Returns:
-        pd.DataFrame: A new DataFrame with transformed transaction data, including separate columns
-                      for transaction ID, transaction type, created date and time, and last updated
-                      date and time.
+        pd.DataFrame: A new DataFrame with transformed transaction data,
+                    including separate columns for transaction ID,
+                    transaction type, created date and time, and last updated
+                    date and time.
     """
 
-# Ensure datetime columns are in datetime format
+    # Ensure datetime columns are in datetime format
     df_transaction["created_at"] = pd.to_datetime(df_transaction["created_at"])
     df_transaction["last_updated"] = pd.to_datetime(
         df_transaction["last_updated"]
@@ -560,10 +611,7 @@ def transform_dim_transaction(
             "created_time": df_transaction["created_at"].dt.time,
             "last_updated_date": df_transaction["last_updated"].dt.date,
             "last_updated_time": df_transaction["last_updated"].dt.time,
-            
         }
     )
 
     return df_dim_transaction
-
-

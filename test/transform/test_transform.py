@@ -13,6 +13,7 @@ from src.transform.function.utils.transform import (
     transform_dim_counterparty,
 )
 
+
 # DummyResponse class to simulate requests.Response
 class DummyResponse:
     def __init__(self, status_code, json_data):
@@ -22,12 +23,15 @@ class DummyResponse:
     def json(self):
         return self._json_data
 
+
 # Dummy functions to simulate API responses
 def dummy_get_success(url):
     return DummyResponse(200, {"eur": {"usd": 1.12, "eur": 1.0, "gbp": 0.85}})
 
+
 def dummy_get_failure(url):
     return DummyResponse(404, {})
+
 
 class TestFetchExchangeRates:
     def test_fetch_exchange_rates_success(self, monkeypatch):
@@ -43,6 +47,8 @@ class TestFetchExchangeRates:
         with pytest.raises(Exception) as excinfo:
             fetch_exchange_rates()
         assert "Failed to fetch data from API" in str(excinfo.value)
+
+
 class TestTransform:
     def test_transform_fact_sales_order(self):
         # Sample input data
@@ -445,27 +451,33 @@ class TestTransform:
         }
         return {"eur": dummy_rates}
 
-    @patch("src.transform.function.utils.transform.fetch_exchange_rates", new=dummy_fetch_exchange_rates.__func__)
+    @patch(
+        "src.transform.function.utils.transform.fetch_exchange_rates",
+        new=dummy_fetch_exchange_rates.__func__,
+    )
     def test_transform_dim_currency_success(self):
         # Create a sample input DataFrame mimicking your df_currency
-        df_currency = pd.DataFrame({
-            "currency_id": [1, 2, 3],
-            "currency_code": ["GBP", "USD", "EUR"]
-        })
+        df_currency = pd.DataFrame(
+            {"currency_id": [1, 2, 3], "currency_code": ["GBP", "USD", "EUR"]}
+        )
 
         # Call the function under test
         result_df = transform_dim_currency(df_currency)
 
         # Define the expected output DataFrame
-        expected_df = pd.DataFrame({
-            "currency_id": [1, 2, 3],
-            "currency_code": ["GBP", "USD", "EUR"],
-            "currency_name": ["British Pound", "US Dollar", "Euro"],
-            "currency_exchange_rate_eur_based": [0.85, 1.12, 1.0]
-        })
+        expected_df = pd.DataFrame(
+            {
+                "currency_id": [1, 2, 3],
+                "currency_code": ["GBP", "USD", "EUR"],
+                "currency_name": ["British Pound", "US Dollar", "Euro"],
+                "currency_exchange_rate_eur_based": [0.85, 1.12, 1.0],
+            }
+        )
 
         # Compare the result with the expected DataFrame
-        pd.testing.assert_frame_equal(result_df.reset_index(drop=True), expected_df)
+        pd.testing.assert_frame_equal(
+            result_df.reset_index(drop=True), expected_df
+        )  # noqa
 
     def test_transform_dim_counterparty(self):
         # Create sample counterparty data
@@ -534,5 +546,3 @@ class TestTransform:
         assert pd.isna(row2["counterparty_legal_postal_code"])
         assert pd.isna(row2["counterparty_legal_country"])
         assert pd.isna(row2["counterparty_legal_phone_number"])
-
-

@@ -5,6 +5,7 @@ from src.transform.function.utils.star_schema import star_schema
 from src.transform.function.utils.s3_client import s3_client
 import logging
 
+
 class TestStarschema:
 
     @pytest.fixture
@@ -12,17 +13,25 @@ class TestStarschema:
         with mock_aws():
             yield s3_client()
 
-    @patch("src.transform.function.utils.star_schema.transform_dim_transaction")
-    @patch("src.transform.function.utils.star_schema.transform_dim_payment_type")
-    @patch("src.transform.function.utils.star_schema.transform_dim_counterparty")
+    @patch("src.transform.function.utils.star_schema.transform_dim_transaction")  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.transform_dim_payment_type"
+    )  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.transform_dim_counterparty"
+    )  # noqa
     @patch("src.transform.function.utils.star_schema.transform_dim_currency")
     @patch("src.transform.function.utils.star_schema.transform_dim_date")
     @patch("src.transform.function.utils.star_schema.transform_dim_design")
     @patch("src.transform.function.utils.star_schema.transform_dim_location")
     @patch("src.transform.function.utils.star_schema.transform_dim_staff")
     @patch("src.transform.function.utils.star_schema.transform_fact_payment")
-    @patch("src.transform.function.utils.star_schema.transform_fact_purchase_order")
-    @patch("src.transform.function.utils.star_schema.transform_fact_sales_order")
+    @patch(
+        "src.transform.function.utils.star_schema.transform_fact_purchase_order"  # noqa
+    )
+    @patch(
+        "src.transform.function.utils.star_schema.transform_fact_sales_order"
+    )  # noqa
     @patch("src.transform.function.utils.star_schema.ingested_data_retrival")
     def test_star_schema(
         self,
