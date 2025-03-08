@@ -25,28 +25,47 @@ class DummyResponse:
 
 
 # Dummy functions to simulate API responses
-def dummy_get_success(url):
+def dummy_get_success(*args, **kwargs):
     return DummyResponse(200, {"eur": {"usd": 1.12, "eur": 1.0, "gbp": 0.85}})
 
 
-def dummy_get_failure(url):
+def dummy_get_failure(*args, **kwargs):
     return DummyResponse(404, {})
 
 
+def dummy_get_timeout(*args, **kwargs):
+    raise requests.exceptions.Timeout("The request timed out")
+
+
 class TestFetchExchangeRates:
-    def test_fetch_exchange_rates_success(self, monkeypatch):
-        # Replace requests.get with the dummy success function
-        monkeypatch.setattr(requests, "get", dummy_get_success)
+    @patch("requests.get", side_effect=dummy_get_success)
+    def test_fetch_exchange_rates_success(self, mock_get):
         result = fetch_exchange_rates()
         expected = {"eur": {"usd": 1.12, "eur": 1.0, "gbp": 0.85}}
         assert result == expected
+        mock_get.assert_called_once_with(
+            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",
+            timeout=10,
+        )
 
-    def test_fetch_exchange_rates_failure(self, monkeypatch):
-        # Replace requests.get with the dummy failure function
-        monkeypatch.setattr(requests, "get", dummy_get_failure)
+    @patch("requests.get", side_effect=dummy_get_failure)
+    def test_fetch_exchange_rates_failure(self, mock_get):
         with pytest.raises(Exception) as excinfo:
             fetch_exchange_rates()
         assert "Failed to fetch data from API" in str(excinfo.value)
+        mock_get.assert_called_once_with(
+            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",
+            timeout=10,
+        )
+
+    @patch("requests.get", side_effect=dummy_get_timeout)
+    def test_fetch_exchange_rates_timeout(self, mock_get):
+        with pytest.raises(requests.exceptions.Timeout):
+            fetch_exchange_rates()
+        mock_get.assert_called_once_with(
+            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",
+            timeout=10,
+        )
 
 
 class TestTransform:

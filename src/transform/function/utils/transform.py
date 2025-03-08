@@ -223,7 +223,7 @@ def transform_dim_date() -> pd.DataFrame:
 # Function to fetch exchange rates
 def fetch_exchange_rates():
     url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json"  # noqa
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     if response.status_code == 200:
         return response.json()
     else:
