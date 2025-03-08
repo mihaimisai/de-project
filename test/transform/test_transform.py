@@ -44,7 +44,7 @@ class TestFetchExchangeRates:
         expected = {"eur": {"usd": 1.12, "eur": 1.0, "gbp": 0.85}}
         assert result == expected
         mock_get.assert_called_once_with(
-            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",
+            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",  # noqa
             timeout=10,
         )
 
@@ -54,7 +54,7 @@ class TestFetchExchangeRates:
             fetch_exchange_rates()
         assert "Failed to fetch data from API" in str(excinfo.value)
         mock_get.assert_called_once_with(
-            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",
+            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",  # noqa
             timeout=10,
         )
 
@@ -63,7 +63,7 @@ class TestFetchExchangeRates:
         with pytest.raises(requests.exceptions.Timeout):
             fetch_exchange_rates()
         mock_get.assert_called_once_with(
-            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",
+            "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json",  # noqa
             timeout=10,
         )
 
@@ -381,7 +381,9 @@ class TestTransform:
         # Validate attributes for the first date (2020-01-01)
         first_row = df_dim_date.iloc[0]
         # 2020-01-01 is a Wednesday: Monday=1, so Wednesday=3.
-        assert first_row["year"] == 2020, "Year for the first row is incorrect."  # noqa
+        assert (
+            first_row["year"] == 2020
+        ), "Year for the first row is incorrect."  # noqa
         assert first_row["month"] == 1, "Month for the first row is incorrect."
         assert first_row["day"] == 1, "Day for the first row is incorrect."
         assert (
@@ -411,7 +413,9 @@ class TestTransform:
         assert (
             sample_row["month_name"] == "December"
         ), "Month name for 2021-12-31 is incorrect."
-        assert sample_row["quarter"] == 4, "Quarter for 2021-12-31 should be 4."  # noqa
+        assert (
+            sample_row["quarter"] == 4
+        ), "Quarter for 2021-12-31 should be 4."  # noqa
 
     @staticmethod
     def dummy_fetch_exchange_rates():

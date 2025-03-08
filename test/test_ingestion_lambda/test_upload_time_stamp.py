@@ -25,7 +25,9 @@ class TestUploadTimeStamp:
         time_stamp = "2025-02-28 14:45:33"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
 
         with LogCapture(level=logging.INFO) as logstream:
@@ -71,7 +73,9 @@ class TestUploadTimeStamp:
         time_stamp = "2025-02-28 14:45:33"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
         with pytest.raises(AttributeError):
             upload_time_stamp(

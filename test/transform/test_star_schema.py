@@ -13,7 +13,9 @@ class TestStarschema:
         with mock_aws():
             yield s3_client()
 
-    @patch("src.transform.function.utils.star_schema.transform_dim_transaction")  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.transform_dim_transaction"
+    )  # noqa
     @patch(
         "src.transform.function.utils.star_schema.transform_dim_payment_type"
     )  # noqa

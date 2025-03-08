@@ -27,7 +27,9 @@ class TestTimeStampDataRetrieval:
         key = "time_stamp_users.txt"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
         test_client.put_object(Bucket=bucket_name, Body=body, Key=key)
         time_stamp = timestamp_data_retrival(
@@ -44,7 +46,9 @@ class TestTimeStampDataRetrieval:
         key = "time_stamp_users.txt"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
         test_client.put_object(Bucket=bucket_name, Body=body, Key=key)
 
@@ -67,7 +71,9 @@ class TestTimeStampDataRetrieval:
         bucket_name = "Test_Bucket"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
 
         test_client.get_object = MagicMock()
@@ -87,7 +93,9 @@ class TestTimeStampDataRetrieval:
         bucket_name = "Test_bucket"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()

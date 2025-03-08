@@ -181,7 +181,9 @@ class TestIngestDataToS3:
         "src.ingestion.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
-    def test_ingest_data_to_s3_data_upload_called(self, mock_logger, s3_client):  # noqa
+    def test_ingest_data_to_s3_data_upload_called(
+        self, mock_logger, s3_client
+    ):  # noqa
         s3_ingestion = "ingestion"
         s3_timestamp = "timestamp"
 

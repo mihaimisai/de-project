@@ -312,7 +312,8 @@ def transform_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
     # Fetch latest exchange rates EUR based
     exch_rates = fetch_exchange_rates()
     xc = {
-        key: exch_rates["eur"][key.lower()] for key in list(currency_mapping.keys()) # noqa
+        key: exch_rates["eur"][key.lower()]
+        for key in list(currency_mapping.keys())  # noqa
     }
 
     # Add a new column with currency names using the mapping
@@ -496,7 +497,9 @@ def transform_fact_payment(df_payment: pd.DataFrame) -> pd.DataFrame:
 
     # Ensure datetime columns are in datetime format
     df_payment["created_at"] = pd.to_datetime(df_payment["created_at"])
-    df_payment["last_updated"] = pd.to_datetime(df_payment["last_updated"])  # noqa
+    df_payment["last_updated"] = pd.to_datetime(
+        df_payment["last_updated"]
+    )  # noqa
 
     # Convert agreed dates from string to datetime
     # (if not already) then extract date part
