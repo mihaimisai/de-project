@@ -503,12 +503,10 @@ def transform_fact_payment(df_payment: pd.DataFrame) -> pd.DataFrame:
 
     # Convert agreed dates from string to datetime
     # (if not already) then extract date part
-    df_payment["agreed_payment_date"] = pd.to_datetime(
-        df_payment["agreed_payment_date"]
+    df_payment["payment_date"] = pd.to_datetime(
+        df_payment["payment_date"]
     ).dt.date
-    df_payment["agreed_delivery_date"] = pd.to_datetime(
-        df_payment["agreed_delivery_date"]
-    ).dt.date
+
 
     # Create the fact table DataFrame
     df_fact_payment = pd.DataFrame(
@@ -572,7 +570,7 @@ def transform_dim_payment_type(df_payment_type: pd.DataFrame) -> pd.DataFrame:
         {
             # Generate a payment_record_id starting from 1; mimics SERIAL
             "payment_type_id": df_payment_type["payment_type_id"],
-            "payment_type_name": df_payment_type["payment_type_name"].dt.date,
+            "payment_type_name": df_payment_type["payment_type_name"],
             "created_date": df_payment_type["created_at"].dt.date,
             "created_time": df_payment_type["created_at"].dt.time,
             "last_updated_date": df_payment_type["last_updated"].dt.date,
@@ -609,7 +607,7 @@ def transform_dim_transaction(df_transaction: pd.DataFrame) -> pd.DataFrame:
         {
             # Generate a payment_record_id starting from 1; mimics SERIAL
             "transaction_id": df_transaction["transaction_id"],
-            "transaction_type": df_transaction["transaction_type"].dt.date,
+            "transaction_type": df_transaction["transaction_type"],
             "created_date": df_transaction["created_at"].dt.date,
             "created_time": df_transaction["created_at"].dt.time,
             "last_updated_date": df_transaction["last_updated"].dt.date,

@@ -1,3 +1,9 @@
+from .s3_client import s3_client
+import logging
+import os
+from .get_latest_files import get_latest_files
+from pprint import pprint as pp
+
 from .list_s3 import ingested_data_retrival
 from .transform import (
     transform_fact_sales_order,
@@ -105,3 +111,16 @@ def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
     except Exception:
         logger.error("Insuffcient dataframes for star-schema data processing")
         raise
+
+
+client = s3_client()
+ingested_bucket_name = os.environ.get("ingested_data_bucket")
+transform_bucket_name = os.environ.get("processed_data_bucket")
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+files_dict = get_latest_files(client, ingested_bucket_name, logger)
+
+df_star_schema = star_schema(client, ingested_bucket_name, logger, files_dict)
+pp(df_star_schema)
