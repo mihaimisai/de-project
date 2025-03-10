@@ -7,6 +7,19 @@ The following directory acts as an Extract-Transform-Load (ETL) pipeline, transp
 <img src="markdown-photos/mvp.png" width="500">
 </center>
 
+
+Principally, the structure of this infrastructure is represented within the above diagram. A scheduler was intialised to trigger an AWS State-Machine every 20 minutes, which in-turn activates all three lambda sequentially encapsulated within the aforementioned State-Machine. Details on the following three Lambdas is as follows. 
+
+
+## Set-Up Guidance:
+To utilise this repository for your own ETL needs, the following configurations must be accomplished:
+1. Store database credentials for both initial PSQL datasource (DB) and resulting Data Warehouse (DB_DW) within Github Action's Secret Manager.
+2. Store your AWS account credentials, specifically Access Key and Secret Access Key, within Github Action's Secret Manager (For more information on this, see the *'Hidden Varibles'* section below).
+3. In your AWS console, manually create an s3 Data Bucket dedicated to holding your *'terraform.tfstate'* file (For more information, see the *'State Bucket'* section below.)
+4. Ensure that any modifications within the src code for the Lambdas are accurately reflected within the Dependencies section (For more information, see the *'Lambda Dependencies'* section).
+5. In accordance to the Github Action's YAML pipeline, all changes to the src code must be fully compliant with BANDIT, BLACK and FLAKE8 reviews to achieve successful deployment. 
+
+
 ## Lambda One (Extraction):
 
 The initial Lambda, a serverless computing service delivered by AWS, extracts raw, unformatted data from the *TOTESYS* PSQL database using pg8000, and dumps it into a specified s3 Ingestion Bucket (a cloud storage system delivered by AWS) as a .csv file, structured by tablename, year, month and day:
@@ -41,6 +54,13 @@ The third and final Lambda is responsible for loading the transformed data from 
 ```
 </center>
 
+## State-Machine and Scheduling:
+All lambdas exist within the scope of AWS's State-Machine, a event-driven workflow allowing seemless integration between all of the cloud infrastructure, as deployed within this repository. The inital lambda is triggered, and thus begins ingesting data from the *TOTESYS* database every 20 minutes. Both subsequent Lambdas (both Transformation and Load) are trigger to execute when new data is dumped into the s3 Bucket that proceeds them within the State-Machine, consequently allowing for the data to be successfully transported down the ETL pipeline: 
+
+<center>
+<img src="markdown-photos/state-machine.png" width="100">
+</center>
+
 ## Extra Features:
 
 #### Cloudwatch Logging:
@@ -53,13 +73,6 @@ The third and final Lambda is responsible for loading the transformed data from 
 <img src="markdown-photos/email-alert.png" width="500">
 </center>
 
-#### State-Machine and Scheduling:
-- All lambdas exist within the scope of AWS's State-Machine, a event-driven workflow allowing seemless integration between all of the cloud infrastructure, as deployed within this repository. The inital lambda is triggered, and thus begins ingesting data from the *TOTESYS* database every 20 minutes. Both subsequent Lambdas (both Transformation and Load) are trigger to execute when new data is dumped into the s3 Bucket that proceeds them within the State-Machine, consequently allowing for the data to be successfully transported down the ETL pipeline. 
-
-<center>
-<img src="markdown-photos/state-machine.png" width="100">
-</center>
-
 
 #### Lambda Dependencies:
 - All of the Lambda dependencies exist within a designated Dependencies/Python file, within which additional Python packages and modules not innately supported by AWS's serverless computing are deployed. For this reason, any changes to the requirements.txt file within this repository much be reflected in the dependencies section to ensure no ModuleNotFound errors are incorrectly raised. 
@@ -70,8 +83,35 @@ The third and final Lambda is responsible for loading the transformed data from 
 #### State Bucket:
 - The Terraform state file, utilised by Terraform to map real-world resources to your configuration, keep track of metadata, and improve performance for large infrastructures, is stored in a seperate s3 Bucket, deployed via the AWS console. This allows for cross-platform collaboration between the our team and prevents issues with non-centralised modifications to the Terraform state. 
 
+#### Hidden Variables:
+- All variables representing sensitive data (mainly pertaining to access credentials for the Data Warehouse and SYSTOTE PSQL Database) are strategically hidden within GitHub Action's Secret Manager, preventing accidental exposure and prioritising cybersecurity. Such variables were manually inputted into Github Action's Secret Manager, and were subsequently collected for the environment at hand through our .YAML file:
 
-#### Created by Team Banshee:
+<center>
+<img src="markdown-photos/secrets-example.png" width="300">
+</center>
+
+## Comprehensive List of Used Technologies:
+
+#### Amazon Web Services (AWS):
+- s3 Data Buckets.
+- State-Machine.
+- Scheduler (rule).
+- Cloudwatch.
+- Lambda. 
+
+#### Python External Modules:
+- Pyarrow.
+- Pg8000.
+- Boto3.
+- Moto.
+- Pandas. 
+- Bandit.
+- Black. 
+- Numpy.
+- Pytest.
+- SQLAlchemy.
+
+## Repository Authors:
 - Shea Macfarlane.
 - Mihai Misai. 
 - Meral Hewitt. 
