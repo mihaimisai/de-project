@@ -75,7 +75,7 @@ All lambdas exist within the scope of AWS's State-Machine, a event-driven workfl
 
 
 #### Lambda Dependencies:
-- All of the Lambda dependencies exist within a designated Dependencies/Python file, within which additional Python packages and modules not innately supported by AWS's serverless computing are deployed. For this reason, any changes to the requirements.txt file within this repository much be reflected in the dependencies section to ensure no ModuleNotFound errors are incorrectly raised. 
+- All of the Lambda dependencies exist within a designated Dependencies/Python file, within which additional Python packages and modules not innately supported by AWS's serverless computing are deployed. For this reason, any changes to the requirements.txt file within this repository must be reflected in the dependencies section to ensure no ModuleNotFound errors are incorrectly raised. 
 
 #### CI/CD, Github Actions and .yml:
 - The build, test and deploy pipeline central to the development of this repositiory was automated through Github Actions in accordance to our *"test-and-deploy.yml"* file. This ensured that all scripts pushed to this repository underwent stringent validation prior to being incorporated and deployed. This ensured all Python scripts were fully PEP8 compliant through leveraging Flake8 and Black modules, passed all respective unittests and furthermore meant that all Terraform-deployed AWS resources were valid and well-formed. 
