@@ -73,4 +73,4 @@ jobs:
           DB_PASSWORD_DW: ${{ secrets.DB_PASSWORD_DW }}
           DB_PORT_DW: ${{ secrets.DB_PORT_DW }}
           DB_USER_DW: ${{ secrets.DB_USER_DW }}
-        run: source venv/bin/activate && export PYTHONPATH=$(PWD) && python src/reset_warehouse/reset.py   
+        run: source venv/bin/activate && python src/reset_warehouse/reset.py   
