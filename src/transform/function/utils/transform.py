@@ -33,8 +33,6 @@ def transform_fact_sales_order(df_sales_order: pd.DataFrame) -> pd.DataFrame:
     # Create the fact table DataFrame
     df_fact_sales_order = pd.DataFrame(
         {
-            # Generate a sales_record_id starting from 1; mimics SERIAL
-            "sales_record_id": range(1, len(df_sales_order) + 1),
             "sales_order_id": df_sales_order["sales_order_id"],
             "created_date": df_sales_order["created_at"].dt.date,
             "created_time": df_sales_order["created_at"].dt.time,
@@ -172,7 +170,7 @@ def transform_dim_date() -> pd.DataFrame:
 
     # Define the start and end dates for the date dimension
     start_date = datetime.strptime("2020-01-01", "%Y-%m-%d")
-    end_date = datetime.strptime("2125-12-31", "%Y-%m-%d")
+    end_date = datetime.strptime("2025-12-31", "%Y-%m-%d")
 
     # Generate date range
     date_range = pd.date_range(start_date, end_date, freq="D")

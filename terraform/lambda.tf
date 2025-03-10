@@ -46,9 +46,10 @@ resource "aws_lambda_function" "transformation_lambda_function" {
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "transformation/function.zip"
   role = aws_iam_role.lambda_2_role.arn
-  handler = "function.transformation_handler_fn.transformation_handler"
+  handler = "function.transform_handler_fn.transform_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
+  memory_size = 256
   layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
     variables = {
@@ -76,11 +77,18 @@ resource "aws_lambda_function" "load_lambda_function" {
   role = aws_iam_role.lambda_3_role.arn
   handler = "function.load_handler_fn.load_handler"
   runtime = var.python_runtime
-  timeout = var.default_timeout
+  timeout = 600
+  memory_size = 256
   layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
     variables = {
       processed_data_bucket = aws_s3_bucket.processed_bucket.bucket
+
+      DB_HOST_DW = "${var.db_host_dw}"
+      DB_PORT_DW = "${var.db_port_dw}"
+      DB_DW  = "${var.db_db_dw}"
+      DB_USER_DW  = "${var.db_user_dw}"
+      DB_PASSWORD_DW  = "${var.db_password_dw}"
     }
   }
   depends_on = [aws_s3_object.lambda_code, aws_s3_object.load_layer]

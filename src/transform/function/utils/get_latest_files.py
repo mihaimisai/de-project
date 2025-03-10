@@ -10,22 +10,32 @@ def get_latest_files(client, bucket, logger):
 
     try:
 
-        objs = client.list_objects_v2(Bucket=bucket)
+        objects = []
+        response = client.list_objects_v2(Bucket=bucket)
+        while response["IsTruncated"]:
+            objects.extend(response["Contents"])
+            response = client.list_objects_v2(
+                Bucket=bucket,
+                ContinuationToken=response["NextContinuationToken"],
+            )
+
+        objects.extend(response["Contents"])
 
         def get_last_modified(obj):
+
             return int(obj["LastModified"].strftime("%s"))
 
         list_objects = [
             obj["Key"]
-            for obj in sorted(objs.get("Contents", []), key=get_last_modified)
+            for obj in sorted(
+                objects, key=get_last_modified, reverse=True
+            )  # noqa
         ]
-
-        keys = [table.split("/")[0] for table in list_objects]
 
         files_dict = {}
 
-        for i in range(len(keys)):
-            files_dict[keys[i]] = list_objects[i]
+        for table in list_objects[:11]:
+            files_dict[table.split("/")[0]] = table
 
         logger.info(f"Succesfully retrieved files from bucket:{bucket}")
 

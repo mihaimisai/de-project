@@ -1,4 +1,3 @@
-import io
 import pandas as pd
 
 from botocore.exceptions import ClientError
@@ -6,7 +5,7 @@ from botocore.exceptions import ClientError
 
 def ingested_data_retrival(
     s3_client, files_dict: dict, logger, bucket_name: str
-):
+):  # noqa
     """
     Retrieves CSV files from an S3 bucket and changes data into DataFrames.
 
@@ -27,12 +26,12 @@ def ingested_data_retrival(
     for table_name, file_path in files_dict.items():
         try:
             response = s3_client.get_object(Bucket=bucket_name, Key=file_path)
-            csv_content = response["Body"].read().decode("utf-8")
-            df = pd.read_csv(io.StringIO(csv_content))
-            retrieved_data[table_name] = df
+
+            df = pd.read_csv(response["Body"], sep=",")
+            retrieved_data[f"df_{table_name}"] = df
             logger.info(
                 f"Successfully retrieved {file_path} for table {table_name}"
-            )
+            )  # noqa
 
         except ClientError as e:
             if e.response["Error"]["Code"] == "NoSuchKey":
@@ -40,7 +39,7 @@ def ingested_data_retrival(
             else:
                 logger.error(
                     f"Error retrieving {file_path} for table {table_name}."
-                )
+                )  # noqa
 
         except Exception as e:
             logger.error(

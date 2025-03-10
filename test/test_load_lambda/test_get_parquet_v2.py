@@ -63,9 +63,7 @@ def test_get_recent_parquet_files_from_s3(
 
     for key in file_keys:
         s3_client.put_object(
-            Bucket=bucket_name,
-            Key=key,
-            Body=sample_parquet_data
+            Bucket=bucket_name, Key=key, Body=sample_parquet_data
         )
 
     # Run the function
@@ -102,9 +100,7 @@ def test_logs_when_successfully_retrieved(
 
     for key in file_keys:
         s3_client.put_object(
-            Bucket=bucket_name,
-            Key=key,
-            Body=sample_parquet_data
+            Bucket=bucket_name, Key=key, Body=sample_parquet_data
         )
 
     with LogCapture("test_logger", level=logging.INFO) as logstream:

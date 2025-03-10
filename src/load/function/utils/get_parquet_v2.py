@@ -2,10 +2,7 @@ import pandas as pd
 import io
 
 
-def get_recent_parquet_files_from_s3(bucket_name,
-                                     client,
-                                     logger,
-                                     num_files=7):
+def get_recent_parquet_files_from_s3(bucket_name, client, logger, num_files=7):
     """
     Retrieves the 7 most recently modified files from
     an S3 bucket and loads them into pandas DataFrames.
@@ -48,15 +45,10 @@ def get_recent_parquet_files_from_s3(bucket_name,
             # Extract table name
             table_name = key.split("/")[0]
 
-            file_obj = client.get_object(Bucket=bucket_name,
-                                         Key=key)
+            file_obj = client.get_object(Bucket=bucket_name, Key=key)
             file_body = file_obj["Body"].read()
 
             df = pd.read_parquet(io.BytesIO(file_body))
-
-            if table_name in df_dict:
-                table_name = f"{table_name}_{len(df_dict)}"
-
             df_dict[table_name] = df
 
         logger.info("Successfully loaded transformed parquet files.")

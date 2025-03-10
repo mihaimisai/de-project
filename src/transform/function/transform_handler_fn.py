@@ -23,9 +23,7 @@ def transform_handler(event, context):
     """
 
     logger = logging.getLogger(__name__)
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
+    logger.setLevel(logging.DEBUG)
 
     client = s3_client()
     ingested_bucket_name = os.environ.get("ingested_data_bucket")
@@ -35,7 +33,7 @@ def transform_handler(event, context):
 
     df_star_schema = star_schema(
         client, ingested_bucket_name, logger, files_dict
-    )
+    )  # noqa
 
     star_schema_table_names = list(df_star_schema.keys())
     try:
@@ -43,9 +41,9 @@ def transform_handler(event, context):
             upload_df_to_s3(
                 client,
                 df_star_schema[key],
-                key + ".parquet",
-                logger=logger,
-                transform_bucket_name="",
+                key,
+                logger,
+                transform_bucket_name,
             )
             for key in star_schema_table_names
         ]
