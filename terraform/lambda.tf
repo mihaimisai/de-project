@@ -13,7 +13,6 @@ resource "aws_lambda_function" "ingested_lambda_function" {
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "ingestion/function.zip"
   role = aws_iam_role.lambda_1_role.arn
-  # adjust handler to match
   handler = "function.ingestion_handler_fn.ingestion_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
@@ -29,7 +28,7 @@ resource "aws_lambda_function" "ingested_lambda_function" {
       DB_PASSWORD = "${var.db_password}"
     }
   }
-  depends_on = [aws_s3_object.ingestion_lambda_code, aws_s3_object.ingestion_layer]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.ingestion_layer]
 }
 
 ##### LAMBDA TWO #####
@@ -37,7 +36,7 @@ resource "aws_lambda_function" "ingested_lambda_function" {
 
 data "archive_file" "transformation_lambda" {
   type             = "zip"
-  output_path = "${path.module}/../packages/transform/function.zip"
+  output_path = "${path.module}/../packages/transformation/function.zip"
   source_dir      = "${path.module}/../src/transform" 
 }
 
@@ -47,10 +46,10 @@ resource "aws_lambda_function" "transformation_lambda_function" {
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "transformation/function.zip"
   role = aws_iam_role.lambda_2_role.arn
-  # adjust handler to match
   handler = "function.transform_handler_fn.transform_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
+  memory_size = 256
   layers = [aws_lambda_layer_version.dependencies.arn]
   environment {
     variables = {
@@ -58,5 +57,39 @@ resource "aws_lambda_function" "transformation_lambda_function" {
       processed_data_bucket = aws_s3_bucket.processed_bucket.bucket
     }
   }
-  depends_on = [aws_s3_object.transformation_lambda_code]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.transformation_layer]
+}
+
+##### LAMBDA THREE #####
+
+
+data "archive_file" "load_lambda" {
+  type             = "zip"
+  output_path = "${path.module}/../packages/load/function.zip"
+  source_dir      = "${path.module}/../src/load" 
+}
+
+resource "aws_lambda_function" "load_lambda_function" {
+  function_name = var.load_lambda
+  source_code_hash = data.archive_file.load_lambda.output_base64sha256
+  s3_bucket = aws_s3_bucket.code_bucket.bucket
+  s3_key = "load/function.zip"
+  role = aws_iam_role.lambda_3_role.arn
+  handler = "function.load_handler_fn.load_handler"
+  runtime = var.python_runtime
+  timeout = 600
+  memory_size = 256
+  layers = [aws_lambda_layer_version.dependencies.arn]
+  environment {
+    variables = {
+      processed_data_bucket = aws_s3_bucket.processed_bucket.bucket
+
+      DB_HOST_DW = "${var.db_host_dw}"
+      DB_PORT_DW = "${var.db_port_dw}"
+      DB_DW  = "${var.db_db_dw}"
+      DB_USER_DW  = "${var.db_user_dw}"
+      DB_PASSWORD_DW  = "${var.db_password_dw}"
+    }
+  }
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.load_layer]
 }

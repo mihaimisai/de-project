@@ -48,7 +48,9 @@ def test_file_not_found(mock_logger):
             "Message": "The specified key does not exist.",
         }
     }
-    mock_s3_client.get_object.side_effect = ClientError(error_response, "GetObject")
+    mock_s3_client.get_object.side_effect = ClientError(
+        error_response, "GetObject"
+    )
 
     files_dict = {"table1": "table1/test.csv", "table2": "table2/another.csv"}
     result = ingested_data_retrival(

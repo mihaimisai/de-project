@@ -13,15 +13,27 @@ class TestStarschema:
         with mock_aws():
             yield s3_client()
 
-    @patch("src.transform.function.utils.star_schema.ingested_data_retrival")  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.ingested_data_retrival"
+    )  # noqa
     @patch(
         "src.transform.function.utils.star_schema.transform_fact_sales_order"  # noqa
     )
-    @patch("src.transform.function.utils.star_schema.transform_dim_staff")  # noqa
-    @patch("src.transform.function.utils.star_schema.transform_dim_location")  # noqa
-    @patch("src.transform.function.utils.star_schema.transform_dim_design")  # noqa
-    @patch("src.transform.function.utils.star_schema.transform_dim_date")  # noqa
-    @patch("src.transform.function.utils.star_schema.transform_dim_currency")  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.transform_dim_staff"
+    )  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.transform_dim_location"
+    )  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.transform_dim_design"
+    )  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.transform_dim_date"
+    )  # noqa
+    @patch(
+        "src.transform.function.utils.star_schema.transform_dim_currency"
+    )  # noqa
     @patch(
         "src.transform.function.utils.star_schema.transform_dim_counterparty"  # noqa
     )

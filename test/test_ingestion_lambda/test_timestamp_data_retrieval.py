@@ -27,7 +27,9 @@ class TestTimeStampDataRetrieval:
         key = "time_stamp_users.txt"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
         test_client.put_object(Bucket=bucket_name, Body=body, Key=key)
         time_stamp = timestamp_data_retrival(
@@ -44,13 +46,17 @@ class TestTimeStampDataRetrieval:
         key = "time_stamp_users.txt"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
         test_client.put_object(Bucket=bucket_name, Body=body, Key=key)
 
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
-            timestamp_data_retrival(test_client, bucket_name, "users", test_logger)
+            timestamp_data_retrival(
+                test_client, bucket_name, "users", test_logger
+            )
 
         for log in logstream:
             assert log == (
@@ -65,7 +71,9 @@ class TestTimeStampDataRetrieval:
         bucket_name = "Test_Bucket"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
 
         test_client.get_object = MagicMock()
@@ -85,12 +93,16 @@ class TestTimeStampDataRetrieval:
         bucket_name = "Test_bucket"
         test_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},  # noqa
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            },  # noqa
         )
         with LogCapture(level=logging.INFO) as logstream:
             logstream.clear()
             try:
-                timestamp_data_retrival(test_client, bucket_name, "users", test_logger)
+                timestamp_data_retrival(
+                    test_client, bucket_name, "users", test_logger
+                )
             except Exception:
                 print("Exception in test func")
 
