@@ -67,4 +67,10 @@ jobs:
         run: make security
 
       - name: Reset warehouse
+        env:
+          DB_DW: ${{ secrets.DB_DW }}
+          DB_HOST_DW: ${{ secrets.DB_HOST_DW }}
+          DB_PASSWORD_DW: ${{ secrets.DB_PASSWORD_DW }}
+          DB_PORT_DW: ${{ secrets.DB_PORT_DW }}
+          DB_USER_DW: ${{ secrets.DB_USER_DW }}
         run: source venv/bin/activate && export PYTHONPATH=$(PWD) && python src/reset_warehouse/reset.py   
