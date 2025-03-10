@@ -1,14 +1,28 @@
-name: Terraform Destroy (Manual)
+name: Manual Terraform Destroy
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
-  test-job:
-    name: Run Hello World
+  terraform-destroy:
     runs-on: ubuntu-latest
+    name: terraform-destroy
 
     steps:
-      - name: Print Hello World
-        run: echo "Hello, world!"
-  
+      - name: Checkout and clone repo
+        uses: actions/checkout@v4
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Setup Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCES_KEY }}
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init
+      - name: Destroy Terraform
+        working-directory: terraform
+        run: terraform destroy -auto-approve
+
