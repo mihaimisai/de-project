@@ -1,14 +1,14 @@
   {
-    "Comment": "Lambda Transform will be triggered by successful Lambda Ingest invocation.",
-    "StartAt": "Lambda Ingest",
+    "Comment": "Lambda Transform will be triggered by successful Ingest Lambda invocation.",
+    "StartAt": "Ingest Lambda",
     "States": {
-      "Lambda Ingest": {
+      "Ingest Lambda": {
         "Type": "Task",
         "Resource": "arn:aws:states:::lambda:invoke",
         "OutputPath": "$.Payload",
         "Parameters": {
           "Payload.$": "$",
-          "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_num}:function:${ingestion_function_name}:$LATEST"
+          "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_num}:function:${ingest_function_name}:$LATEST"
         },
         "Retry": [
           {
@@ -24,15 +24,15 @@
             "JitterStrategy": "FULL"
           }
         ],
-        "Next": "Lambda Transform"
+        "Next": "Transform Lambda"
       },
-      "Lambda Transform": {
+      "Transform Lambda": {
         "Type": "Task",
         "Resource": "arn:aws:states:::lambda:invoke",
         "OutputPath": "$.Payload",
         "Parameters": {
           "Payload.$": "$",
-          "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_num}:function:${transformation_function_name}:$LATEST"
+          "FunctionName": "arn:aws:lambda:${aws_region}:${aws_account_num}:function:${transform_function_name}:$LATEST"
         },
         "Retry": [
           {
@@ -48,9 +48,9 @@
             "JitterStrategy": "FULL"
           }
         ],
-        "Next": "Lambda Load"
+        "Next": "Load Lambda"
       },
-      "Lambda Load": {
+      "Load Lambda": {
         "Type": "Task",
         "Resource": "arn:aws:states:::lambda:invoke",
         "OutputPath": "$.Payload",
