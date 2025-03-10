@@ -10,7 +10,19 @@ from .transform import (
 )
 
 
-def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
+def star_schema(client, ingested_bucket_name, logger, files_dict):
+    """
+
+    Arguments:
+        client : s3 client,
+        ingested_bucket_name : bucket name passed to ingested_data_retrieval
+        logger : the logger for logging messages
+        files_dict : dictionary containing table name and path to file
+
+    Returns:
+        dictionary with keys as dataframe names and values as
+        parquet dataframes
+    """
     required_dataframes = [
         "df_sales_order",
         "df_staff",

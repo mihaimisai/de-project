@@ -37,7 +37,7 @@ def upload_df_to_s3(
         logger.error(
             f"Failed to convert DataFrame to Parquet for {file_key}: {e}"
         )  # noqa
-        raise
+        raise e
 
     # Upload the in-memory buffer to S3.
     try:
@@ -48,7 +48,7 @@ def upload_df_to_s3(
         logger.error(
             f"Failed to upload file {file_key} to S3 bucket {transform_bucket_name}: {e}"  # noqa
         )
-        raise
+        raise e
 
     logger.info(
         f"Successfully uploaded DataFrame to {file_key} in bucket {transform_bucket_name}"  # noqa
