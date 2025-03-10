@@ -57,17 +57,18 @@ The third and final Lambda is responsible for loading the transformed data from 
 - All lambdas exist within the scope of AWS's State-Machine, a event-driven workflow allowing seemless integration between all of the cloud infrastructure, as deployed within this repository. The inital lambda is triggered, and thus begins ingesting data from the *TOTESYS* database every 20 minutes. Both subsequent Lambdas (both Transformation and Load) are trigger to execute when new data is dumped into the s3 Bucket that proceeds them within the State-Machine, consequently allowing for the data to be successfully transported down the ETL pipeline. 
 
 <center>
-
-```python
-"insert State-Machine overview here."
-```
+<img src="markdown-photos/state-machine.png" width="100">
 </center>
+
 
 #### Lambda Dependencies:
 - All of the Lambda dependencies exist within a designated Dependencies/Python file, within which additional Python packages and modules not innately supported by AWS's serverless computing are deployed. For this reason, any changes to the requirements.txt file within this repository much be reflected in the dependencies section to ensure no ModuleNotFound errors are incorrectly raised. 
 
 #### CI/CD, Github Actions and .yml:
 - The build, test and deploy pipeline central to the development of this repositiory was automated through Github Actions in accordance to our *"test-and-deploy.yml"* file. This ensured that all scripts pushed to this repository underwent stringent validation prior to being incorporated and deployed. This ensured all Python scripts were fully PEP8 compliant through leveraging Flake8 and Black modules, passed all respective unittests and furthermore meant that all Terraform-deployed AWS resources were valid and well-formed. 
+
+#### State Bucket:
+- The Terraform state file, utilised by Terraform to map real-world resources to your configuration, keep track of metadata, and improve performance for large infrastructures, is stored in a seperate s3 Bucket, deployed via the AWS console. This allows for cross-platform collaboration between the our team and prevents issues with non-centralised modifications to the Terraform state. 
 
 
 #### Created by Team Banshee:
