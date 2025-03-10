@@ -41,3 +41,30 @@ jobs:
         working-directory: terraform
         run: terraform destroy -auto-approve
 
+  reset-warehouse:
+    runs-on: ubuntu-latest
+    name: reset-warehouse
+
+    needs: terraform-destroy
+    steps:
+      - name: Checkout and clone repo
+        uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.6'
+
+      - name: Make environment
+        run: make environment
+
+      - name: Install requirements
+        run: make requirements
+
+      - name: Run format
+        run: make format-check
+
+      - name: Run security checks
+        run: make security
+
+      - name: Reset warehouse
+        run: python src/reset_warehouse/reset.py   
