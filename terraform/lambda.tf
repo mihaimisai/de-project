@@ -12,7 +12,7 @@ resource "aws_lambda_function" "ingest_lambda_function" {
   function_name = var.ingest_lambda
   source_code_hash = data.archive_file.ingest_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
-  s3_key = "${var.ingest_lambda}/function.zip"
+  s3_key = "ingest/function.zip"
   role = aws_iam_role.ingest_lambda_role.arn
   handler = "function.ingest_handler_fn.ingest_handler"
   runtime = var.python_runtime
