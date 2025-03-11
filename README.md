@@ -82,12 +82,13 @@ All lambdas exist within the scope of AWS's State-Machine, a event-driven workfl
 - Multi-tier logging is implemented throughout the lambda scripts and varying other infrastructure-related resources, as deployed via Terraform. Collected via AWS's Cloudwatch, such messages log error- and success- related information specifically detailing the condition of the entire ETL pipeline, start to finish.
 
 #### Email Alerts:
-- In the event that the aforementioned Cloudwatch Logging System encounters an error, an informative message is delivered to a shared email address- "NotificationStreamBanshee@Gmail.com"- allowing for quick resolution by the DevOps team:
+- In the event that the Cloudwatch Logging System encounters an error, an informative message is delivered to a shared email address- "NotificationStreamBanshee@Gmail.com"- allowing for quick resolution by the DevOps team:
 
 <center>
 <img src="markdown-photos/email-alert.png" width="500">
 </center>
 
+- To use a different email address, specify it in the hidden variables and confirm the subscription by clicking on SubscribeURL when Amazon SNS sends a confirmation message to your endpoint.
 
 #### Lambda Dependencies:
 - All of the Lambda dependencies exist within a designated Dependencies/Python file, within which additional Python packages and modules not innately supported by AWS's serverless computing are deployed. For this reason, any changes to the requirements.txt file within this repository must be reflected in the dependencies section to ensure no ModuleNotFound errors are incorrectly raised. 
