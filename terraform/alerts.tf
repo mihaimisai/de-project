@@ -8,6 +8,10 @@ resource "aws_sns_topic_subscription" "alert_subscription" {
   endpoint  = var.alert_email
 }
 
+# -------------
+# Lambda Alarms
+# -------------
+
 resource "aws_cloudwatch_log_metric_filter" "lambda_error_filter" {
   for_each = toset(["ingest", "transform", "load"])
   name           = "${each.key}_lambda_error_filter"
@@ -20,7 +24,7 @@ resource "aws_cloudwatch_log_metric_filter" "lambda_error_filter" {
     value     = 1
     default_value = 0
   }
-  
+
   depends_on = [
     aws_lambda_function.ingest_lambda_function,
     aws_lambda_function.transform_lambda_function,
@@ -39,5 +43,25 @@ resource "aws_cloudwatch_metric_alarm" "lambda_error_alarm" {
   statistic          = "Sum"
   threshold          = 1
   alarm_description  = "Triggers when ${each.key} Lambda logs contain errors"
+  alarm_actions      = [aws_sns_topic.alert_topic.arn]
+}
+
+# -------------------
+# State Machine Alarm
+# -------------------
+
+resource "aws_cloudwatch_metric_alarm" "sfn_execution_failed_alarm" {
+  alarm_name          = "SfnExecutionFailedNotifier"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "ExecutionsFailed"
+  namespace          = "AWS/States"
+  period             = 300
+  statistic          = "Sum"
+  threshold          = 1
+  alarm_description  = "Triggers when ${var.state_machine_name} failed execution detected"
+  dimensions = {
+    StateMachineArn = aws_sfn_state_machine.sfn_ingest_transform_load.arn
+  }
   alarm_actions      = [aws_sns_topic.alert_topic.arn]
 }

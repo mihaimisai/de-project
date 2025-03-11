@@ -35,7 +35,7 @@ resource "aws_iam_role" "state_machine_iam_role" {
 # ------------------------
 
 # Define
-data "aws_iam_policy_document" "sfn_lambda_policy_doc" {
+data "aws_iam_policy_document" "sfn_policy_doc" {
   statement {
     effect = "Allow"
     actions = ["lambda:InvokeFunction"]
@@ -56,16 +56,25 @@ data "aws_iam_policy_document" "sfn_lambda_policy_doc" {
     ]
     resources = ["*"]
   }
+
+  statement {
+        actions = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        resources = ["*"]
+        effect = "Allow"
+      }
 }
 
 # Create
-resource "aws_iam_policy" "sfn_lambda_policy" {
+resource "aws_iam_policy" "sfn_policy" {
   name_prefix = "lambda-policy-${var.state_machine_name}"
-  policy      = data.aws_iam_policy_document.sfn_lambda_policy_doc.json
+  policy      = data.aws_iam_policy_document.sfn_policy_doc.json
 }
 
 # Attach
-resource "aws_iam_role_policy_attachment" "sfn_lambda_policy_attachment" {
-  policy_arn = aws_iam_policy.sfn_lambda_policy.arn
+resource "aws_iam_role_policy_attachment" "sfn_policy_attachment" {
+  policy_arn = aws_iam_policy.sfn_policy.arn
   role       = aws_iam_role.state_machine_iam_role.name
 }
