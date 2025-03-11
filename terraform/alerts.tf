@@ -15,7 +15,7 @@ resource "aws_sns_topic_subscription" "alert_subscription" {
 resource "aws_cloudwatch_log_metric_filter" "lambda_error_filter" {
   for_each = toset(["ingest", "transform", "load"])
   name           = "${each.key}_lambda_error_filter"
-  log_group_name = "/aws/lambda/${each.key}_lambda"
+  log_group_name = "/aws/lambda/${each.key}"
   pattern = "ERROR"
 
  metric_transformation {

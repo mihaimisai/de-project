@@ -193,7 +193,7 @@ data "aws_iam_policy_document" "cw_document" {
       "logs:PutLogEvents"
     ]
     resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${each.key}_lambda:*"
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${each.key}:*"
     ]
     effect = "Allow"
   }

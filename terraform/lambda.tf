@@ -1,7 +1,7 @@
 
 resource "aws_cloudwatch_log_group" "log_group_for_lambda" {
   for_each = toset(["ingest", "transform", "load"])
-  name = "/aws/lambda/${each.key}_lambda"
+  name = "/aws/lambda/${each.key}"
 }
 
 
