@@ -70,11 +70,19 @@ resource "aws_s3_object" "load_layer" {
   depends_on = [ data.archive_file.load_layer_code ]
 }
 
-# for all lambdas using one layer
-# resource "aws_s3_object" "layer" {
+
+# resource "aws_s3_object" "pandas_pyarrow_layer" {
 #   bucket = aws_s3_bucket.code_bucket.bucket
-#   key = "layers/layer.zip"
-#   source = data.archive_file.layer_code.output_path
-#   etag = filemd5(data.archive_file.layer_code.output_path)
-#   depends_on = [ data.archive_file.layer_code ]
+#   key = "layers/pandas_pyarrow_layer.zip"
+#   source = data.archive_file.pandas_pyarrow_layer_code.output_path
+#   etag = filemd5(data.archive_file.pandas_pyarrow_layer_code.output_path)
+#   depends_on = [ data.archive_file.pandas_pyarrow_layer_code ]
+# }
+
+# resource "aws_s3_object" "pg8000_layer" {
+#   bucket = aws_s3_bucket.code_bucket.bucket
+#   key = "layers/pg8000_layer.zip"
+#   source = data.archive_file.pg8000_layer_code.output_path
+#   etag = filemd5(data.archive_file.pg8000_layer_code.output_path)
+#   depends_on = [ data.archive_file.pg8000_layer_code ]
 # }
