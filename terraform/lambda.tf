@@ -102,5 +102,5 @@ resource "aws_lambda_function" "load_lambda_function" {
     }
   }
   # depends_on = [aws_s3_object.lambda_code, aws_s3_object.load_layer]
-  depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object_pg8000_layer]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object.pg8000_layer]
 }
