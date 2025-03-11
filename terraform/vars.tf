@@ -55,17 +55,17 @@ variable "timestamp_bucket_prefix" {
 # lambdas
 variable "ingest_lambda" {
     type = string
-    default = "ingest-lambda"
+    default = "ingest_lambda"
 }
 
 variable "transform_lambda" {
     type = string
-    default = "transform-lambda"
+    default = "transform_lambda"
 }
 
 variable "load_lambda" {
     type = string
-    default = "load-lambda"
+    default = "load_lambda"
 }
 
 variable "python_runtime" {
@@ -82,7 +82,7 @@ variable "default_timeout" {
 # sfn
 variable "state_machine_name" {
     type = string
-    default = "sfn-ingest-transform-load"
+    default = "sfn_ingest_transform_load"
 }
 
 
