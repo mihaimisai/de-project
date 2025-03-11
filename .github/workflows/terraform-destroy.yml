@@ -21,7 +21,6 @@ jobs:
       TF_VAR_db_user_dw: ${{ secrets.DB_USER_DW }}
 
       TF_VAR_alert_email: ${{ secrets.LOG_EMAIL }}
-      TF_VAR_log_email_pass: ${{ secrets.LOG_EMAIL_PASS }}
 
     steps:
       - name: Checkout and clone repo

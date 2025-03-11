@@ -1,3 +1,4 @@
+# totesys database credentials
 variable "db_user" { 
   type = string 
   sensitive = true
@@ -28,19 +29,16 @@ variable "alert_email" {
     sensitive = true 
 }
 
-variable "log_email_pass" {
-  type = string
-  sensitive = true
-}
 
+# s3 buckets
 variable "ingested_data_bucket_prefix" {
     type = string
     default = "de-project-ingested-data-"
 }
 
-variable "processed_data_bucket_prefix" {
+variable "transformed_data_bucket_prefix" {
     type = string
-    default = "de-project-processed-data-"
+    default = "de-project-transformed-data-"
 }
 
 variable "code_bucket_prefix" {
@@ -53,14 +51,16 @@ variable "timestamp_bucket_prefix" {
     default = "de-project-lambda-timestamp-"
 }
 
-variable "ingestion_lambda" {
+
+# lambdas
+variable "ingest_lambda" {
     type = string
-    default = "ingestion_lambda"
+    default = "ingest_lambda"
 }
 
-variable "transformation_lambda" {
+variable "transform_lambda" {
     type = string
-    default = "transformation_lambda"
+    default = "transform_lambda"
 }
 
 variable "load_lambda" {
@@ -77,11 +77,16 @@ variable "default_timeout" {
   type    = number
   default = 120
 }
+
+
+# sfn
 variable "state_machine_name" {
     type = string
-    default = "sfn_ingest_to_transform"
+    default = "sfn_ingest_transform_load"
 }
 
+
+# data warehouse credentials
 variable "db_host_dw" { 
   type = string 
   sensitive = true

@@ -1,6 +1,6 @@
-# ---------------
-# Lambda IAM Role
-# ---------------
+# ----------------
+# IAM Trust Policy
+# ----------------
 
 # Define
 data "aws_iam_policy_document" "trust_policy" {
@@ -9,32 +9,50 @@ data "aws_iam_policy_document" "trust_policy" {
 
     principals {
       type        = "Service"
-      identifiers = ["lambda.amazonaws.com", "states.amazonaws.com", "events.amazonaws.com"]
+      identifiers = [
+        "lambda.amazonaws.com", 
+        "states.amazonaws.com", 
+        "events.amazonaws.com"
+        ]
     }
 
     actions = ["sts:AssumeRole"]
   }
 }
 
+# ----------------
+# Lambda IAM Roles
+# ----------------
+
 # Create
-resource "aws_iam_role" "lambda_1_role" {
-  name_prefix        = "role-${var.ingestion_lambda}"
+resource "aws_iam_role" "ingest_lambda_role" {
+  name_prefix        = "role-${var.ingest_lambda}"
+  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
+}
+
+resource "aws_iam_role" "transform_lambda_role" {
+  name_prefix        = "role-${var.transform_lambda}"
+  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
+}
+
+resource "aws_iam_role" "load_lambda_role" {
+  name_prefix        = "role-${var.load_lambda}"
   assume_role_policy = data.aws_iam_policy_document.trust_policy.json
 }
 
 
-# ------------------------------
-# Lambda IAM Policy for S3 Read and Write
-# ------------------------------
+# ---------------------------------
+# Ingest Lambda IAM Policies for S3
+# ---------------------------------
 
 # Define
-data "aws_iam_policy_document" "s3_data_policy_doc" {
+data "aws_iam_policy_document" "ingest_s3_policy_doc" {
   statement {
 
     actions = ["s3:PutObject"]
     resources = [
       "${aws_s3_bucket.timestamp_bucket.arn}/*",
-      "${aws_s3_bucket.data_bucket.arn}/*"
+      "${aws_s3_bucket.ingested_data_bucket.arn}/*"
     ]
     effect = "Allow"
   }
@@ -43,7 +61,7 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
     actions = ["s3:GetObject"]
     resources = [
       "${aws_s3_bucket.timestamp_bucket.arn}/*",
-      "${aws_s3_bucket.data_bucket.arn}/*",
+      "${aws_s3_bucket.ingested_data_bucket.arn}/*",
       "${aws_s3_bucket.code_bucket.arn}/*"
     ]
     effect = "Allow"
@@ -59,77 +77,28 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
 }
 
 # Create
-resource "aws_iam_policy" "s3_read_write_policy" {
-  name_prefix = "s3-policy-${var.ingestion_lambda}-read-write"
-  policy      = data.aws_iam_policy_document.s3_data_policy_doc.json
+resource "aws_iam_policy" "ingest_s3_policy" {
+  name_prefix = "s3-policy-${var.ingest_lambda}-read-write"
+  policy      = data.aws_iam_policy_document.ingest_s3_policy_doc.json
 }
 
 # Attach
-resource "aws_iam_role_policy_attachment" "lambda_s3_read_write_policy_attachment" {
-  policy_arn = aws_iam_policy.s3_read_write_policy.arn
-  role       = aws_iam_role.lambda_1_role.name
+resource "aws_iam_role_policy_attachment" "ingest_s3_policy_attachment" {
+  policy_arn = aws_iam_policy.ingest_s3_policy.arn
+  role       = aws_iam_role.ingest_lambda_role.name
 }
 
-
-# # ------------------------------
-# # Lambda IAM Policy for CloudWatch
-# # ------------------------------
+# ----------------------------------
+# Transform Lambda IAM Policy for S3
+# ----------------------------------
 
 # Define
-data "aws_iam_policy_document" "cw_document" {
-  statement {
-    actions = [
-      "logs:CreateLogGroup",
-    
-    ]
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
-    effect    = "Allow"
-  }
-
-  statement {
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
-    ]
-    resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.ingestion_lambda}:*"
-    ]
-    effect = "Allow"
-  }
-}
-
-# Create
-resource "aws_iam_policy" "cw_policy" {
-  name_prefix = "cw-policy-${var.ingestion_lambda}"
-  policy      = data.aws_iam_policy_document.cw_document.json
-}
-# Attach
-resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
-  policy_arn = aws_iam_policy.cw_policy.arn
-  role       = aws_iam_role.lambda_1_role.name
-}
-####################################################################################################
-# ---------------
-# Lambda 2 IAM Role
-# ---------------
-
-# Create
-resource "aws_iam_role" "lambda_2_role" {
-  name_prefix        = "role-${var.transformation_lambda}"
-  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
-}
-
-# ------------------------------
-# Lambda IAM Policy for S3 Read and Write
-# ------------------------------
-
-# Define
-data "aws_iam_policy_document" "s3_data_policy_doc_lambda_two" {
+data "aws_iam_policy_document" "transform_s3_policy_doc" {
   statement {
 
     actions = ["s3:PutObject"]
     resources = [
-      "${aws_s3_bucket.processed_bucket.arn}/*"
+      "${aws_s3_bucket.transformed_data_bucket.arn}/*"
     ]
     effect = "Allow"
   }
@@ -137,7 +106,7 @@ data "aws_iam_policy_document" "s3_data_policy_doc_lambda_two" {
 
     actions = ["s3:GetObject"]
     resources = [
-      "${aws_s3_bucket.data_bucket.arn}/*",
+      "${aws_s3_bucket.ingested_data_bucket.arn}/*",
       "${aws_s3_bucket.code_bucket.arn}/*"
     ]
     effect = "Allow"
@@ -146,87 +115,37 @@ data "aws_iam_policy_document" "s3_data_policy_doc_lambda_two" {
 
     actions = ["s3:ListBucket"]
     resources = [
-      "${aws_s3_bucket.processed_bucket.arn}",
-      "${aws_s3_bucket.data_bucket.arn}"
+      "${aws_s3_bucket.ingested_data_bucket.arn}",
+      "${aws_s3_bucket.transformed_data_bucket.arn}"
     ]
   effect = "Allow"
   }
 }
 
 # Create
-resource "aws_iam_policy" "s3_read_write_policy_lambda_two" {
-  name_prefix = "s3-policy-${var.transformation_lambda}-read-write"
-  policy      = data.aws_iam_policy_document.s3_data_policy_doc_lambda_two.json
+resource "aws_iam_policy" "transform_s3_policy" {
+  name_prefix = "s3-policy-${var.transform_lambda}-read-write"
+  policy      = data.aws_iam_policy_document.transform_s3_policy_doc.json
 }
 
 # Attach
-resource "aws_iam_role_policy_attachment" "lambda_s3_read_write_policy_attachment_lambda_two" {
-  policy_arn = aws_iam_policy.s3_read_write_policy_lambda_two.arn
-  role       = aws_iam_role.lambda_2_role.name
+resource "aws_iam_role_policy_attachment" "transform_s3_policy_attachment" {
+  policy_arn = aws_iam_policy.transform_s3_policy.arn
+  role       = aws_iam_role.transform_lambda_role.name
 }
 
 
-# # ------------------------------
-# # Lambda IAM Policy for CloudWatch
-# # ------------------------------
+# -----------------------------
+# Load Lambda IAM Policy for S3
+# -----------------------------
 
 # Define
-data "aws_iam_policy_document" "cw_document_lambda_two" {
-  statement {
-    actions = [
-      "logs:CreateLogGroup",
-    
-    ]
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
-    effect    = "Allow"
-  }
-
-  statement {
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
-    ]
-    resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.transformation_lambda}:*"
-    ]
-    effect = "Allow"
-  }
-}
-
-# Create
-resource "aws_iam_policy" "cw_policy_lambda_two" {
-  name_prefix = "cw-policy-${var.transformation_lambda}"
-  policy      = data.aws_iam_policy_document.cw_document_lambda_two.json
-}
-# Attach
-resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment_lambda_two" {
-  policy_arn = aws_iam_policy.cw_policy_lambda_two.arn
-  role       = aws_iam_role.lambda_2_role.name
-}
-
-
-####################################################################################################
-# ---------------
-# Lambda 3 IAM Role
-# ---------------
-
-# Create
-resource "aws_iam_role" "lambda_3_role" {
-  name_prefix        = "role-${var.load_lambda}"
-  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
-}
-
-# ------------------------------
-# Lambda IAM Policy for S3 Read and Write
-# ------------------------------
-
-# Define
-data "aws_iam_policy_document" "s3_data_policy_doc_lambda_three" {
+data "aws_iam_policy_document" "load_s3_policy_doc" {
   statement {
 
     actions = ["s3:GetObject"]
     resources = [
-      "${aws_s3_bucket.processed_bucket.arn}/*",
+      "${aws_s3_bucket.transformed_data_bucket.arn}/*",
       "${aws_s3_bucket.code_bucket.arn}/*"
     ]
     effect = "Allow"
@@ -235,39 +154,31 @@ data "aws_iam_policy_document" "s3_data_policy_doc_lambda_three" {
 
     actions = ["s3:ListBucket"]
     resources = [
-      "${aws_s3_bucket.processed_bucket.arn}"
+      "${aws_s3_bucket.transformed_data_bucket.arn}"
     ]
     effect = "Allow"
   }
 }
 
 # Create
-resource "aws_iam_policy" "s3_read_policy_lambda_three" {
+resource "aws_iam_policy" "load_s3_policy" {
   name_prefix = "s3-policy-${var.load_lambda}-read"
-  policy      = data.aws_iam_policy_document.s3_data_policy_doc_lambda_three.json
+  policy      = data.aws_iam_policy_document.load_s3_policy_doc.json
 }
 
 # Attach
-resource "aws_iam_role_policy_attachment" "lambda_s3_read_policy_attachment_lambda_three" {
-  policy_arn = aws_iam_policy.s3_read_policy_lambda_three.arn
-  role       = aws_iam_role.lambda_3_role.name
+resource "aws_iam_role_policy_attachment" "load_s3_policy_attachment" {
+  policy_arn = aws_iam_policy.load_s3_policy.arn
+  role       = aws_iam_role.load_lambda_role.name
 }
 
-
-# # ------------------------------
-# # Lambda 2 IAM Policy for CloudWatch
-# # ------------------------------
+# --------------------------------
+# Lambda IAM Policy for CloudWatch
+# --------------------------------
 
 # Define
-data "aws_iam_policy_document" "cw_document_lambda_three" {
-  statement {
-    actions = [
-      "logs:CreateLogGroup",
-    
-    ]
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
-    effect    = "Allow"
-  }
+data "aws_iam_policy_document" "cw_document" {
+  for_each = toset(["ingest", "transform", "load"])
 
   statement {
     actions = [
@@ -275,19 +186,41 @@ data "aws_iam_policy_document" "cw_document_lambda_three" {
       "logs:PutLogEvents"
     ]
     resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.load_lambda}:*"
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${each.key}_lambda:*"
     ]
     effect = "Allow"
   }
 }
 
 # Create
-resource "aws_iam_policy" "cw_policy_lambda_three" {
-  name_prefix = "cw-policy-${var.load_lambda}"
-  policy      = data.aws_iam_policy_document.cw_document_lambda_three.json
+resource "aws_iam_policy" "ingest_cw_policy" {
+  name_prefix = "cw-policy-${var.ingest_lambda}"
+  policy      = data.aws_iam_policy_document.cw_document["ingest"].json
 }
 # Attach
-resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment_lambda_three" {
-  policy_arn = aws_iam_policy.cw_policy_lambda_three.arn
-  role       = aws_iam_role.lambda_3_role.name
+resource "aws_iam_role_policy_attachment" "cw_policy_attachment" {
+  policy_arn = aws_iam_policy.ingest_cw_policy.arn
+  role       = aws_iam_role.ingest_lambda_role.name
+}
+
+# Create
+resource "aws_iam_policy" "transform_cw_policy" {
+  name_prefix = "cw-policy-${var.transform_lambda}"
+  policy      = data.aws_iam_policy_document.cw_document["transform"].json
+}
+# Attach
+resource "aws_iam_role_policy_attachment" "transform_cw_policy_attachment" {
+  policy_arn = aws_iam_policy.transform_cw_policy.arn
+  role       = aws_iam_role.transform_lambda_role.name
+}
+
+# Create
+resource "aws_iam_policy" "load_cw_policy" {
+  name_prefix = "cw-policy-${var.load_lambda}"
+  policy      = data.aws_iam_policy_document.cw_document["load"].json
+}
+# Attach
+resource "aws_iam_role_policy_attachment" "load_cw_policy_attachment" {
+  policy_arn = aws_iam_policy.load_cw_policy.arn
+  role       = aws_iam_role.load_lambda_role.name
 }

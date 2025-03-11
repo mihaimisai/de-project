@@ -2,6 +2,12 @@ import os
 from pg8000 import Connection
 from pg8000.native import identifier
 
+"""
+    This file will be run automatically when doing terraform-destroy
+
+    It will access the datawarehouse and clear all rows expect dim_date
+"""
+
 PG_HOST = os.environ.get("DB_HOST_DW")
 PG_PORT = os.environ.get("DB_PORT_DW")
 PG_DATABASE = os.environ.get("DB_DW")

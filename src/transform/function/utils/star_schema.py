@@ -10,7 +10,19 @@ from .transform import (
 )
 
 
-def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
+def star_schema(client, ingested_data_bucket, logger, files_dict):
+    """
+
+    Arguments:
+        client : s3 client,
+        ingested_data_bucket : bucket name passed to ingested_data_retrieval
+        logger : the logger for logging messages
+        files_dict : dictionary containing table name and path to file
+
+    Returns:
+        dictionary with keys as dataframe names and values as
+        parquet dataframes
+    """
     required_dataframes = [
         "df_sales_order",
         "df_staff",
@@ -21,7 +33,7 @@ def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
         "df_counterparty",
     ]
     dataframes = ingested_data_retrival(
-        client, files_dict, logger, ingested_bucket_name
+        client, files_dict, logger, ingested_data_bucket
     )
     available_dataframes = list(dataframes.keys())
     try:
@@ -50,8 +62,10 @@ def star_schema(client, ingested_bucket_name, logger, files_dict):  # noqa
                 "dim_currency": dim_currency,
                 "dim_counterparty": dim_counterparty,
             }
-            logger.info("Star-schema data successfully processed")
+            logger.info("Star-schema data successfully transformed")
             return df_star_schema
     except Exception:
-        logger.error("Insuffcient dataframes for star-schema data processing")
+        logger.error(
+            "Insuffcient dataframes for star-schema data transformation"
+        )
         raise
