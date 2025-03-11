@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "ingest_s3_policy_doc" {
 # Create
 resource "aws_iam_policy" "ingest_s3_policy" {
   name_prefix = "s3-policy-${var.ingest_lambda}-read-write"
-  policy      = data.aws_iam_policy_document.ingest_s3_doc.json
+  policy      = data.aws_iam_policy_document.ingest_s3_policy_doc.json
 }
 
 # Attach

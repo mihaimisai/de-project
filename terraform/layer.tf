@@ -22,7 +22,7 @@ resource "aws_lambda_layer_version" "dependencies" {
 
 ##### LAMBDA TWO #####
 
-data "archive_file" "transforma_layer_code" {
+data "archive_file" "transform_layer_code" {
   type = "zip"
   output_path = "${path.module}/../packages/layers/transform_layer.zip"
   source_dir = "${path.module}/../dependencies"
