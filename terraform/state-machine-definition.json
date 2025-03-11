@@ -1,5 +1,5 @@
   {
-    "Comment": "Lambda Transform will be triggered by successful Ingest Lambda invocation.",
+    "Comment": "sequentially triggering ingest, transform and load lambdas",
     "StartAt": "Ingest Lambda",
     "States": {
       "Ingest Lambda": {

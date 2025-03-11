@@ -1,4 +1,3 @@
-#scheduler to trigger state machine every 20 minutes
 resource "aws_cloudwatch_event_rule" "every_20_mins_scheduler" {
   name                = "every-20-mins-scheduler"
   description         = "triggers every 20 minutes"
@@ -16,6 +15,7 @@ resource "aws_cloudwatch_event_target" "trigger_state_machine_every_20_mins" {
 # --------------------
 # Eventbridge IAM Role
 # --------------------
+
 resource "aws_iam_role" "scheduler_iam_role" {
   name_prefix        = "role-scheduler-eventbridge-"
   assume_role_policy = data.aws_iam_policy_document.trust_policy.json
