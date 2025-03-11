@@ -179,13 +179,13 @@ resource "aws_iam_role_policy_attachment" "load_s3_policy_attachment" {
 # Define
 data "aws_iam_policy_document" "cw_document" {
   for_each = toset(["ingest", "transform", "load"])
-  statement {
-    actions = ["logs:CreateLogGroup"]
-    resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
-      ]
-    effect    = "Allow"
-  }
+  # statement {
+  #   actions = ["logs:CreateLogGroup"]
+  #   resources = [
+  #     "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+  #     ]
+  #   effect    = "Allow"
+  # }
 
   statement {
     actions = [

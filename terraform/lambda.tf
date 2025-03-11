@@ -1,4 +1,10 @@
 
+resource "aws_cloudwatch_log_group" "log_group_for_lambda" {
+  for_each = toset(["ingest", "transform", "load"])
+  name = "/aws/lambda/${each.key}_lambda"
+}
+
+
 ##### INGEST LAMBDA #####
 
 data "archive_file" "ingest_lambda" {
@@ -34,6 +40,7 @@ resource "aws_lambda_function" "ingest_lambda_function" {
   depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object.pg8000_layer]
 
 }
+
 
 ##### TRANSFORM LAMBDA #####
 
