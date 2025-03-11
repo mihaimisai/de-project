@@ -12,7 +12,7 @@ resource "aws_sfn_state_machine" "sfn_ingest_transform_load" {
   logging_configuration {
     log_destination        = "${aws_cloudwatch_log_group.log_group_for_sfn.arn}:*"
     include_execution_data = true
-    level                  = "ERROR"
+    level                  = "ALL"
   }
 }
 
