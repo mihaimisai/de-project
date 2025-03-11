@@ -5,7 +5,7 @@ from .s3_client import s3_client
 
 
 # S3 Configuration
-# names obtained from tf
+
 s3_ingestion_bucket = os.environ.get("ingested_data_bucket")
 s3_timestamp_bucket = os.environ.get("timestamp_bucket")
 region = "eu-west-2"

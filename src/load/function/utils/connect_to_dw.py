@@ -24,7 +24,7 @@ def connect_to_db(logger):
     try:
         PG_HOST_DW, PG_PORT_DW, PG_DATABASE_DW, PG_USER_DW, PG_PASSWORD_DW = (
             dw_access()
-        )  # noqa
+        )
         # Establish a connection to PostgreSQL database
 
         connection = Connection(

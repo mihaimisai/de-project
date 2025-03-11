@@ -10,7 +10,7 @@ def transform_handler(event, context):
     """
     Is invoked when triggered by an event
 
-    Invokes s3_client, files_dict and ingested_data_retrival.
+    Invokes s3_client, get_latest_files, star_schema and upload_df_to_s3
 
         Parameters:
             event (event object): json object - converted to empty dict
@@ -18,6 +18,11 @@ def transform_handler(event, context):
             context (context object): context object provided by AWS
 
         Returns:
+
+            Connects to the s3 clent, fetch the latest files uploaded to
+            ingested_bucke_name, this dictionary is passed to df_star_schema
+            then this dictionary is passed to upload_df_to_s3
+
             {'statusCode': 200, "body": "Data transformation complete" }
             if successful
     """

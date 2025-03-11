@@ -1,6 +1,0 @@
-assert_used:
-  skips: ['*_test.py', '*test_*.py']
-
-hardcoded_password_funcarg:
-  skips: ['test/*.py']
-  
