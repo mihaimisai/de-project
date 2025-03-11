@@ -135,7 +135,7 @@ def test_logs_error_when_bucket_empty(
     assert logstream[0] == (
         "test_logger",
         "ERROR",
-        "Error loading transformed parquet files: Processed Bucket Empty.",
+        "Error loading transformed parquet files: Transformed Data Bucket Empty.",
     )
 
 

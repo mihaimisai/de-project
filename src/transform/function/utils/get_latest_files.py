@@ -1,6 +1,7 @@
 def get_latest_files(client, bucket, logger):
     """
     Fetch the latest files in each table folder.
+
     It lists all the elemnts in the bucket then it
     orders them by date and only pick the latest one
     for each table.

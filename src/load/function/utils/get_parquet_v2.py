@@ -24,7 +24,7 @@ def get_recent_parquet_files_from_s3(bucket_name, client, logger, num_files=7):
         response = client.list_objects_v2(Bucket=bucket_name)
 
         if "Contents" not in response:
-            raise ValueError("Processed Bucket Empty.")
+            raise ValueError("Transformed Data Bucket Empty.")
 
         # Sort files by 'LastModified' timestamp (descending order)
         sorted_files = sorted(

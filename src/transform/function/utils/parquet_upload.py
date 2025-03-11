@@ -7,7 +7,7 @@ def upload_df_to_s3(
     df,
     file_key,
     logger,
-    transform_bucket_name,
+    transformed_data_bucket,
 ):
     """
     Uploads a DataFrame to an S3 bucket in Parquet format
@@ -17,7 +17,7 @@ def upload_df_to_s3(
         df (pandas.DataFrame): The DataFrame to be uploaded.
         file_key (str): The key (path) for the file.
         logger (logging.Logger): The logger for logging messages.
-        transform_bucket_name (str): The name of the S3 bucket.
+        transformed_data_bucket (str): The name of the S3 bucket.
     Raises:
         Exception: If conversion to Parquet or S3 upload fails.
     """
@@ -42,14 +42,14 @@ def upload_df_to_s3(
     # Upload the in-memory buffer to S3.
     try:
         s3_client.upload_fileobj(
-            buffer, transform_bucket_name, s3_key_transform
+            buffer, transformed_data_bucket, s3_key_transform
         )  # noqa
     except Exception as e:
         logger.error(
-            f"Failed to upload file {file_key} to S3 bucket {transform_bucket_name}: {e}"  # noqa
+            f"Failed to upload file {file_key} to S3 bucket {transformed_data_bucket}: {e}"  # noqa
         )
         raise e
 
     logger.info(
-        f"Successfully uploaded DataFrame to {file_key} in bucket {transform_bucket_name}"  # noqa
+        f"Successfully uploaded DataFrame to {file_key} in bucket {transformed_data_bucket}"  # noqa
     )

@@ -1,5 +1,5 @@
 # import botocore.exceptions
-from src.ingestion.function.utils.timestamp_data_retrival import (
+from src.ingest.function.utils.timestamp_data_retrival import (
     timestamp_data_retrival,
 )
 import boto3

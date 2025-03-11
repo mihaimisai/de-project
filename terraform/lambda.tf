@@ -13,16 +13,14 @@ resource "aws_lambda_function" "ingest_lambda_function" {
   source_code_hash = data.archive_file.ingest_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "${var.ingest_lambda}/function.zip"
-  # check
   role = aws_iam_role.ingest_lambda_role.arn
-  # check
   handler = "function.ingest_handler_fn.ingest_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
   layers = [aws_lambda_layer_version.dependencies.arn]
+  # layers = [aws_lambda_layer_version.pandas_pyarrow.arn, aws_lambda_layer_version.pg8000.arn]
   environment {
     variables = {
-      # check
       ingested_data_bucket = aws_s3_bucket.ingested_data_bucket.bucket
       timestamp_bucket = aws_s3_bucket.timestamp_bucket.bucket
       DB_HOST = "${var.db_host}"
@@ -33,6 +31,8 @@ resource "aws_lambda_function" "ingest_lambda_function" {
     }
   }
   depends_on = [aws_s3_object.lambda_code, aws_s3_object.ingest_layer]
+  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object.pg8000_layer]
+
 }
 
 ##### TRANSFORM LAMBDA #####
@@ -50,24 +50,22 @@ resource "aws_lambda_function" "transform_lambda_function" {
   source_code_hash = data.archive_file.transform_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "transform/function.zip"
-  # check
   role = aws_iam_role.transform_lambda_role.arn
-  # check
   handler = "function.transform_handler_fn.transform_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
   memory_size = 256
   layers = [aws_lambda_layer_version.dependencies.arn]
-  # change env variables in python code???
+  # layers = [aws_lambda_layer_version.pandas_pyarrow.arn]
   environment {
     variables = {
-      # check
       ingested_data_bucket = aws_s3_bucket.ingested_data_bucket.bucket
-      # checl
       transformed_data_bucket = aws_s3_bucket.transformed_data_bucket.bucket
     }
   }
   depends_on = [aws_s3_object.lambda_code, aws_s3_object.transform_layer]
+  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer]
+
 }
 
 ##### LOAD LAMBDA #####
@@ -85,17 +83,15 @@ resource "aws_lambda_function" "load_lambda_function" {
   source_code_hash = data.archive_file.load_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "load/function.zip"
-  # check
   role = aws_iam_role.load_lambda_role.arn
-  # check
   handler = "function.load_handler_fn.load_handler"
   runtime = var.python_runtime
   timeout = 600
   memory_size = 256
   layers = [aws_lambda_layer_version.dependencies.arn]
+  # layers = [aws_lambda_layer_version.pandas_pyarrow.arn, aws_lambda_layer_version.pg8000.arn]
   environment {
     variables = {
-      # check
       transformed_data_bucket = aws_s3_bucket.transformed_data_bucket.bucket
 
       DB_HOST_DW = "${var.db_host_dw}"
@@ -106,4 +102,5 @@ resource "aws_lambda_function" "load_lambda_function" {
     }
   }
   depends_on = [aws_s3_object.lambda_code, aws_s3_object.load_layer]
+  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object_pg8000_layer]
 }

@@ -1,4 +1,4 @@
-from src.ingestion.function.utils.upload_time_stamp import upload_time_stamp
+from src.ingest.function.utils.upload_time_stamp import upload_time_stamp
 from moto import mock_aws
 import logging
 import boto3

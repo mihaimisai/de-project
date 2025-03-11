@@ -31,13 +31,13 @@ def transform_handler(event, context):
     logger.setLevel(logging.DEBUG)
 
     client = s3_client()
-    ingested_bucket_name = os.environ.get("ingested_data_bucket")
-    transform_bucket_name = os.environ.get("processed_data_bucket")
+    ingested_data_bucket = os.environ.get("ingested_data_bucket")
+    transformed_data_bucket = os.environ.get("transformed_data_bucket")
 
-    files_dict = get_latest_files(client, ingested_bucket_name, logger)
+    files_dict = get_latest_files(client, ingested_data_bucket, logger)
 
     df_star_schema = star_schema(
-        client, ingested_bucket_name, logger, files_dict
+        client, ingested_data_bucket, logger, files_dict
     )  # noqa
 
     star_schema_table_names = list(df_star_schema.keys())
@@ -48,13 +48,15 @@ def transform_handler(event, context):
                 df_star_schema[key],
                 key,
                 logger,
-                transform_bucket_name,
+                transformed_data_bucket,
             )
             for key in star_schema_table_names
         ]
-        logger.info(f"Successfully uploaded data to {transform_bucket_name}")
+        logger.info(f"Successfully uploaded data to {transformed_data_bucket}")
     except Exception as e:
-        logger.error(f"Failed to upload data to {transform_bucket_name}: {e}")
+        logger.error(
+            f"Failed to upload data to {transformed_data_bucket}: {e}"
+        )
         raise
 
     return {"statusCode": 200, "body": "Data transformation complete"}

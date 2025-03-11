@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from src.ingestion.function.utils.s3_data_upload import s3_data_upload
+from src.ingest.function.utils.s3_data_upload import s3_data_upload
 from freezegun import freeze_time
 
 
-@patch("src.ingestion.function.utils.s3_client.s3_client")
+@patch("src.ingest.function.utils.s3_client.s3_client")
 def test_s3_data_upload_success_with_time_stamp(mock_s3_client):
     mock_logger = MagicMock()
 
@@ -23,7 +23,7 @@ def test_s3_data_upload_success_with_time_stamp(mock_s3_client):
     )
 
 
-@patch("src.ingestion.function.utils.s3_client.s3_client")
+@patch("src.ingest.function.utils.s3_client.s3_client")
 def test_s3_data_upload_success_without_time_stamp(mock_s3_client):
     mock_logger = MagicMock()
 
@@ -44,7 +44,7 @@ def test_s3_data_upload_success_without_time_stamp(mock_s3_client):
 
 
 @freeze_time("2025-01-01 11:00:00")
-@patch("src.ingestion.function.utils.s3_client.s3_client")
+@patch("src.ingest.function.utils.s3_client.s3_client")
 def test_s3_data_upload_success_returns_time_stamp(mock_s3_client):
     mock_logger = MagicMock()
 
@@ -60,7 +60,7 @@ def test_s3_data_upload_success_returns_time_stamp(mock_s3_client):
     assert result == "2025-01-01 11:00:00"
 
 
-@patch("src.ingestion.function.utils.s3_client.s3_client")
+@patch("src.ingest.function.utils.s3_client.s3_client")
 def test_s3_data_upload_failed(mock_s3_client):
     mock_logger = MagicMock()
 

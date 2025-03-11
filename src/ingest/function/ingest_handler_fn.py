@@ -2,7 +2,7 @@ from .utils.s3_client import s3_client
 from .utils.process_all_tables import process_all_tables
 
 
-def ingestion_handler(event, context):
+def ingest_handler(event, context):
     """
     Orchestrates ingestion and storage of data
     from multiple tables in database.

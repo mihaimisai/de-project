@@ -78,7 +78,7 @@ def convert_to_csv(df):
 
 
 def ingest_data_to_s3(
-    s3_client, logger, table_name, s3_ingestion_bucket, s3_timestamp_bucket
+    s3_client, logger, table_name, ingested_data_bucket, timestamp_bucket
 ):
     """
     Orchestrates retrival, conversion and upload of
@@ -88,8 +88,8 @@ def ingest_data_to_s3(
             s3_client (): s3 client
             logger (Logger): logger instance
             table_name (str): table to retrieve data from
-            s3_ingestion_bucket (str): name of s3 bucket to upload csv to
-            s3_timestamp_bucket (str): name of s3 bucket to retrieve
+            ingested_data_bucket (str): name of s3 bucket to upload csv to
+            timestamp_bucket (str): name of s3 bucket to retrieve
             and upload timestamp to
 
         Logs:
@@ -108,7 +108,7 @@ def ingest_data_to_s3(
         conn = connect_to_db(logger)
 
         time_stamp = timestamp_data_retrival(
-            s3_client, s3_timestamp_bucket, table_name, logger
+            s3_client, timestamp_bucket, table_name, logger
         )
 
         df = fetch_data(conn, table_name, time_stamp, logger)
@@ -117,11 +117,11 @@ def ingest_data_to_s3(
         logger.info(f"Successfully fetched data from table: {table_name}")
 
         new_timestamp = s3_data_upload(
-            s3_client, s3_ingestion_bucket, table_name, csv_df, logger
+            s3_client, ingested_data_bucket, table_name, csv_df, logger
         )
 
         upload_time_stamp(
-            s3_client, s3_timestamp_bucket, table_name, logger, new_timestamp
+            s3_client, timestamp_bucket, table_name, logger, new_timestamp
         )
 
     except Exception as e:

@@ -1,7 +1,7 @@
 from moto import mock_aws
 import boto3
 import pytest
-from src.ingestion.function.utils.ingest_data_to_s3 import (
+from src.ingest.function.utils.ingest_data_to_s3 import (
     fetch_data,
     convert_to_csv,
     ingest_data_to_s3,
@@ -106,11 +106,11 @@ class TestIngestDataToS3:
         assert result_str == expected_csv
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch(
-        "src.ingestion.function.utils.connect_to_db.Connection",
+        "src.ingest.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
     def test_ingest_data_to_s3_time_stamp_called(self, s3_client, mock_logger):
@@ -119,7 +119,7 @@ class TestIngestDataToS3:
         table_name = "counterparty"
 
         with patch(
-            "src.ingestion.function.utils.ingest_data_to_s3.timestamp_data_retrival"  # noqa: E501
+            "src.ingest.function.utils.ingest_data_to_s3.timestamp_data_retrival"  # noqa: E501
         ) as mock_timestamp:
 
             ingest_data_to_s3(
@@ -128,11 +128,11 @@ class TestIngestDataToS3:
             mock_timestamp.assert_called_once
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch(
-        "src.ingestion.function.utils.connect_to_db.Connection",
+        "src.ingest.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
     def test_ingest_data_to_s3_fetch_data_called(self, mock_logger, s3_client):
@@ -141,7 +141,7 @@ class TestIngestDataToS3:
         table_name = "counterparty"
 
         with patch(
-            "src.ingestion.function.utils.ingest_data_to_s3.fetch_data"
+            "src.ingest.function.utils.ingest_data_to_s3.fetch_data"
         ) as mock_fetch_data:
 
             ingest_data_to_s3(
@@ -151,11 +151,11 @@ class TestIngestDataToS3:
             mock_fetch_data.assert_called_once()
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch(
-        "src.ingestion.function.utils.connect_to_db.Connection",
+        "src.ingest.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
     def test_ingest_data_to_s3_convert_called(self, mock_logger, s3_client):
@@ -164,7 +164,7 @@ class TestIngestDataToS3:
         table_name = "counterparty"
 
         with patch(
-            "src.ingestion.function.utils.ingest_data_to_s3.convert_to_csv"
+            "src.ingest.function.utils.ingest_data_to_s3.convert_to_csv"
         ) as mock_convert:
 
             ingest_data_to_s3(
@@ -174,11 +174,11 @@ class TestIngestDataToS3:
             mock_convert.assert_called_once()
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch(
-        "src.ingestion.function.utils.connect_to_db.Connection",
+        "src.ingest.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
     def test_ingest_data_to_s3_data_upload_called(
@@ -188,7 +188,7 @@ class TestIngestDataToS3:
         s3_timestamp = "timestamp"
 
         with patch(
-            "src.ingestion.function.utils.ingest_data_to_s3.s3_data_upload"
+            "src.ingest.function.utils.ingest_data_to_s3.s3_data_upload"
         ) as mock_upload:
 
             table_name = "counterparty"
@@ -200,11 +200,11 @@ class TestIngestDataToS3:
             mock_upload.assert_called_once()
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch(
-        "src.ingestion.function.utils.connect_to_db.Connection",
+        "src.ingest.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
     def test_ingest_data_to_s3_upload_time_stamp_called(
@@ -214,7 +214,7 @@ class TestIngestDataToS3:
         s3_timestamp = "timestamp"
 
         with patch(
-            "src.ingestion.function.utils.ingest_data_to_s3.upload_time_stamp"
+            "src.ingest.function.utils.ingest_data_to_s3.upload_time_stamp"
         ) as mock_upload:
 
             table_name = "counterparty"
@@ -226,11 +226,11 @@ class TestIngestDataToS3:
             mock_upload.assert_called_once()
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch(
-        "src.ingestion.function.utils.connect_to_db.Connection",
+        "src.ingest.function.utils.connect_to_db.Connection",
         return_value=MagicMock(),
     )
     def test_ingest_data_to_s3_success_log(self, conn, mock_logger):

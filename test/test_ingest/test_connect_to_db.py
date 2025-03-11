@@ -1,4 +1,4 @@
-from src.ingestion.function.utils.connect_to_db import connect_to_db
+from src.ingest.function.utils.connect_to_db import connect_to_db
 import pytest
 import logging
 from unittest.mock import patch
@@ -15,7 +15,7 @@ def test_logger():
 
 class TestConnectToDb:
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     def test_fails_with_no_connection_established(self, test_logger):
@@ -23,10 +23,10 @@ class TestConnectToDb:
             connect_to_db(test_logger)
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "anyyy"),
     )
-    @patch("src.ingestion.function.utils.connect_to_db.Connection")
+    @patch("src.ingest.function.utils.connect_to_db.Connection")
     def test_connects_to_db_success(
         self, mock_access, mock_connection, test_logger
     ):
@@ -54,11 +54,11 @@ class TestConnectToDb:
         assert logstream[0] == expected_log
 
     @patch(
-        "src.ingestion.function.utils.connect_to_db.pg_access",
+        "src.ingest.function.utils.connect_to_db.pg_access",
         return_value=("localhost", 1234, "test_db", "user", "password"),
     )
     @patch(
-        "src.ingestion.function.utils.connect_to_db.Connection",
+        "src.ingest.function.utils.connect_to_db.Connection",
         return_value=object(),
     )
     def test_connects_to_db_logs_info(
