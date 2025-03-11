@@ -17,7 +17,7 @@ resource "aws_sfn_state_machine" "sfn_ingest_transform_load" {
 }
 
 resource "aws_cloudwatch_log_group" "log_group_for_sfn" {
-  name = "${var.state_machine_name}-logs"
+  name = "/aws/sfn/ingest_transform_load"
 }
 
 # ----------------------
