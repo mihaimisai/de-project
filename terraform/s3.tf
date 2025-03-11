@@ -1,56 +1,28 @@
-resource "aws_s3_bucket" "data_bucket" {
-  bucket_prefix = var.ingested_data_bucket_prefix
-  force_destroy = true
-  tags = {
-    Name        = "ingested data bucket"
-  }
-}
-
+# buckets
 resource "aws_s3_bucket" "timestamp_bucket" {
   bucket_prefix = var.timestamp_bucket_prefix
   force_destroy = true
-  tags = {
-    Name        = "timestamp of last lambda call bucket"
-  }
 }
 
 resource "aws_s3_bucket" "code_bucket" {
   bucket_prefix  = var.code_bucket_prefix
   force_destroy = true
-  tags = {
-    Name        = "lambda code bucket"
-  }
 }
 
-resource "aws_s3_bucket" "processed_bucket" {
-  bucket_prefix = var.processed_data_bucket_prefix
+resource "aws_s3_bucket" "ingested_data_bucket" {
+  bucket_prefix = var.ingested_data_bucket_prefix
   force_destroy = true
-  tags = {
-    Name        = "processed data bucket"
-  }
 }
 
-# Upload the ingester_lambda code to the code_bucket
-# resource "aws_s3_object" "ingestion_lambda_code" {
-#   bucket = aws_s3_bucket.code_bucket.bucket
-#   key = "ingestion/function.zip"
-#   source = data.archive_file.ingestion_lambda.output_path
-#   etag = filemd5(data.archive_file.ingestion_lambda.output_path)
-# }
-
-# Upload the transformation_lambda code to the code_bucket
-# resource "aws_s3_object" "transformation_lambda_code" {
-#   bucket = aws_s3_bucket.code_bucket.bucket
-#   key = "transformation/function.zip"
-#   source = data.archive_file.transformation_lambda.output_path
-#   etag = filemd5(data.archive_file.transformation_lambda.output_path)
-# }
+resource "aws_s3_bucket" "transformed_data_bucket" {
+  bucket_prefix = var.transformed_data_bucket_prefix
+  force_destroy = true
+}
 
 
-#SOMETHING TO IMPLEMENT WHEN ALL THREE LAMBDAS EXIST 
-
+# objects
 resource "aws_s3_object" "lambda_code" {
-  for_each = toset(["ingestion", "transformation", "load"])
+  for_each = toset(["ingest", "transform", "load"])
   bucket   = aws_s3_bucket.code_bucket.bucket
   key      = "${each.key}/function.zip"
   source   = "${path.module}/../packages/${each.key}/function.zip"
@@ -58,39 +30,18 @@ resource "aws_s3_object" "lambda_code" {
 }
 
 
-# once lambda code complete - can be combined if all lambdas have same dependencies
-
-# Upload the ingester_lambda layer to the code_bucket if exists
-resource "aws_s3_object" "ingestion_layer" {
+resource "aws_s3_object" "pandas_pyarrow_layer" {
   bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/ingestion_layer.zip"
-  source = data.archive_file.ingestion_layer_code.output_path
-  etag = filemd5(data.archive_file.ingestion_layer_code.output_path)
-  depends_on = [ data.archive_file.ingestion_layer_code ]
+  key = "layers/pandas_pyarrow_layer.zip"
+  source = data.archive_file.pandas_pyarrow_layer_code.output_path
+  etag = filemd5(data.archive_file.pandas_pyarrow_layer_code.output_path)
+  depends_on = [ data.archive_file.pandas_pyarrow_layer_code ]
 }
 
-# Upload the transformation_lambda layer to the code_bucket if exists
-resource "aws_s3_object" "transformation_layer" {
+resource "aws_s3_object" "pg8000_layer" {
   bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/transformation_layer.zip"
-  source = data.archive_file.transformation_layer_code.output_path
-  etag = filemd5(data.archive_file.transformation_layer_code.output_path)
-  depends_on = [ data.archive_file.transformation_layer_code ]
+  key = "layers/pg8000_layer.zip"
+  source = data.archive_file.pg8000_layer_code.output_path
+  etag = filemd5(data.archive_file.pg8000_layer_code.output_path)
+  depends_on = [ data.archive_file.pg8000_layer_code ]
 }
-
-resource "aws_s3_object" "load_layer" {
-  bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/load_layer.zip"
-  source = data.archive_file.load_layer_code.output_path
-  etag = filemd5(data.archive_file.load_layer_code.output_path)
-  depends_on = [ data.archive_file.load_layer_code ]
-}
-
-# for all lambdas using one layer
-# resource "aws_s3_object" "layer" {
-#   bucket = aws_s3_bucket.code_bucket.bucket
-#   key = "layers/layer.zip"
-#   source = data.archive_file.layer_code.output_path
-#   etag = filemd5(data.archive_file.layer_code.output_path)
-#   depends_on = [ data.archive_file.layer_code ]
-# }

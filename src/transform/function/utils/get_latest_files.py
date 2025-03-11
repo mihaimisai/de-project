@@ -1,11 +1,19 @@
 def get_latest_files(client, bucket, logger):
     """
-    Gets the latest files in each table folder
+    Fetch the latest files in each table folder.
+
+    It lists all the elemnts in the bucket then it
+    orders them by date and only pick the latest one
+    for each table.
 
     Arguments:
         client: the s3 client
         bucket: the bucket from where to extract the files
         logger: to log any info or errors
+
+    Returns:
+        Dictionary where the key is the table name and the
+        value is path to file
     """
 
     try:

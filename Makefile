@@ -32,11 +32,10 @@ format-check: black black-check flake8
 #Run security
 
 bandit:
-	source venv/bin/activate && bandit -c .bandit.yml -r src/ test/
+	source venv/bin/activate && bandit -r src/ test/ --skip B101
 pip-audit:
 	source venv/bin/activate && pip-audit
-security:
-	source venv/bin/activate && bandit -c .bandit.yml -r src/ test/ && pip-audit
+security: bandit pip-audit
 
 #Run tests
 

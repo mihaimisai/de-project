@@ -1,25 +1,32 @@
 
-##### LAMBDA ONE #####
-
-data "archive_file" "ingestion_lambda" {
-  type             = "zip"
-  output_path = "${path.module}/../packages/ingestion/function.zip"
-  source_dir      = "${path.module}/../src/ingestion"
+resource "aws_cloudwatch_log_group" "log_group_for_lambda" {
+  for_each = toset(["ingest", "transform", "load"])
+  name = "/aws/lambda/${each.key}_lambda"
 }
 
-resource "aws_lambda_function" "ingested_lambda_function" {
-  function_name = var.ingestion_lambda
-  source_code_hash = data.archive_file.ingestion_lambda.output_base64sha256
+
+##### INGEST LAMBDA #####
+
+data "archive_file" "ingest_lambda" {
+  type             = "zip"
+  output_file_mode = "0666"
+  output_path = "${path.module}/../packages/ingest/function.zip"
+  source_dir      = "${path.module}/../src/ingest"
+}
+
+resource "aws_lambda_function" "ingest_lambda_function" {
+  function_name = var.ingest_lambda
+  source_code_hash = data.archive_file.ingest_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
-  s3_key = "ingestion/function.zip"
-  role = aws_iam_role.lambda_1_role.arn
-  handler = "function.ingestion_handler_fn.ingestion_handler"
+  s3_key = "ingest/function.zip"
+  role = aws_iam_role.ingest_lambda_role.arn
+  handler = "function.ingest_handler_fn.ingest_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
-  layers = [aws_lambda_layer_version.dependencies.arn]
+  layers = [aws_lambda_layer_version.pandas_pyarrow.arn, aws_lambda_layer_version.pg8000.arn]
   environment {
     variables = {
-      ingested_data_bucket = aws_s3_bucket.data_bucket.bucket
+      ingested_data_bucket = aws_s3_bucket.ingested_data_bucket.bucket
       timestamp_bucket = aws_s3_bucket.timestamp_bucket.bucket
       DB_HOST = "${var.db_host}"
       DB_PORT = "${var.db_port}"
@@ -28,43 +35,48 @@ resource "aws_lambda_function" "ingested_lambda_function" {
       DB_PASSWORD = "${var.db_password}"
     }
   }
-  depends_on = [aws_s3_object.lambda_code, aws_s3_object.ingestion_layer]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object.pg8000_layer]
+
 }
 
-##### LAMBDA TWO #####
+
+##### TRANSFORM LAMBDA #####
 
 
-data "archive_file" "transformation_lambda" {
+data "archive_file" "transform_lambda" {
   type             = "zip"
-  output_path = "${path.module}/../packages/transformation/function.zip"
+  output_file_mode = "0666"
+  output_path = "${path.module}/../packages/transform/function.zip"
   source_dir      = "${path.module}/../src/transform" 
 }
 
-resource "aws_lambda_function" "transformation_lambda_function" {
-  function_name = var.transformation_lambda
-  source_code_hash = data.archive_file.transformation_lambda.output_base64sha256
+resource "aws_lambda_function" "transform_lambda_function" {
+  function_name = var.transform_lambda
+  source_code_hash = data.archive_file.transform_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
-  s3_key = "transformation/function.zip"
-  role = aws_iam_role.lambda_2_role.arn
+  s3_key = "transform/function.zip"
+  role = aws_iam_role.transform_lambda_role.arn
   handler = "function.transform_handler_fn.transform_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
   memory_size = 256
-  layers = [aws_lambda_layer_version.dependencies.arn]
+  layers = [aws_lambda_layer_version.pandas_pyarrow.arn]
   environment {
     variables = {
-      ingested_data_bucket = aws_s3_bucket.data_bucket.bucket
-      processed_data_bucket = aws_s3_bucket.processed_bucket.bucket
+      ingested_data_bucket = aws_s3_bucket.ingested_data_bucket.bucket
+      transformed_data_bucket = aws_s3_bucket.transformed_data_bucket.bucket
     }
   }
-  depends_on = [aws_s3_object.lambda_code, aws_s3_object.transformation_layer]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer]
+
 }
 
-##### LAMBDA THREE #####
+##### LOAD LAMBDA #####
 
 
 data "archive_file" "load_lambda" {
   type             = "zip"
+  output_file_mode = "0666"
   output_path = "${path.module}/../packages/load/function.zip"
   source_dir      = "${path.module}/../src/load" 
 }
@@ -74,15 +86,16 @@ resource "aws_lambda_function" "load_lambda_function" {
   source_code_hash = data.archive_file.load_lambda.output_base64sha256
   s3_bucket = aws_s3_bucket.code_bucket.bucket
   s3_key = "load/function.zip"
-  role = aws_iam_role.lambda_3_role.arn
+  role = aws_iam_role.load_lambda_role.arn
   handler = "function.load_handler_fn.load_handler"
   runtime = var.python_runtime
   timeout = 600
   memory_size = 256
-  layers = [aws_lambda_layer_version.dependencies.arn]
+
+  layers = [aws_lambda_layer_version.pandas_pyarrow.arn, aws_lambda_layer_version.pg8000.arn]
   environment {
     variables = {
-      processed_data_bucket = aws_s3_bucket.processed_bucket.bucket
+      transformed_data_bucket = aws_s3_bucket.transformed_data_bucket.bucket
 
       DB_HOST_DW = "${var.db_host_dw}"
       DB_PORT_DW = "${var.db_port_dw}"
@@ -91,5 +104,5 @@ resource "aws_lambda_function" "load_lambda_function" {
       DB_PASSWORD_DW  = "${var.db_password_dw}"
     }
   }
-  depends_on = [aws_s3_object.lambda_code, aws_s3_object.load_layer]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object.pg8000_layer]
 }
