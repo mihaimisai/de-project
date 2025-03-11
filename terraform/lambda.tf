@@ -17,8 +17,8 @@ resource "aws_lambda_function" "ingest_lambda_function" {
   handler = "function.ingest_handler_fn.ingest_handler"
   runtime = var.python_runtime
   timeout = var.default_timeout
-  layers = [aws_lambda_layer_version.dependencies.arn]
-  # layers = [aws_lambda_layer_version.pandas_pyarrow.arn, aws_lambda_layer_version.pg8000.arn]
+  # layers = [aws_lambda_layer_version.dependencies.arn]
+  layers = [aws_lambda_layer_version.pandas_pyarrow.arn, aws_lambda_layer_version.pg8000.arn]
   environment {
     variables = {
       ingested_data_bucket = aws_s3_bucket.ingested_data_bucket.bucket
@@ -30,8 +30,8 @@ resource "aws_lambda_function" "ingest_lambda_function" {
       DB_PASSWORD = "${var.db_password}"
     }
   }
-  depends_on = [aws_s3_object.lambda_code, aws_s3_object.ingest_layer]
-  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object.pg8000_layer]
+  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.ingest_layer]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object.pg8000_layer]
 
 }
 
@@ -55,16 +55,16 @@ resource "aws_lambda_function" "transform_lambda_function" {
   runtime = var.python_runtime
   timeout = var.default_timeout
   memory_size = 256
-  layers = [aws_lambda_layer_version.dependencies.arn]
-  # layers = [aws_lambda_layer_version.pandas_pyarrow.arn]
+  # layers = [aws_lambda_layer_version.dependencies.arn]
+  layers = [aws_lambda_layer_version.pandas_pyarrow.arn]
   environment {
     variables = {
       ingested_data_bucket = aws_s3_bucket.ingested_data_bucket.bucket
       transformed_data_bucket = aws_s3_bucket.transformed_data_bucket.bucket
     }
   }
-  depends_on = [aws_s3_object.lambda_code, aws_s3_object.transform_layer]
-  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer]
+  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.transform_layer]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer]
 
 }
 
@@ -88,8 +88,8 @@ resource "aws_lambda_function" "load_lambda_function" {
   runtime = var.python_runtime
   timeout = 600
   memory_size = 256
-  layers = [aws_lambda_layer_version.dependencies.arn]
-  # layers = [aws_lambda_layer_version.pandas_pyarrow.arn, aws_lambda_layer_version.pg8000.arn]
+  # layers = [aws_lambda_layer_version.dependencies.arn]
+  layers = [aws_lambda_layer_version.pandas_pyarrow.arn, aws_lambda_layer_version.pg8000.arn]
   environment {
     variables = {
       transformed_data_bucket = aws_s3_bucket.transformed_data_bucket.bucket
@@ -101,6 +101,6 @@ resource "aws_lambda_function" "load_lambda_function" {
       DB_PASSWORD_DW  = "${var.db_password_dw}"
     }
   }
-  depends_on = [aws_s3_object.lambda_code, aws_s3_object.load_layer]
-  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object_pg8000_layer]
+  # depends_on = [aws_s3_object.lambda_code, aws_s3_object.load_layer]
+  depends_on = [aws_s3_object.lambda_code, aws_s3_object.pandas_pyarrow_layer, aws_s3_object_pg8000_layer]
 }

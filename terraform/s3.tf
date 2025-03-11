@@ -42,47 +42,47 @@ resource "aws_s3_object" "lambda_code" {
 }
 
 
-# once lambda code complete - can be combined if all lambdas have same dependencies
+# # once lambda code complete - can be combined if all lambdas have same dependencies
 
-# Upload the ingester_lambda layer to the code_bucket if exists
-resource "aws_s3_object" "ingest_layer" {
-  bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/ingest_layer.zip"
-  source = data.archive_file.ingest_layer_code.output_path
-  etag = filemd5(data.archive_file.ingest_layer_code.output_path)
-  depends_on = [ data.archive_file.ingest_layer_code ]
-}
-
-# Upload the transformation_lambda layer to the code_bucket if exists
-resource "aws_s3_object" "transform_layer" {
-  bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/transform_layer.zip"
-  source = data.archive_file.transform_layer_code.output_path
-  etag = filemd5(data.archive_file.transform_layer_code.output_path)
-  depends_on = [ data.archive_file.transform_layer_code ]
-}
-
-resource "aws_s3_object" "load_layer" {
-  bucket = aws_s3_bucket.code_bucket.bucket
-  key = "layers/load_layer.zip"
-  source = data.archive_file.load_layer_code.output_path
-  etag = filemd5(data.archive_file.load_layer_code.output_path)
-  depends_on = [ data.archive_file.load_layer_code ]
-}
-
-
-# resource "aws_s3_object" "pandas_pyarrow_layer" {
+# # Upload the ingester_lambda layer to the code_bucket if exists
+# resource "aws_s3_object" "ingest_layer" {
 #   bucket = aws_s3_bucket.code_bucket.bucket
-#   key = "layers/pandas_pyarrow_layer.zip"
-#   source = data.archive_file.pandas_pyarrow_layer_code.output_path
-#   etag = filemd5(data.archive_file.pandas_pyarrow_layer_code.output_path)
-#   depends_on = [ data.archive_file.pandas_pyarrow_layer_code ]
+#   key = "layers/ingest_layer.zip"
+#   source = data.archive_file.ingest_layer_code.output_path
+#   etag = filemd5(data.archive_file.ingest_layer_code.output_path)
+#   depends_on = [ data.archive_file.ingest_layer_code ]
 # }
 
-# resource "aws_s3_object" "pg8000_layer" {
+# # Upload the transformation_lambda layer to the code_bucket if exists
+# resource "aws_s3_object" "transform_layer" {
 #   bucket = aws_s3_bucket.code_bucket.bucket
-#   key = "layers/pg8000_layer.zip"
-#   source = data.archive_file.pg8000_layer_code.output_path
-#   etag = filemd5(data.archive_file.pg8000_layer_code.output_path)
-#   depends_on = [ data.archive_file.pg8000_layer_code ]
+#   key = "layers/transform_layer.zip"
+#   source = data.archive_file.transform_layer_code.output_path
+#   etag = filemd5(data.archive_file.transform_layer_code.output_path)
+#   depends_on = [ data.archive_file.transform_layer_code ]
 # }
+
+# resource "aws_s3_object" "load_layer" {
+#   bucket = aws_s3_bucket.code_bucket.bucket
+#   key = "layers/load_layer.zip"
+#   source = data.archive_file.load_layer_code.output_path
+#   etag = filemd5(data.archive_file.load_layer_code.output_path)
+#   depends_on = [ data.archive_file.load_layer_code ]
+# }
+
+
+resource "aws_s3_object" "pandas_pyarrow_layer" {
+  bucket = aws_s3_bucket.code_bucket.bucket
+  key = "layers/pandas_pyarrow_layer.zip"
+  source = data.archive_file.pandas_pyarrow_layer_code.output_path
+  etag = filemd5(data.archive_file.pandas_pyarrow_layer_code.output_path)
+  depends_on = [ data.archive_file.pandas_pyarrow_layer_code ]
+}
+
+resource "aws_s3_object" "pg8000_layer" {
+  bucket = aws_s3_bucket.code_bucket.bucket
+  key = "layers/pg8000_layer.zip"
+  source = data.archive_file.pg8000_layer_code.output_path
+  etag = filemd5(data.archive_file.pg8000_layer_code.output_path)
+  depends_on = [ data.archive_file.pg8000_layer_code ]
+}
