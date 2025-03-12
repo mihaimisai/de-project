@@ -9,6 +9,7 @@ resource "aws_sfn_state_machine" "sfn_ingest_transform_load" {
       load_function_name = "${var.load_lambda}"
     })
   role_arn = aws_iam_role.state_machine_iam_role.arn
+
   logging_configuration {
     log_destination        = "${aws_cloudwatch_log_group.log_group_for_sfn.arn}:*"
     include_execution_data = true
@@ -23,6 +24,7 @@ resource "aws_cloudwatch_log_group" "log_group_for_sfn" {
 # ----------------------
 # State Machine IAM Role
 # ----------------------
+
 
 # create
 resource "aws_iam_role" "state_machine_iam_role" {
