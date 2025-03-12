@@ -66,7 +66,7 @@ This is accomplished, primarily, through leveraging the Pandas module and manipu
 
 ## Lambda Three (Load):
 
-The third and final Lambda is responsible for loading the transformed data from the s3 Transformation Bucket into a Redshift Data Warehouse, hosted by AWS. Tables have to created before inserting data.
+The third and final Lambda is responsible for loading the transformed data from the s3 Transformation Bucket into a PSQL-hosted Data Warehouse. The code as is relies on pre-existing tables as landing sites for this data-loading, and therefore such tables should be created in your connected PSQL database prior to activation. 
 
 
 ## State-Machine and Scheduling:
